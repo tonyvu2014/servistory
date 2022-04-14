@@ -1,0 +1,15 @@
+{
+  "prod": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-servistory-prod-102855-authRole",
+      "UnauthRoleArn": "arn:aws:iam::416696267306:role/amplify-servistory-prod-102855-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::416696267306:role/amplify-servistory-prod-102855-authRole",
+      "Region": "ap-southeast-2",
+      "DeploymentBucketName": "amplify-servistory-prod-102855-deployment",
+      "UnauthRoleName": "amplify-servistory-prod-102855-unauthRole",
+      "StackName": "amplify-servistory-prod-102855",
+      "StackId": "arn:aws:cloudformation:ap-southeast-2:416696267306:stack/amplify-servistory-prod-102855/e05c9400-bb89-11ec-bb5b-0230e03a9480",
+      "AmplifyAppId": "d37elpx0f99jhq"
+    }
+  }
+}
