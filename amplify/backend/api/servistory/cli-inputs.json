@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "serviceConfiguration": {
+    "apiName": "servistory",
+    "serviceName": "AppSync",
+    "gqlSchemaPath": "/Users/tonyvu/servistory/amplify/backend/api/servistory/schema.graphql",
+    "defaultAuthType": {
+      "mode": "API_KEY",
+      "expirationTime": 7
+    }
+  }
+}

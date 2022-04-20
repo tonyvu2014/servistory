@@ -6,3 +6,39 @@ Helpful resources:
 - Amplify CLI documentation: https://docs.amplify.aws/cli
 - More details on this folder & generated files: https://docs.amplify.aws/cli/reference/files
 - Join Amplify's community: https://amplify.aws/community/
+
+
+# Prerequisites
+
+You need to to have:
+- nodejs v14
+- npm
+- amplify-cli
+- An AWS profile with sufficient permissions to provision Amplify resources
+
+# Setup a new amplify project
+
+- Run `amplify init` to initialize new amplify project
+- Run `amplify configure` to add an AWS profile and choose the AWS profile with sufficient permissions
+- Run `amplify add api` to start a new backend API for an amplify project, choose GraphQL as API
+- Run `amplify add auth` to add a new authentication (via AWS Cognito by default)
+- Run `amplify add hosting` to set up CI/CD from Amplify Console
+- Run `amplify add function` to add a new (Lambda) function
+- Run `amplify status` to check the current status of local resources
+
+# Test GraphQL locally
+
+Run `amplify mock`, the local mock AppSync URL will be shown on terminal.
+
+# Switch between different environments
+
+Run `amplify env checkout <envName>` 
+
+# Update resources (api, auth, hosting or function)
+
+Run `amplify <resourceType> update` then pick the resource name
+
+# Push local change to AWS
+
+Run `amplify push` (make sure you are on the correct environment)
+

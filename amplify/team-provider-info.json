@@ -10,6 +10,14 @@
       "StackName": "amplify-servistory-prod-102855",
       "StackId": "arn:aws:cloudformation:ap-southeast-2:416696267306:stack/amplify-servistory-prod-102855/e05c9400-bb89-11ec-bb5b-0230e03a9480",
       "AmplifyAppId": "d37elpx0f99jhq"
+    },
+    "categories": {
+      "hosting": {
+        "amplifyhosting": {
+          "appId": "d37elpx0f99jhq",
+          "type": "cicd"
+        }
+      }
     }
   }
 }
