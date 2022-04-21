@@ -7,4 +7,10 @@ type Vendor {
     name: String!
     address: String
     email: String
+    phone: String!
 } 
+
+type Query {
+  getVendor(id: ID!): Vendor
+}
+

@@ -17,6 +17,16 @@
           "appId": "d37elpx0f99jhq",
           "type": "cicd"
         }
+      },
+      "function": {
+        "smsSender": {
+          "deploymentBucketName": "amplify-servistory-prod-102855-deployment",
+          "s3Key": "amplify-builds/smsSender-2b54795032695652626d-build.zip"
+        },
+        "resolver": {
+          "deploymentBucketName": "amplify-servistory-prod-102855-deployment",
+          "s3Key": "amplify-builds/resolver-6b55786d483051364b56-build.zip"
+        }
       }
     }
   }

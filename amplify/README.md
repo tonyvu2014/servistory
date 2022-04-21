@@ -28,7 +28,8 @@ You need to to have:
 
 # Test GraphQL locally
 
-Run `amplify mock`, the local mock AppSync URL will be shown on terminal.
+- Run `amplify mock`, the local mock AppSync URL will be shown on terminal.
+- Run `amplify mock function`, to trigger the lambda with event payload as specified in `event.json` file
 
 # Switch between different environments
 
