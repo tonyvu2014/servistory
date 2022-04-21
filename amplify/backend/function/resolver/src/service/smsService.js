@@ -6,7 +6,7 @@ const SMS_SENDER_LAMBDA_NAME = 'smsSender';
 const lambda = new aws.Lambda({
     apiVersion: "2015-03-31",
     endpoint: `lambda.${process.env.REGION}.amazonaws.com`
-  });
+});
 
 exports.smsService = {
     sendMessage: async function(phone, message, customer) {
@@ -18,7 +18,6 @@ exports.smsService = {
         });
 
         const functionName = `${SMS_SENDER_LAMBDA_NAME}-${process.env.ENV}`;
-        console.log('functionName', functionName);
 
         const result = await lambda
         .invoke({
@@ -31,7 +30,7 @@ exports.smsService = {
             console.log('Message Sent');
         })
         .catch(error => {
-            console.log('Message Sent Failed, error: ', error);
+            console.log(`Message Sent Failed for number ${phone}, error: `, error);
         });
         console.log(`${functionName} invoked`, result);
     }

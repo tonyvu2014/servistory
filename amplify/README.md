@@ -26,10 +26,15 @@ You need to to have:
 - Run `amplify add function` to add a new (Lambda) function
 - Run `amplify status` to check the current status of local resources
 
+# Provision AWS resources
+- To add or update AWS resources related to a function, look for file `{functionName}-cloudformation-template.json` and modify the file with your CloudFormation configuration changes. You can add parameters to be used in the Cloudformation in the `parameters.json` file. Those parameters can be read from the template file.
+- To add additional permissions to the lambda function, you can also modify the `custom-policies.json` file in the function folder.
+- To add a seperate AWS resources, follow this guideline: https://aws.amazon.com/blogs/mobile/extend-amplify-backend-with-custom-aws-resource-using-aws-cdk-or-cloudformation/
+
 # Test GraphQL locally
 
 - Run `amplify mock`, the local mock AppSync URL will be shown on terminal.
-- Run `amplify mock function`, to trigger the lambda with event payload as specified in `event.json` file
+- Run `amplify mock function` and pick the function to trigger the lambda with event payload as specified in `event.json` file
 
 # Switch between different environments
 
