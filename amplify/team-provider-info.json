@@ -25,8 +25,11 @@
         },
         "resolver": {
           "deploymentBucketName": "amplify-servistory-prod-102855-deployment",
-          "s3Key": "amplify-builds/resolver-6b55786d483051364b56-build.zip"
+          "s3Key": "amplify-builds/resolver-577743682f44306a4b79-build.zip"
         }
+      },
+      "auth": {
+        "servistory4ec1a891": {}
       }
     }
   }
