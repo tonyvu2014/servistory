@@ -7,6 +7,7 @@ import awsExports from './aws-exports';
 Amplify.configure(awsExports);
 
 function App({ signOut, changePassword, user }) {
+  console.log('user', user);
   return (
     <>
       <h1>Hello {user.username}</h1>
