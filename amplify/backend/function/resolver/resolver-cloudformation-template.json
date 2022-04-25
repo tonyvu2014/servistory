@@ -15,6 +15,15 @@
     },
     "s3Key": {
       "Type": "String"
+    },
+    "dbSecretArn": {
+      "Type": "String"
+    },
+    "dbClusterArn": {
+      "Type": "String"
+    },
+    "dbName": {
+      "Type": "String"
     }
   },
   "Conditions": {
@@ -69,6 +78,15 @@
             },
             "REGION": {
               "Ref": "AWS::Region"
+            },
+            "DB_SECRET_ARN": {
+              "Ref": "dbSecretArn"
+            },
+            "DB_CLUSTER_ARN": {
+              "Ref": "dbClusterArn"
+            },
+            "DB_NAME": {
+              "Ref": "dbName"
             }
           }
         },

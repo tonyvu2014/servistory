@@ -21,9 +21,7 @@ export type AmplifyDependentResourcesAttributes = {
         }
     },
     "auth": {
-        "servistory4ec1a891": {
-            "IdentityPoolId": "string",
-            "IdentityPoolName": "string",
+        "servistoryAuth": {
             "UserPoolId": "string",
             "UserPoolArn": "string",
             "UserPoolName": "string",

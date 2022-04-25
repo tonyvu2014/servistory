@@ -6,15 +6,14 @@ import '@aws-amplify/ui-react/styles.css';
 import awsExports from './aws-exports';
 Amplify.configure(awsExports);
 
-function App({ signOut, changePassword, user }) {
+function App({ signOut, user }) {
   console.log('user', user);
   return (
     <>
-      <h1>Hello {user.username}</h1>
-      <button onClick={changePassword}>Change password</button>
+      <h1>Hello {user.attributes.email}</h1>
       <button onClick={signOut}>Sign out</button>
     </>
   );
 }
 
-export default withAuthenticator(App);
+export default withAuthenticator(App, {hideSignUp: true});

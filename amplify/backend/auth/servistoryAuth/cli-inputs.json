@@ -1,10 +1,8 @@
 {
   "version": "1",
   "cognitoConfig": {
-    "identityPoolName": "servistory4ec1a891_identitypool_4ec1a891",
-    "allowUnauthenticatedIdentities": false,
-    "resourceNameTruncated": "servis4ec1a891",
-    "userPoolName": "servistory4ec1a891_userpool_4ec1a891",
+    "resourceNameTruncated": "servis9e851033",
+    "userPoolName": "servistoryAuth_userpool",
     "autoVerifiedAttributes": [
       "email"
     ],
@@ -16,9 +14,13 @@
     "smsVerificationMessage": "Your verification code is {####}",
     "emailVerificationSubject": "Your verification code",
     "emailVerificationMessage": "Your verification code is {####}",
-    "defaultPasswordPolicy": false,
-    "passwordPolicyMinLength": 8,
-    "passwordPolicyCharacters": [],
+    "defaultPasswordPolicy": true,
+    "passwordPolicyMinLength": "6",
+    "passwordPolicyCharacters": [
+      "Requires Lowercase",
+      "Requires Uppercase",
+      "Requires Numbers"
+    ],
     "requiredAttributes": [
       "email"
     ],
@@ -26,21 +28,30 @@
     "userpoolClientGenerateSecret": false,
     "userpoolClientRefreshTokenValidity": 30,
     "userpoolClientWriteAttributes": [
+      "address",
+      "name",
+      "phone_number",
       "email"
     ],
     "userpoolClientReadAttributes": [
-      "email"
+      "address",
+      "email",
+      "name",
+      "phone_number"
     ],
-    "userpoolClientLambdaRole": "servis4ec1a891_userpoolclient_lambda_role",
-    "userpoolClientSetAttributes": false,
-    "sharedId": "4ec1a891",
-    "resourceName": "servistory4ec1a891",
-    "authSelections": "identityPoolAndUserPool",
-    "useDefault": "default",
+    "userpoolClientLambdaRole": "servis9e851033_userpoolclient_lambda_role",
+    "userpoolClientSetAttributes": true,
+    "sharedId": "9e851033",
+    "resourceName": "servistoryAuth",
+    "authSelections": "userPoolOnly",
+    "useDefault": "manual",
     "usernameAttributes": [
       "email"
     ],
+    "userPoolGroups": false,
+    "adminQueries": false,
     "triggers": {},
+    "hostedUI": false,
     "userPoolGroupList": [],
     "serviceName": "Cognito",
     "usernameCaseSensitive": false,

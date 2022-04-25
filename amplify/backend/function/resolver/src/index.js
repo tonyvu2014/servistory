@@ -1,11 +1,12 @@
-const { smsService } = require('./service/smsService');
+const { vendorService } = require('./service/vendorService');
 
 /**
  * @type {import('@types/aws-lambda').APIGatewayProxyHandler}
  */
 exports.handler = async (event) => {
     console.log(`EVENT: ${JSON.stringify(event)}`);
-    await smsService.sendMessage('+61469015068', 'How are you today?', 'Tony');
+    const vendor = await vendorService.getVendor('123abc');
+    console.log('vendor', vendor);
     return {
         statusCode: 200,
     //  Uncomment below to enable CORS requests
