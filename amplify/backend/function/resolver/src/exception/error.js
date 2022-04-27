@@ -21,9 +21,18 @@ class ValidationError extends Error {
       this.message = message
     }
   }
+
+  class NotFoundError extends Error {
+    constructor(message) {
+      super(message)
+      this.name = 'NOT_FOUND_ERROR'
+      this.message = message
+    }
+  }
   
   module.exports = {
     ValidationError,
     PermissionError,
-    DatabaseError
+    DatabaseError,
+    NotFoundError
   }

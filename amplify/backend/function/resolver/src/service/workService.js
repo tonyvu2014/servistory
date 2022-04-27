@@ -39,5 +39,13 @@ exports.workService = {
 
     getWorks: async function(filter, limit, token) {
         return await workRepo.getPaginatedList(filter, limit, token);
+    },
+
+    deleteWork: async function(id) {
+        if (id == null) {
+            throw new ValidationError('Id is required');
+        }
+
+        return await workRepo.delete(id);
     }
 };

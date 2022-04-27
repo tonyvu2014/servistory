@@ -11,6 +11,10 @@ const resolvers = {
             return updateWork(event);
         },
 
+        deleteWork: (event) => {
+            return deleteWork(event);
+        },
+
         createVendor: (event) => {
             return createVendor(event);
         }
@@ -69,6 +73,13 @@ async function getWorks(event) {
     const { filter, limit, token } = event.arguments;
 
     return await workService.getWorks(filter, limit, token);
+}
+
+async function deleteWork(event) {
+    const { input } = event.arguments;
+    const { id } = input;
+
+    return await workService.deleteWork(id);
 }
 
 // Vendor

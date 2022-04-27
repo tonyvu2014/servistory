@@ -1,5 +1,5 @@
 const { dataApiClient } = require("../db");
-const { DatabaseError } = require("../exception/error");
+const { DatabaseError, NotFoundError } = require("../exception/error");
 const { parseFilter } = require('../common/conditionParser');
 const format = require('date-fns/format');
 const parseISO = require('date-fns/parseISO');
@@ -114,5 +114,21 @@ exports.workRepository = {
             previousToken: previousIndex > 0 ? previousIndex.toString() : null,
             nextToken: nextIndex < total ? nextIndex.toString() : null
         }
+    },
+
+    delete: async function(id) {
+        const data = await this.getOne(id);
+
+        if (!data) {
+            throw new NotFoundError(`Record is not found for id: ${id}`);
+        }
+
+        const result =  await dataApiClient.query(`DELETE FROM Work WHERE id =:id`, { id });
+
+        if (result?.numberOfRecordsUpdated < 1) {
+            throw new DatabaseError('Fail to create work');
+        }
+
+        return data;
     }
 }
