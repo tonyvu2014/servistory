@@ -8,17 +8,17 @@ const { nanoid } = require('nanoid')
 
 exports.workRepository = {
     create: async function(work) {
-        const { id, customer_name, customer_phone, car_model, plate_no, 
+        const { id, vendor_id, customer_name, customer_phone, car_model, plate_no, 
             note, date_time_arrived, date_time_pickup } = work;
 
         const now = format(new Date(), constant.DEFAULT_DB_DATE_FORMAT);
 
         const result = await dataApiClient.query(`
-            INSERT INTO Work (id, customer_name, customer_phone, car_model, plate_no, note, tracking_no, 
+            INSERT INTO Work (id, vendor_id, customer_name, customer_phone, car_model, plate_no, note, tracking_no, 
                 date_time_arrived, date_time_pickup, status, date_time_created, date_time_updated) 
-            VALUES (:id, :customer_name, :customer_phone, :car_model, :plate_no, :note, :tracking_no,
+            VALUES (:id, :vendor_id, :customer_name, :customer_phone, :car_model, :plate_no, :note, :tracking_no,
                 :date_time_arrived, :date_time_pickup, :status, :date_time_created, :date_time_updated)
-        `, { id, customer_name, customer_phone, car_model, plate_no, note: note ?? null, traking_no: nanoid(10),
+        `, { id, vendor_id, customer_name, customer_phone, car_model, plate_no, note: note ?? null, tracking_no: nanoid(10),
             date_time_arrived: date_time_arrived ? format(parseISO(date_time_arrived), constant.DEFAULT_DB_DATE_FORMAT) : null, 
             date_time_pickup: date_time_pickup ? format(parseISO(date_time_pickup), constant.DEFAULT_DB_DATE_FORMAT) : null, 
             status: 'PENDING', date_time_created: now, date_time_updated: now }
@@ -35,7 +35,7 @@ exports.workRepository = {
 
         const now = format(new Date(), constant.DEFAULT_DB_DATE_FORMAT);
 
-        const { id } = work;
+        const { id, date_time_arrived, date_time_pickup } = work;
 
         const updateSetStatement = [
             'customer_name', 'customer_phone', 'plate_no', 
@@ -50,8 +50,13 @@ exports.workRepository = {
         const result = await dataApiClient.query(`
             UPDATE Work SET ${updateSetStatement}, date_time_updated = :date_time_updated
             WHERE id = :id
-        `, { id, date_time_updated: now, ...work }
-        );
+        `, { 
+            id, 
+            ...work, 
+            ...(date_time_arrived && {date_time_arrived: format(parseISO(date_time_arrived), constant.DEFAULT_DB_DATE_FORMAT)}),
+            ...(date_time_pickup && {date_time_pickup: format(parseISO(date_time_pickup), constant.DEFAULT_DB_DATE_FORMAT)}),
+            date_time_updated: now 
+        });
 
         if (result?.numberOfRecordsUpdated < 1) {
             throw new DatabaseError('Fail to update work');

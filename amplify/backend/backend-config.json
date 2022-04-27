@@ -10,7 +10,6 @@
     "servistory": {
       "service": "AppSync",
       "providerPlugin": "awscloudformation",
-      "dependsOn": [],
       "output": {
         "authConfig": {
           "defaultAuthentication": {
