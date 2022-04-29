@@ -56,7 +56,6 @@ function App({ signOut, user }) {
           <Toolbar />
           <Container>
             <h1>Hello {user.attributes.email}</h1>
-            <button onClick={signOut}>Sign out</button>
           </Container>
         </Box>
       </Box>
