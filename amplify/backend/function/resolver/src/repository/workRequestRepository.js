@@ -6,21 +6,21 @@ const parseISO = require('date-fns/parseISO');
 const constant = require('../common/constant');
 const { nanoid } = require('nanoid')
 
-exports.workRepository = {
-    create: async function(work) {
-        const { id, vendor_id, customer_name, customer_phone, car_model, plate_no, 
-            note, date_time_arrived, date_time_pickup } = work;
+exports.workRequestRepository = {
+    create: async function(request) {
+        const { id, work_id, title, description, price, date_time_completed } = request;
 
         const now = format(new Date(), constant.DEFAULT_DB_DATE_FORMAT);
+        const tracking_no = nanoid(10);
 
         const result = await dataApiClient.query(`
-            INSERT INTO Work (id, vendor_id, customer_name, customer_phone, car_model, plate_no, note, tracking_no, 
-                date_time_arrived, date_time_pickup, status, date_time_created, date_time_updated) 
-            VALUES (:id, :vendor_id, :customer_name, :customer_phone, :car_model, :plate_no, :note, :tracking_no,
-                :date_time_arrived, :date_time_pickup, :status, :date_time_created, :date_time_updated)
-        `, { id, vendor_id, customer_name, customer_phone, car_model, plate_no, note: note ?? null, tracking_no: nanoid(10),
-            date_time_arrived: date_time_arrived ? format(parseISO(date_time_arrived), constant.DEFAULT_DB_DATE_FORMAT) : null, 
-            date_time_pickup: date_time_pickup ? format(parseISO(date_time_pickup), constant.DEFAULT_DB_DATE_FORMAT) : null, 
+            INSERT INTO WorkRequest (id, work_id, title, description, price, date_time_completed, 
+                tracking_no, approval_url, status, date_time_created, date_time_updated) 
+            VALUES (:id, :work_id, :title, :description, :price, :date_time_completed,
+                :tracking_no, :approval_url, :status, :date_time_created, :date_time_updated)
+        `, { id, work_id, title, description: description ?? null, price: price ?? null, 
+            date_time_completed: date_time_completed ? format(parseISO(date_time_completed), constant.DEFAULT_DB_DATE_FORMAT) : null, 
+            tracking_no, approval_url: `request/${tracking_no}`, 
             status: 'PENDING', date_time_created: now, date_time_updated: now }
         );
 
@@ -31,42 +31,40 @@ exports.workRepository = {
         return await this.getOne(id);
     },
 
-    update: async function(work) {
+    update: async function(request) {
 
         const now = format(new Date(), constant.DEFAULT_DB_DATE_FORMAT);
 
-        const { id, date_time_arrived, date_time_pickup } = work;
+        const { id, date_time_completed } = request;
 
         const updateSetStatement = [
-            'customer_name', 'customer_phone', 'plate_no', 
-            'car_model', 'note', 
-            'date_time_arrived', 'date_time_pickup'
+            'title', 'description', 
+            'price', 'status', 
         ]
-            .filter(field => work[field] != null)
+            .filter(field => request[field] != null)
             .map(field => `${field} = :${field}`)
             .join(', ');
-        console.log('Work updateSetStatement', updateSetStatement);
+        console.log('WorkRequest updateSetStatement', updateSetStatement);
 
         const result = await dataApiClient.query(`
-            UPDATE Work SET ${updateSetStatement}, date_time_updated = :date_time_updated
+            UPDATE WorkRequest SET ${updateSetStatement}, date_time_updated = :date_time_updated
             WHERE id = :id
         `, { 
             id, 
-            ...work, 
-            ...(date_time_arrived && {date_time_arrived: format(parseISO(date_time_arrived), constant.DEFAULT_DB_DATE_FORMAT)}),
-            ...(date_time_pickup && {date_time_pickup: format(parseISO(date_time_pickup), constant.DEFAULT_DB_DATE_FORMAT)}),
+            ...request, 
+            ...(date_time_completed && {date_time_completed: format(parseISO(date_time_completed), constant.DEFAULT_DB_DATE_FORMAT)}),
             date_time_updated: now 
         });
 
         if (result?.numberOfRecordsUpdated < 1) {
-            throw new DatabaseError('Fail to update work');
+            throw new DatabaseError('Fail to update work request');
         }
 
         return await this.getOne(id);
     },
 
     getOne: async function(id) {
-        const data =  await dataApiClient.query(`SELECT * FROM Work WHERE id =:id`, { id });
+        const data =  await dataApiClient.query(`SELECT * FROM WorkRequest WHERE id =:id`, { id });
 
         return data?.records.length > 0 ? data?.records[0]: null;
     },
@@ -74,12 +72,12 @@ exports.workRepository = {
     getPaginatedList: async function(filter, limit, token) {
         const filterCondition = parseFilter(filter);
 
-        let countSql = 'SELECT COUNT(*) AS total FROM Work';
+        let countSql = 'SELECT COUNT(*) AS total FROM WorkRequest';
         if (filterCondition) {
             countSql = `${countSql} WHERE ${filterCondition}`;
         }
 
-        console.log('Work count query:', countSql);
+        console.log('WorkRequest count query:', countSql);
 
         const result = await dataApiClient.query(countSql);
 
@@ -91,17 +89,17 @@ exports.workRepository = {
             offset = 0
         }
 
-        let sql = 'SELECT * FROM Work';
+        let sql = 'SELECT * FROM WorkRequest';
 
         if (filterCondition) {
             sql = `${sql} WHERE ${filterCondition}`
         }
 
         if (limit) {
-            sql = `${sql} ORDER BY date_time_pickup DESC, date_time_created DESC LIMIT ${limit} OFFSET ${offset}`;
+            sql = `${sql} ORDER BY date_time_updated DESC, date_time_created DESC LIMIT ${limit} OFFSET ${offset}`;
         }
 
-        console.log('Work paginatedList Query with filter and limit:', sql);
+        console.log('WorkRequest paginatedList Query with filter and limit:', sql);
 
         const data = await dataApiClient.query(sql);
 
@@ -123,10 +121,10 @@ exports.workRepository = {
             throw new NotFoundError(`Record is not found for id: ${id}`);
         }
 
-        const result =  await dataApiClient.query(`DELETE FROM Work WHERE id =:id`, { id });
+        const result =  await dataApiClient.query(`DELETE FROM WorkRequest WHERE id =:id`, { id });
 
         if (result?.numberOfRecordsUpdated < 1) {
-            throw new DatabaseError('Fail to delete work');
+            throw new DatabaseError('Fail to delete work request');
         }
 
         return data;

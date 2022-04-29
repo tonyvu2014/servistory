@@ -1,5 +1,6 @@
 const { vendorService } = require('./service/vendorService');
 const { workService } = require('./service/workService');
+const { workRequestService } = require('./service/workRequestService');
 
 const resolvers = {
     Mutation: {
@@ -15,6 +16,18 @@ const resolvers = {
             return deleteWork(event);
         },
 
+        createWorkRequest: (event) => {
+            return createWorkRequest(event);
+        },
+
+        updateWorkRequest: (event) => {
+            return updateWorkRequest(event);
+        },
+
+        deleteWorkRequest: (event) => {
+            return deleteWorkRequest(event);
+        },
+
         createVendor: (event) => {
             return createVendor(event);
         }
@@ -27,6 +40,14 @@ const resolvers = {
 
         listWorks: (event) => {
             return getWorks(event);
+        },
+
+        getWorkRequest: (event) => {
+            return getWorkRequest(event);
+        },
+
+        listWorkRequests: (event) => {
+            return getWorkRequests(event);
         },
 
         getVendor: (event) => {
@@ -80,6 +101,38 @@ async function deleteWork(event) {
     const { id } = input;
 
     return await workService.deleteWork(id);
+}
+
+// WorkRequest
+async function createWorkRequest(event) {
+    const { input } = event.arguments; 
+
+    return await workRequestService.createWorkRequest(input);
+}
+
+async function updateWorkRequest(event) {
+    const { input } = event.arguments; 
+
+    return await workRequestService.updateWorkRequest(input);
+}
+
+async function getWorkRequest(event) {
+    const { id } = event.arguments;
+
+    return await workRequestService.getWorkRequest(id);
+}
+
+async function getWorkRequests(event) {
+    const { filter, limit, token } = event.arguments;
+
+    return await workRequestService.getWorkRequests(filter, limit, token);
+}
+
+async function deleteWorkRequest(event) {
+    const { input } = event.arguments;
+    const { id } = input;
+
+    return await workRequestService.deleteWorkRequest(id);
 }
 
 // Vendor
