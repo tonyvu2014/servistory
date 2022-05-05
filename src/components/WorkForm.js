@@ -225,7 +225,7 @@ const WorkForm = (props) => {
                 <Box sx={{ textAlign: 'right' }}>
                     <Button variant="contained" color="primary" type="submit">
                         <AddIcon color="#fff" sx={{ mr: 1 }} />
-                        Submit
+                        {work? 'Update Card' : 'Create Card'}
                     </Button>
                 </Box>
             </Box>
