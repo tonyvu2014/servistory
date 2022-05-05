@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import { API, Auth } from 'aws-amplify';
 import Box from "@mui/material/Box";
@@ -13,21 +13,38 @@ import format from 'date-fns/format';
 import parseISO from 'date-fns/parseISO';
 import { DATE_PICKER_FORMAT } from '../common/constant';
 import * as yup from 'yup';
+import { WorkAlertContext } from '../containers/Works';
 
 const WorkForm = (props) => {
+    const { setAlertState } = useContext(WorkAlertContext);
+
     const { preSubmitAction, postSubmitAction, work } = props;
 
+    const today = new Date();
+
     const validationSchema = yup.object().shape({
-        customer_name: yup.string().required('Customer name is required'),
-        customer_phone: yup.string().required('Customer phone is required'),
+        customer_name: yup.string().required('Customer Name is required'),
+        customer_phone: yup.string().required('Customer Phone is required'),
         plate_no: yup.string(),
         car_model: yup.string(),
-        date_time_arrived: yup.date().typeError('Invalid date').required('Drop-Off date is required'),
-        date_time_pickup: yup.date().typeError('Invalid date').required('Pick-Up date is required'),
+        date_time_arrived: yup.date().typeError('Invalid date')
+            .required('Drop-Off Date is required')
+            .min(today, 'Drop-Off Date cannot be in the past')
+            .when('date_time_pickup', (pickupDate) => {
+                if (pickupDate) {
+                    yup.date().max(pickupDate, 'Drop-Off Date must be before Pick-Up Date')
+                }
+            }),
+        date_time_pickup: yup.date().typeError('Invalid date')
+            .required('Pick-Up Date is required')
+            .min(today, 'Pick-Up Date cannot be in the past')
+            .when('date_time_arrived', (dropoffDate) => {
+                if (dropoffDate) {
+                    yup.date().min(dropoffDate, 'Pick-Up Date must be after the Drop-Off Date')
+                }
+            }),
         note: yup.string()
-    });
-
-    const today = new Date();
+    }, ['date_time_pickup', 'date_time_arrived']);
 
     const { handleSubmit, control, formState: { errors } } = useForm({
         defaultValues: {
@@ -56,18 +73,20 @@ const WorkForm = (props) => {
             } else {
                 await API.graphql({ query: mutations.createWork, variables: { input: {...data, vendor_id: attributes['custom:org_id']} } });
             }
-            // setAlertState({
-            //     open: true,
-            //     severity: 'success',
-            //     message: 'Client is saved successfully'
-            // })
+            setAlertState({
+                open: true,
+                severity: 'success',
+                title: 'Card Added Successfully',
+                message: 'Card are sorted by drop-off date'
+            })
         } catch (e) {
             console.log('Error in saving work', e);
-            // setAlertState({
-            //     open: true,
-            //     severity: 'error',
-            //     message: 'Error in saving client'
-            // });
+            setAlertState({
+                open: true,
+                severity: 'error',
+                title: 'Card Added Error',
+                message: 'Please try again later'
+            });
         }    
 
         if (postSubmitAction) {
@@ -78,7 +97,7 @@ const WorkForm = (props) => {
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
             <Box>
-                <Stack direction="row" spacing={2} sx={{ my: 4 }}>
+                <Stack direction="row" spacing={2} sx={{ my: 3 }}>
                     <Controller
                         name = "customer_name"
                         render = {({ field }) =>
@@ -112,7 +131,7 @@ const WorkForm = (props) => {
                         control={control}
                     />
                 </Stack>
-                <Stack direction="row" spacing={2} sx={{ my: 4 }}>
+                <Stack direction="row" spacing={2} sx={{ my: 3 }}>
                     <Controller
                         name = "plate_no"
                         render = {({ field }) =>
@@ -146,7 +165,7 @@ const WorkForm = (props) => {
                         control={control}
                     />
                 </Stack>
-                <Stack direction="row" spacing={2} sx={{ my: 4 }}>
+                <Stack direction="row" spacing={2} sx={{ my: 3 }}>
                     <Controller
                         name = "date_time_arrived"
                         render = {({ field }) =>
@@ -182,7 +201,7 @@ const WorkForm = (props) => {
                         control={control}
                     />
                 </Stack>
-                <Stack direction="row" spacing={2} sx={{ my: 4 }}>
+                <Stack direction="row" spacing={2} sx={{ my: 3 }}>
                     <Controller
                         name = "note"
                         render = {({ field }) =>
