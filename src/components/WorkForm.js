@@ -20,7 +20,8 @@ const WorkForm = (props) => {
 
     const { preSubmitAction, postSubmitAction, work } = props;
 
-    const today = new Date();
+    let today = new Date();
+    today.setHours(0, 0, 0, 0);
 
     const validationSchema = yup.object().shape({
         customer_name: yup.string().required('Customer Name is required'),
