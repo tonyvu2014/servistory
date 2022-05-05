@@ -1,9 +1,13 @@
 import React, { useState, createContext, useMemo } from 'react';
 import Box from '@mui/material/Box';
 import Alert from "@mui/material/Alert";
+import TextField from "@mui/material/TextField";
 import AlertTitle from '@mui/material/AlertTitle';
 import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/AddCircle';
+import SearchIcon from '@mui/icons-material/Search';
+import Input from '@mui/material/Input';
+import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import PresentationModal from '../components/common/PresentationModal';
@@ -56,7 +60,25 @@ const Works = () => {
                         {alertState.message}
                     </Alert>   
                 )}
-                {!alertState.open && (<div>Search</div>)}
+                {!alertState.open && (<Input 
+                    id="search"
+                    name="query"
+                    label=""
+                    placeholder="Search Customer, Vehicle, Number Plate"
+                    disableUnderline
+                    sx={{ 
+                        borderRadius: "25px",
+                        width: "400px", 
+                        border: "1px solid", borderColor: "secondary", 
+                        paddingLeft: 2, 
+                        paddingRight: 2 
+                    }}
+                    startAdornment={
+                        <InputAdornment position="start">
+                            <SearchIcon color="primary" fontSize="medium" />
+                        </InputAdornment>
+                    }
+                />)}
                 <Button variant="contained" sx={{ lineHeight: "16px" }} onClick={handleOpenCustomerFormModal}>
                     <AddIcon color="#fff" sx={{ mr: 1 }} />
                     Customer
