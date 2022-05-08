@@ -205,6 +205,29 @@ let mdTheme = createTheme({
             letterSpacing: '0.01rem'
           }
         }
+      },
+      MuiTab: {
+        styleOverrides: {
+          root: {
+            fontFamily: 'Montserrat',
+            color: '#82868C',
+            fontWeight: 600,
+            '&.Mui-selected': {
+              backgroundColor: `${mdTheme.palette.secondary.main}`,
+              color: '#3A3C40'
+            }
+          }
+        }
+      },
+      MuiTabs: {
+        styleOverrides: {
+          root: {
+            marginLeft: "-24px",
+            marginRight: "-24px",
+            filter: "drop-shadow(0px 4px 23px rgba(0, 0, 0, 0.12))",
+            backgroundColor: "#fff"
+          }
+        }
       }
     }
   });

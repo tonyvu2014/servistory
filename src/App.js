@@ -43,7 +43,7 @@ function App({ signOut, user }) {
             }}
         >
           <Toolbar />
-          <Container sx={{ mt: 4 }}>
+          <Container>
             <Works />
           </Container>
         </Box>
