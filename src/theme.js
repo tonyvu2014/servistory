@@ -4,7 +4,7 @@ let mdTheme = createTheme({
     palette: {
       primary: {
         light: '#A9B8FA',
-        main: '#2940d3'
+        main: '#2940D3'
       },
       secondary: {
         light: '#F5F5F7',
@@ -12,10 +12,13 @@ let mdTheme = createTheme({
         dark: '#1D212E'
       },
       success: {
-        main: '#2940d3'
+        main: '#2940D3'
       },
       info: {
         main: '#167E8D'
+      },
+      warning: {
+        main: '#DBB039'
       },
       error: {
         main: '#932825'
@@ -222,8 +225,6 @@ let mdTheme = createTheme({
       MuiTabs: {
         styleOverrides: {
           root: {
-            marginLeft: "-24px",
-            marginRight: "-24px",
             filter: "drop-shadow(0px 4px 23px rgba(0, 0, 0, 0.12))",
             backgroundColor: "#fff"
           }

@@ -6,7 +6,6 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import LogoutIcon from '@mui/icons-material/Logout';
-import Container from '@mui/material/Container';
 import { withAuthenticator } from '@aws-amplify/ui-react';
 import '@aws-amplify/ui-react/styles.css';
 import awsExports from './aws-exports';
@@ -40,12 +39,11 @@ function App({ signOut, user }) {
               flexGrow: 1,
               height: '100vh',
               overflow: 'auto',
+              backgroundColor: '#F5F5F7'
             }}
         >
           <Toolbar />
-          <Container>
-            <Works />
-          </Container>
+          <Works />
         </Box>
       </Box>
     </ThemeProvider>
