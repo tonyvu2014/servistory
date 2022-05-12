@@ -1,4 +1,4 @@
-import React, { useState, createContext, useMemo, useEffect } from 'react';
+import React, { useState, createContext, useMemo, useEffect, useRef } from 'react';
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Alert from "@mui/material/Alert";
@@ -38,6 +38,7 @@ import format from 'date-fns/format';
 import parseISO from 'date-fns/parseISO';
 import { listWorks } from '../graphql/queries';
 import { DATE_DISPLAY_FORMAT } from '../common/constant';
+import * as subscriptions from '../graphql/subscriptions';
 
 const defaultAlertState = {
     open: false,
@@ -66,6 +67,55 @@ const Works = () => {
         () => ({ alertState, setAlertState }),
         [alertState]
     );
+
+    const addWorkRef = useRef(null);
+    const addWork = (newWork) => {
+        if (workStatus === newWork.status) {
+            setWorks([newWork, ...works]);
+        }
+    }
+    addWorkRef.current = addWork;
+
+    const replaceWorkRef = useRef(null);
+    const replaceWork = (updatedWork) => {
+        if (workStatus === updatedWork.status) {
+            console.log('Replacing work', updatedWork);
+            const updatedWorks = works.map((work) => work.id !== updatedWork.id ? work : updatedWork);
+            setWorks(updatedWorks);
+        } else {
+            const updatedJobs = works.filter((work) => work.id !== updatedWork.id);
+            setWorks(updatedJobs);
+        }
+    }
+    replaceWorkRef.current = replaceWork;
+
+    useEffect(() => {
+        const onCreateWorkSubscription = API.graphql(
+            graphqlOperation(subscriptions.onCreateWork)
+        ).subscribe({
+            next: ({ provider, value }) => {
+                const newWork = value.data.onCreateWork
+                addWorkRef.current(newWork);
+            },
+            error: error => console.log('onCreateWork() subscription error', error)
+        });
+
+        const onUpdateWorkSubscription = API.graphql(
+            graphqlOperation(subscriptions.onUpdateWork)
+        ).subscribe({
+            next: ({ provider, value }) => {
+                const updatedWork = value.data.onUpdateWork;
+                console.log('Update works for', updatedWork);
+                replaceWorkRef.current(updatedWork)
+            },
+            error: error => console.log('onUpdateWork() subscription error', error)
+        });
+
+        return () => {
+            onCreateWorkSubscription.unsubscribe();
+            onUpdateWorkSubscription.unsubscribe();
+        }
+    }, []);
 
     useEffect(() => {
         async function fetchData() {

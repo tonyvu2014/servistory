@@ -30,7 +30,6 @@ const WorkForm = (props) => {
         car_model: yup.string(),
         date_time_arrived: yup.date().typeError('Invalid date')
             .required('Drop-Off Date is required')
-            .min(today, 'Drop-Off Date cannot be in the past')
             .when('date_time_pickup', (pickupDate) => {
                 if (pickupDate) {
                     yup.date().max(pickupDate, 'Drop-Off Date must be before Pick-Up Date')
@@ -38,7 +37,6 @@ const WorkForm = (props) => {
             }),
         date_time_pickup: yup.date().typeError('Invalid date')
             .required('Pick-Up Date is required')
-            .min(today, 'Pick-Up Date cannot be in the past')
             .when('date_time_arrived', (dropoffDate) => {
                 if (dropoffDate) {
                     yup.date().min(dropoffDate, 'Pick-Up Date must be after the Drop-Off Date')
@@ -67,17 +65,20 @@ const WorkForm = (props) => {
 
         console.log('Work data to be saved', data);
         const { attributes } = await Auth.currentAuthenticatedUser();
+        let action;
 
         try {
-            if (work) {
+            if (work?.id) {
+                action = 'Updated';
                 await API.graphql({ query: mutations.updateWork, variables: { input: { id: work.id, ...data } } });
             } else {
+                action = 'Added'
                 await API.graphql({ query: mutations.createWork, variables: { input: {...data, vendor_id: attributes['custom:org_id']} } });
             }
             setAlertState({
                 open: true,
                 severity: 'success',
-                title: 'Card Added Successfully',
+                title: `Card ${action} Successfully`,
                 message: 'Card are sorted by drop-off date'
             })
         } catch (e) {
@@ -85,7 +86,7 @@ const WorkForm = (props) => {
             setAlertState({
                 open: true,
                 severity: 'error',
-                title: 'Card Added Error',
+                title: `Card ${action} Error`,
                 message: 'Please try again later'
             });
         }    
