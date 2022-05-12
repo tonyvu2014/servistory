@@ -6,6 +6,7 @@ import Stack from '@mui/material/Stack';
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import AddIcon from '@mui/icons-material/AddCircle';
+import EditIcon from '@mui/icons-material/Edit';
 import * as mutations from "../graphql/mutations";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -225,8 +226,8 @@ const WorkForm = (props) => {
                 </Stack>
                 <Box sx={{ textAlign: 'right' }}>
                     <Button variant="contained" color="primary" type="submit">
-                        <AddIcon color="#fff" sx={{ mr: 1 }} />
-                        {work? 'Update Card' : 'Create Card'}
+                        {work ? (<EditIcon color="#fff" sx={{ mr: 1 }} />) : (<AddIcon color="#fff" sx={{ mr: 1 }} />)}
+                        {work ? 'Update Card' : 'Create Card'}
                     </Button>
                 </Box>
             </Box>

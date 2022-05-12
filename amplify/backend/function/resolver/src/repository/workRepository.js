@@ -38,28 +38,31 @@ exports.workRepository = {
         const { id, date_time_arrived, date_time_pickup } = work;
 
         const updateSetStatement = [
-            'customer_name', 'customer_phone', 'plate_no', 
-            'car_model', 'note', 
-            'date_time_arrived', 'date_time_pickup'
+            'customer_name', 'customer_phone', 
+            'plate_no', 'car_model', 
+            'date_time_arrived', 'date_time_pickup', 
+            'note', 'status'
         ]
             .filter(field => work[field] != null)
             .map(field => `${field} = :${field}`)
             .join(', ');
         console.log('Work updateSetStatement', updateSetStatement);
 
-        const result = await dataApiClient.query(`
-            UPDATE Work SET ${updateSetStatement}, date_time_updated = :date_time_updated
-            WHERE id = :id
-        `, { 
-            id, 
-            ...work, 
-            ...(date_time_arrived && {date_time_arrived: format(parseISO(date_time_arrived), constant.DEFAULT_DB_DATE_FORMAT)}),
-            ...(date_time_pickup && {date_time_pickup: format(parseISO(date_time_pickup), constant.DEFAULT_DB_DATE_FORMAT)}),
-            date_time_updated: now 
-        });
+        if (updateSetStatement) {
+            const result = await dataApiClient.query(`
+                UPDATE Work SET ${updateSetStatement}, date_time_updated = :date_time_updated
+                WHERE id = :id
+            `, { 
+                id, 
+                ...work, 
+                ...(date_time_arrived && {date_time_arrived: format(parseISO(date_time_arrived), constant.DEFAULT_DB_DATE_FORMAT)}),
+                ...(date_time_pickup && {date_time_pickup: format(parseISO(date_time_pickup), constant.DEFAULT_DB_DATE_FORMAT)}),
+                date_time_updated: now 
+            });
 
-        if (result?.numberOfRecordsUpdated < 1) {
-            throw new DatabaseError('Fail to update work');
+            if (result?.numberOfRecordsUpdated < 1) {
+                throw new DatabaseError('Fail to update work');
+            }
         }
 
         return await this.getOne(id);

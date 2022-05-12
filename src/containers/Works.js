@@ -23,6 +23,7 @@ import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import PresentationModal from '../components/common/PresentationModal';
 import WorkForm from '../components/WorkForm';
 import WorkView from '../components/WorkView';
+import WorkRemoval from '../components/WorkRemoval';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell, { tableCellClasses } from '@mui/material/TableCell';
@@ -37,8 +38,10 @@ import Paper from '@mui/material/Paper';
 import format from 'date-fns/format';
 import parseISO from 'date-fns/parseISO';
 import { listWorks } from '../graphql/queries';
+import { updateWork } from '../graphql/mutations';
 import { DATE_DISPLAY_FORMAT } from '../common/constant';
 import * as subscriptions from '../graphql/subscriptions';
+import debounce from 'lodash/debounce';
 
 const defaultAlertState = {
     open: false,
@@ -59,6 +62,7 @@ const Works = () => {
     const [selectedWork, setSelectedWork] = useState(undefined);
     const [workStatus, setWorkStatus] = useState('PENDING');
     const [alertState, setAlertState] = useState(defaultAlertState);
+    const [searchQuery, setSearchQuery] = useState('');
 
     const handleCloseAlert = () => {
         setAlertState(defaultAlertState);
@@ -79,12 +83,11 @@ const Works = () => {
     const replaceWorkRef = useRef(null);
     const replaceWork = (updatedWork) => {
         if (workStatus === updatedWork.status) {
-            console.log('Replacing work', updatedWork);
             const updatedWorks = works.map((work) => work.id !== updatedWork.id ? work : updatedWork);
             setWorks(updatedWorks);
         } else {
-            const updatedJobs = works.filter((work) => work.id !== updatedWork.id);
-            setWorks(updatedJobs);
+            const updatedWorks = works.filter((work) => work.id !== updatedWork.id);
+            setWorks(updatedWorks);
         }
     }
     replaceWorkRef.current = replaceWork;
@@ -105,7 +108,6 @@ const Works = () => {
         ).subscribe({
             next: ({ provider, value }) => {
                 const updatedWork = value.data.onUpdateWork;
-                console.log('Update works for', updatedWork);
                 replaceWorkRef.current(updatedWork)
             },
             error: error => console.log('onUpdateWork() subscription error', error)
@@ -120,8 +122,18 @@ const Works = () => {
     useEffect(() => {
         async function fetchData() {
             try {
+                let filterCondition = { status: { eq: workStatus } }
+                if (searchQuery) {
+                    filterCondition = { status: { eq: workStatus }, and: {
+                        customer_name: { contains: searchQuery}, or: {
+                            car_model: { contains: searchQuery }, or: {
+                                plate_no: { contains: searchQuery }
+                            }
+                        }
+                    } }
+                }
                 const result = await API.graphql(graphqlOperation(listWorks, {
-                    filter: { status: { eq: workStatus } },
+                    filter: filterCondition,
                     limit: 30,
                     token: null
                 }));
@@ -137,11 +149,13 @@ const Works = () => {
                 })
             }
         };
-        fetchData();
-    }, [workStatus])
+        const debouncedFetch = debounce(fetchData, 1000);
+        debouncedFetch();
+    }, [workStatus, searchQuery])
 
     const [openCustomerFormModal, setOpenCustomerFormModal] = useState(false);
     const [openCustomerViewModal, setOpenCustomerViewModal] = useState(false);
+    const [openCustomerRemovalModal, setOpenCustomerRemovalModal] = useState(false);
 
     const handleOpenCustomerFormModal = (data) => {
         if (data) {
@@ -168,8 +182,43 @@ const Works = () => {
         setSelectedWork(undefined);
     }
 
+    const handleOpenCustomerRemovalModal = (data) => {
+        setSelectedWork(data);
+        setOpenCustomerRemovalModal(true);
+    }
+
+    const handleCloseCustomerRemovalModal = () => {
+        setOpenCustomerRemovalModal(false);
+        setSelectedWork(undefined);
+    }
+
     const handleTabChange = (event, value) => {
         setWorkStatus(value);
+    }
+
+    const handleStatusChange = async (data, status) => {
+        try {
+            await API.graphql(graphqlOperation(updateWork, {
+                input: {
+                    id: data.id,
+                    status: status
+                }
+            }));
+            setAlertState({
+                open: true,
+                severity: 'success',
+                title: `Card Status Updated Successfully`,
+                message: 'Card are sorted by drop-off date'
+            })
+        } catch (e) {
+            console.log('Error in updating work status', e);
+            setAlertState({
+                open: true,
+                severity: 'error',
+                title: `Card Status Updated Error`,
+                message: 'Please try again later'
+            });
+        }
     }
 
     const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -254,6 +303,7 @@ const Works = () => {
                         name="query"
                         label=""
                         placeholder="Search Customer, Vehicle, Number Plate"
+                        onChange={(event) => console.log('query', setSearchQuery(event.target.value))}
                         disableUnderline
                         sx={{ 
                             borderRadius: "25px",
@@ -301,7 +351,7 @@ const Works = () => {
                                     <IconButton onClick={() => handleOpenCustomerFormModal(row)}>
                                         <EditIcon color='warning'/>
                                     </IconButton>
-                                    <IconButton onClick={() => {console.log('Delete');}}>
+                                    <IconButton onClick={() => handleOpenCustomerRemovalModal(row)}>
                                         <DeleteIcon color='error'/>
                                     </IconButton>
                                 </StyledTableCell>
@@ -310,7 +360,7 @@ const Works = () => {
                                         id='work-status'
                                         defaultValue={row.status}
                                         label='Status'
-                                        onChange={() => 'Update Status'}>
+                                        onChange={(event) => handleStatusChange(row, event.target.value)}>
                                         <StyledMenuItem value='PENDING'>
                                             <StyledRadio checked={row.status === 'PENDING'}
                                                 color='secondary'
@@ -367,6 +417,12 @@ const Works = () => {
                 handleClose={handleCloseCustomerFormModal}>
                     <WorkForm work={selectedWork} postSubmitAction={handleCloseCustomerFormModal} />
             </PresentationModal>
+            <PresentationModal
+                title="Remove Customer Card"
+                open={openCustomerRemovalModal}
+                handleClose={handleCloseCustomerRemovalModal}>
+                    <WorkRemoval work={selectedWork} postSubmitAction={handleCloseCustomerRemovalModal} />
+             </PresentationModal>
         </WorkAlertContext.Provider>
     )
 };
