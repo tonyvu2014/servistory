@@ -211,6 +211,7 @@ const Works = () => {
                     status: status
                 }
             }));
+            setUpdatedWorkId(data.id);
             setAlertState({
                 open: true,
                 severity: 'success',
