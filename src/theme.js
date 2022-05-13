@@ -30,19 +30,19 @@ let mdTheme = createTheme({
     typography: {
       fontFamily: 'Montserrat',
       h3: {
-        fontSize: "24px"
+        fontSize: 24
       },
       subtitle2: {
-        fontSize: "13px"
+        fontSize: 13
       },
       body1: {
-        fontSize: "14px"
+        fontSize: 14
       },
       body2: {
-        fontSize: "12px"
+        fontSize: 12
       },
       button: {
-        fontSize: "13px"
+        fontSize: 14
       }
     },
     components: {

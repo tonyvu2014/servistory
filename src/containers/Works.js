@@ -19,6 +19,7 @@ import IconButton from '@mui/material/IconButton';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Container from '@mui/material/Container';
+import Typography from '@mui/material/Typography';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import PresentationModal from '../components/common/PresentationModal';
 import WorkForm from '../components/WorkForm';
@@ -63,6 +64,7 @@ const Works = () => {
     const [workStatus, setWorkStatus] = useState('PENDING');
     const [alertState, setAlertState] = useState(defaultAlertState);
     const [searchQuery, setSearchQuery] = useState('');
+    const [updatedWorkId, setUpdatedWorkId] = useState(undefined);
 
     const handleCloseAlert = () => {
         setAlertState(defaultAlertState);
@@ -167,6 +169,11 @@ const Works = () => {
         setOpenCustomerFormModal(true);
     }
 
+    const handleWorkFormPostSubmit = () => {
+        setUpdatedWorkId(selectedWork.id);
+        handleCloseCustomerFormModal();
+    }
+
     const handleCloseCustomerFormModal = () => {
         setOpenCustomerFormModal(false);
         setSelectedWork(undefined);
@@ -224,15 +231,23 @@ const Works = () => {
     const StyledTableCell = styled(TableCell)(({ theme }) => ({
         fontStyle: 'normal',
         fontFamily: 'Montseratt',
-        fontSize: 13,
+        fontSize: 14,
         borderColor: `${theme.palette.primary.main}`,
+        [`&.top`]: {
+            borderBottom: 0,
+            paddingBottom: 0
+        },
+        [`&.bottom`]: {
+            paddingTop: 8
+        },
         [`&.${tableCellClasses.head}`]: {
           fontWeight: 600,
           color: '#3A3C40',
           borderBottom: 0
         },
         [`&.${tableCellClasses.body}`]: {
-          fontWeight: 500
+          fontWeight: 500,
+          color: '#3A3C40'
         },
     }));
 
@@ -243,7 +258,7 @@ const Works = () => {
         height: '36px',
         fontStyle: 'normal',
         fontFamily: 'Montseratt',
-        fontSize: 13,
+        fontSize: 14,
         fontWeight: 500,
         color: '#82868C'
 
@@ -253,7 +268,7 @@ const Works = () => {
         fontStyle: 'normal',
         fontFamily: 'Montseratt',
         minWidth: '200px',
-        fontSize: 13,
+        fontSize: 14,
         fontWeight: 500,
         color: '#82868C',
         padding: '0px 10px',
@@ -264,7 +279,7 @@ const Works = () => {
 
     const StyledRadio = styled(Radio)(( { theme } ) => ({
         color: '#82868C',
-        fontSize: 13,
+        fontSize: 14,
         '&.Mui-checked' : {
             color: '#82868C',
         }
@@ -337,69 +352,82 @@ const Works = () => {
                         </TableHead>
                         <TableBody>
                         {works.map((row) => (
-                            <TableRow key={row.id}>
-                                <StyledTableCell align="left" width="10%">
-                                    {row.date_time_pickup ? format(parseISO(row.date_time_pickup), DATE_DISPLAY_FORMAT) : ''}
-                                </StyledTableCell>
-                                <StyledTableCell align="left" width="18%">{row.customer_name}</StyledTableCell>
-                                <StyledTableCell align="left" width="18%">{row.car_model}</StyledTableCell>
-                                <StyledTableCell align="left" width="15%">{row.plate_no}</StyledTableCell>
-                                <StyledTableCell align="left" width="18%">
-                                    <IconButton onClick={() => handleOpenCustomerViewModal(row)}>
-                                        <PageViewIcon color='info'/>
-                                    </IconButton>
-                                    <IconButton onClick={() => handleOpenCustomerFormModal(row)}>
-                                        <EditIcon color='warning'/>
-                                    </IconButton>
-                                    <IconButton onClick={() => handleOpenCustomerRemovalModal(row)}>
-                                        <DeleteIcon color='error'/>
-                                    </IconButton>
-                                </StyledTableCell>
-                                <StyledTableCell align="left" width="21%">
-                                    <StyledSelect labelId='work-status-select'
-                                        id='work-status'
-                                        defaultValue={row.status}
-                                        label='Status'
-                                        onChange={(event) => handleStatusChange(row, event.target.value)}>
-                                        <StyledMenuItem value='PENDING'>
-                                            <StyledRadio checked={row.status === 'PENDING'}
-                                                color='secondary'
-                                                size='small'
-                                                value='PENDING'
-                                                name='work_status'
-                                            />
-                                            Awaiting Vehicle
-                                        </StyledMenuItem>
-                                        <StyledMenuItem value='IN_WORKSHOP'>
-                                            <StyledRadio checked={row.status === 'IN_WORKSHOP'}
-                                                color='secondary'
-                                                size='small'
-                                                value='IN_WORKSHOP'
-                                                name='work_status'
-                                            />
-                                            Vehicle In Workshop
-                                        </StyledMenuItem>
-                                        <StyledMenuItem value='WORK_COMMENCED'>
-                                            <StyledRadio checked={row.status === 'WORK_COMMENCED'}
-                                                size='small'
-                                                color='secondary'
-                                                value='WORK_COMMENCED'
-                                                name='work_status'
-                                            />
-                                            Work Commenced
-                                        </StyledMenuItem>
-                                        <StyledMenuItem value='COMPLETED'>
-                                            <StyledRadio checked={row.status === 'COMPLETED'}
-                                                size='small'
-                                                color='secondary'
-                                                value='COMPLETED'
-                                                name='work_status'
-                                            />
-                                            Awaiting Pickup
-                                        </StyledMenuItem>
-                                    </StyledSelect>
-                                </StyledTableCell>
-                            </TableRow>
+                            <>
+                                <TableRow key={row.id} sx={{ backgroundColor: row.id === updatedWorkId ? '#D4DBFC' : 'none' }}>
+                                    <StyledTableCell align="left" width="10%" className={row.note ? 'top' : ''}>
+                                        {row.date_time_pickup ? format(parseISO(row.date_time_pickup), DATE_DISPLAY_FORMAT) : ''}
+                                    </StyledTableCell>
+                                    <StyledTableCell align="left" width="18%" className={row.note ? 'top' : ''}>{row.customer_name}</StyledTableCell>
+                                    <StyledTableCell align="left" width="18%" className={row.note ? 'top' : ''}>{row.car_model}</StyledTableCell>
+                                    <StyledTableCell align="left" width="15%" className={row.note ? 'top' : ''}>{row.plate_no}</StyledTableCell>
+                                    <StyledTableCell align="left" width="18%" className={row.note ? 'top' : ''}>
+                                        <IconButton onClick={() => handleOpenCustomerViewModal(row)}>
+                                            <PageViewIcon color='info'/>
+                                        </IconButton>
+                                        <IconButton onClick={() => handleOpenCustomerFormModal(row)}>
+                                            <EditIcon color='warning'/>
+                                        </IconButton>
+                                        <IconButton onClick={() => handleOpenCustomerRemovalModal(row)}>
+                                            <DeleteIcon color='error'/>
+                                        </IconButton>
+                                    </StyledTableCell>
+                                    <StyledTableCell align="left" width="21%" className={row.note ? 'top' : ''}>
+                                        <StyledSelect labelId='work-status-select'
+                                            id='work-status'
+                                            defaultValue={row.status}
+                                            label='Status'
+                                            onChange={(event) => handleStatusChange(row, event.target.value)}>
+                                            <StyledMenuItem value='PENDING'>
+                                                <StyledRadio checked={row.status === 'PENDING'}
+                                                    color='secondary'
+                                                    size='small'
+                                                    value='PENDING'
+                                                    name='work_status'
+                                                />
+                                                Awaiting Vehicle
+                                            </StyledMenuItem>
+                                            <StyledMenuItem value='IN_WORKSHOP'>
+                                                <StyledRadio checked={row.status === 'IN_WORKSHOP'}
+                                                    color='secondary'
+                                                    size='small'
+                                                    value='IN_WORKSHOP'
+                                                    name='work_status'
+                                                />
+                                                Vehicle In Workshop
+                                            </StyledMenuItem>
+                                            <StyledMenuItem value='WORK_COMMENCED'>
+                                                <StyledRadio checked={row.status === 'WORK_COMMENCED'}
+                                                    size='small'
+                                                    color='secondary'
+                                                    value='WORK_COMMENCED'
+                                                    name='work_status'
+                                                />
+                                                Work Commenced
+                                            </StyledMenuItem>
+                                            <StyledMenuItem value='COMPLETED'>
+                                                <StyledRadio checked={row.status === 'COMPLETED'}
+                                                    size='small'
+                                                    color='secondary'
+                                                    value='COMPLETED'
+                                                    name='work_status'
+                                                />
+                                                Awaiting Pickup
+                                            </StyledMenuItem>
+                                        </StyledSelect>
+                                    </StyledTableCell>
+                                </TableRow>
+                                {row.note && (
+                                    <TableRow key={'note_' + row.id} sx={{ backgroundColor: row.id === updatedWorkId ? '#D4DBFC' : 'none' }}>
+                                        <StyledTableCell className="bottom"/>
+                                        <StyledTableCell colSpan={3} className="bottom">
+                                            <Typography sx={{ fontWeight: 600, fontSize: 13, display: 'inline' }}>Details:</Typography> &nbsp; 
+                                            <Typography sx={{ fontSize: 13, color: '#82868C', fontWeight: 500, display: 'inline' }}>{row.note}</Typography>
+                                        </StyledTableCell>
+                                        <StyledTableCell className="bottom"/>
+                                        <StyledTableCell className="bottom"/>
+                                    </TableRow>
+                                )}
+                            </>
                         ))}
                         </TableBody>
                     </Table>
@@ -415,7 +443,7 @@ const Works = () => {
                 title={formTitle}
                 open={openCustomerFormModal}
                 handleClose={handleCloseCustomerFormModal}>
-                    <WorkForm work={selectedWork} postSubmitAction={handleCloseCustomerFormModal} />
+                    <WorkForm work={selectedWork} postSubmitAction={handleWorkFormPostSubmit} />
             </PresentationModal>
             <PresentationModal
                 title="Remove Customer Card"
