@@ -26,7 +26,7 @@ function App({ signOut, user }) {
             <Box component="img" src={logo} alt="Servistory" />
             <Box component="span" sx={{ flexGrow: 1 }} />
             <IconButton onClick={signOut}> 
-              <Typography variant="subtitle2" color="secondary.dark" sx={{ pr:'2px', fontWeight: 'medium' }}> 
+              <Typography variant="body1" color="secondary.dark" sx={{ pr:'2px', fontWeight: 'medium' }}> 
                 Logout
               </Typography>
               <LogoutIcon color="secondary.dark" sx={{ width: 34 }} />

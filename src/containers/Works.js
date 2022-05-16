@@ -1,6 +1,7 @@
 import React, { useState, createContext, useMemo, useEffect, useRef } from 'react';
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
+import Snackbar from '@mui/material/Snackbar';
 import Alert from "@mui/material/Alert";
 import AlertTitle from '@mui/material/AlertTitle';
 import Button from '@mui/material/Button';
@@ -34,13 +35,14 @@ import TableRow from '@mui/material/TableRow';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import Radio from '@mui/material/Radio';
+import Pagination from '@mui/material/Pagination';
 import { API, graphqlOperation } from 'aws-amplify';
 import Paper from '@mui/material/Paper';
 import format from 'date-fns/format';
 import parseISO from 'date-fns/parseISO';
 import { listWorks } from '../graphql/queries';
 import { updateWork } from '../graphql/mutations';
-import { DATE_DISPLAY_FORMAT } from '../common/constant';
+import { DATE_DISPLAY_FORMAT, WORKS_PER_PAGE } from '../common/constant';
 import * as subscriptions from '../graphql/subscriptions';
 import debounce from 'lodash/debounce';
 
@@ -65,6 +67,8 @@ const Works = () => {
     const [alertState, setAlertState] = useState(defaultAlertState);
     const [searchQuery, setSearchQuery] = useState('');
     const [updatedWorkId, setUpdatedWorkId] = useState(undefined);
+    const [total, setTotal] = useState(0);
+    const [page, setPage] = useState(1);
 
     const handleCloseAlert = () => {
         setAlertState(defaultAlertState);
@@ -100,6 +104,7 @@ const Works = () => {
         ).subscribe({
             next: ({ provider, value }) => {
                 const newWork = value.data.onCreateWork
+                setUpdatedWorkId(newWork.id);
                 addWorkRef.current(newWork);
             },
             error: error => console.log('onCreateWork() subscription error', error)
@@ -136,11 +141,13 @@ const Works = () => {
                 }
                 const result = await API.graphql(graphqlOperation(listWorks, {
                     filter: filterCondition,
-                    limit: 30,
-                    token: null
+                    limit: WORKS_PER_PAGE,
+                    token: (page-1)*WORKS_PER_PAGE
                 }));
                 const works = result.data.listWorks.items;
                 setWorks(works);
+                const total = result.data.listWorks.total;
+                setTotal(total);
             } catch (e) {
                 console.log('Error fetching data', e);
                 setAlertState({
@@ -153,7 +160,7 @@ const Works = () => {
         };
         const debouncedFetch = debounce(fetchData, 1000);
         debouncedFetch();
-    }, [workStatus, searchQuery])
+    }, [workStatus, searchQuery, page])
 
     const [openCustomerFormModal, setOpenCustomerFormModal] = useState(false);
     const [openCustomerViewModal, setOpenCustomerViewModal] = useState(false);
@@ -167,11 +174,6 @@ const Works = () => {
         }
         setSelectedWork(data);
         setOpenCustomerFormModal(true);
-    }
-
-    const handleWorkFormPostSubmit = () => {
-        setUpdatedWorkId(selectedWork.id);
-        handleCloseCustomerFormModal();
     }
 
     const handleCloseCustomerFormModal = () => {
@@ -227,6 +229,10 @@ const Works = () => {
                 message: 'Please try again later'
             });
         }
+    }
+
+    const handlePageChange = (event, value) => {
+        setPage(value);
     }
 
     const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -288,6 +294,20 @@ const Works = () => {
 
     return (
         <WorkAlertContext.Provider value={value}>
+            <Snackbar open={alertState.open} 
+                autoHideDuration={5000} 
+                onClose={handleCloseAlert} 
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
+                <Alert onClose={handleCloseAlert} sx={{ border: `1px solid ${alertState.severity}`}} severity={alertState.severity} 
+                    action={<IconButton color='inherit' onClick={handleCloseAlert}>Close</IconButton>}
+                    iconMapping={{
+                        success: <CheckCircleOutlineIcon fontSize="large" />,
+                    }}
+                >
+                    <AlertTitle>{alertState.title}</AlertTitle>
+                    {alertState.message}
+                </Alert>   
+            </Snackbar>
             <Tabs
                 value={workStatus}
                 onChange={handleTabChange}
@@ -303,18 +323,7 @@ const Works = () => {
             </Tabs>
             <Container sx={{backgroundColor: '#F5F5F7'}}>
                 <Box component="div" sx={{display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: 'center', mt: 4}}>
-                    {alertState.open && (
-                        <Alert onClose={handleCloseAlert} sx={{ border: `1px solid ${alertState.severity}`}} severity={alertState.severity} 
-                            action={<IconButton color='inherit' onClick={handleCloseAlert}>Close</IconButton>}
-                            iconMapping={{
-                                success: <CheckCircleOutlineIcon fontSize="large" />,
-                            }}
-                        >
-                            <AlertTitle>{alertState.title}</AlertTitle>
-                            {alertState.message}
-                        </Alert>   
-                    )}
-                    {!alertState.open && (<Input 
+                    <Input 
                         id="search"
                         name="query"
                         label=""
@@ -333,7 +342,7 @@ const Works = () => {
                                 <SearchIcon color="primary" fontSize="medium" />
                             </InputAdornment>
                         }
-                    />)}
+                    />
                     <Button variant="contained" sx={{ lineHeight: "16px" }} onClick={() => handleOpenCustomerFormModal()}>
                         <AddIcon color="#fff" sx={{ mr: 1 }} />
                         Customer
@@ -433,6 +442,11 @@ const Works = () => {
                         </TableBody>
                     </Table>
                 </TableContainer>
+                <Pagination count={Math.min(Math.floor(total/ WORKS_PER_PAGE) + 1, 10)} 
+                    page={page} 
+                    siblingCount={2} variant="outlined" 
+                    showFirstButton showLastButton
+                    shape="rounded" onChange={handlePageChange} />
             </Container>
             <PresentationModal 
                 title="View Customer Card"
@@ -444,7 +458,7 @@ const Works = () => {
                 title={formTitle}
                 open={openCustomerFormModal}
                 handleClose={handleCloseCustomerFormModal}>
-                    <WorkForm work={selectedWork} postSubmitAction={handleWorkFormPostSubmit} />
+                    <WorkForm work={selectedWork} postSubmitAction={handleCloseCustomerFormModal} />
             </PresentationModal>
             <PresentationModal
                 title="Remove Customer Card"

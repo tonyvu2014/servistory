@@ -1,3 +1,4 @@
+import { ViewColumn } from '@mui/icons-material';
 import { createTheme } from '@mui/material/styles';
 
 let mdTheme = createTheme({
@@ -227,6 +228,32 @@ let mdTheme = createTheme({
           root: {
             filter: "drop-shadow(0px 4px 23px rgba(0, 0, 0, 0.12))",
             backgroundColor: "#fff"
+          }
+        }
+      },
+      MuiPagination: {
+        styleOverrides: {
+          root: {
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-end',
+            margin: '32px 0px'
+          }
+        }
+      },
+      MuiPaginationItem: {
+        styleOverrides: {
+          root: {
+            borderRadius: 0,
+            margin: 0,
+            fontFamily: 'Montserrat',
+            fontSize: 14,
+            fontWeight: 500,
+            fontStyle: 'normal',
+            '&.Mui-selected': {
+              backgroundColor: '#D4DBFC',
+              borderColor: '#0D177A'
+            }
           }
         }
       }
