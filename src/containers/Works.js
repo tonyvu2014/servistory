@@ -431,7 +431,7 @@ const Works = () => {
                                         <StyledTableCell className="bottom"/>
                                         <StyledTableCell colSpan={3} className="bottom">
                                             <Typography sx={{ fontWeight: 600, fontSize: 13, display: 'inline' }}>Details:</Typography> &nbsp; 
-                                            <Typography sx={{ fontSize: 13, color: '#82868C', fontWeight: 500, display: 'inline' }}>{row.note}</Typography>
+                                            <Typography sx={{ fontSize: 13, color: '#82868C', fontWeight: 500, display: 'inline', whiteSpace: 'pre-line' }}>{row.note}</Typography>
                                         </StyledTableCell>
                                         <StyledTableCell className="bottom"/>
                                         <StyledTableCell className="bottom"/>
