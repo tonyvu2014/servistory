@@ -147,7 +147,7 @@ const Works = () => {
                 const result = await API.graphql(graphqlOperation(listWorks, {
                     filter: filterCondition,
                     limit: WORKS_PER_PAGE,
-                    token: (page-1)*WORKS_PER_PAGE
+                    token: `${(page-1)*WORKS_PER_PAGE}`
                 }));
                 const works = result.data.listWorks.items;
                 setWorks(works);
@@ -454,9 +454,15 @@ const Works = () => {
                                             sx={{ backgroundColor: '#E3E6EB', borderRadius: '4px', 
                                                 padding: 1 ,display: 'flex', flexDirection: 'row', 
                                                 justifyContent: 'space-between', alignItems: 'center' }}>
-                                           <CheckCircleIcon color='info' />
-                                           <WatchLaterIcon color='warning' />
-                                           <CancelIcon color='error' />
+                                           <Box sx={{ paddingRight: '2px'}}>         
+                                            {row.requests.items.filter(r => r.status==='APPROVED').length} <CheckCircleIcon color='info' />
+                                           </Box>
+                                           <Box sx={{ paddingRight: '2px', paddingLeft: '2px'}}>         
+                                            {row.requests.items.filter(r => r.status==='PENDING').length}<WatchLaterIcon color='warning' />
+                                           </Box>
+                                           <Box sx={{ paddingLeft: '2px'}}>
+                                            {row.requests.items.filter(r => r.status==='REJECTED').length}<CancelIcon color='error' />
+                                           </Box>
                                         </Box>
                                     </StyledTableCell>
                                     )}
