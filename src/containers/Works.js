@@ -21,11 +21,15 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import WatchLaterIcon from '@mui/icons-material/WatchLater';
+import CancelIcon from '@mui/icons-material/Cancel';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import PresentationModal from '../components/common/PresentationModal';
 import WorkForm from '../components/WorkForm';
 import WorkView from '../components/WorkView';
 import WorkRemoval from '../components/WorkRemoval';
+import WorkRequestForm from '../components/WorkRequestForm';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell, { tableCellClasses } from '@mui/material/TableCell';
@@ -61,7 +65,7 @@ export const WorkAlertContext = createContext({
 const Works = () => { 
 
     const [works, setWorks] = useState([]);
-    const [formTitle, setFormTitle] = useState('');
+    const [workFormTitle, setWorkFormTitle] = useState('');
     const [selectedWork, setSelectedWork] = useState(undefined);
     const [workStatus, setWorkStatus] = useState('PENDING');
     const [alertState, setAlertState] = useState(defaultAlertState);
@@ -69,6 +73,7 @@ const Works = () => {
     const [updatedWorkId, setUpdatedWorkId] = useState(undefined);
     const [total, setTotal] = useState(0);
     const [page, setPage] = useState(1);
+    const [requestSubtitle, setRequestSubtitle] = useState(undefined);
 
     const handleCloseAlert = () => {
         setAlertState(defaultAlertState);
@@ -165,12 +170,13 @@ const Works = () => {
     const [openCustomerFormModal, setOpenCustomerFormModal] = useState(false);
     const [openCustomerViewModal, setOpenCustomerViewModal] = useState(false);
     const [openCustomerRemovalModal, setOpenCustomerRemovalModal] = useState(false);
+    const [openWorkRequestModal, setOpenWorkRequestModal] = useState(false);
 
     const handleOpenCustomerFormModal = (data) => {
         if (data) {
-            setFormTitle('Edit Customer Card') 
+            setWorkFormTitle('Edit Customer Card') 
         } else {
-            setFormTitle('Add Customer Card'); 
+            setWorkFormTitle('Add Customer Card'); 
         }
         setSelectedWork(data);
         setOpenCustomerFormModal(true);
@@ -201,8 +207,23 @@ const Works = () => {
         setSelectedWork(undefined);
     }
 
+    const handleOpenWorkRequestModal = (data) => {
+        setSelectedWork(data);
+        if (data) {
+            setRequestSubtitle(`${data.customer_name} | ${data.plate_no} | ${data.car_model}`);
+        }
+        setOpenWorkRequestModal(true);
+    }
+
+    const handleCloseWorkRequestModal = () => {
+        setOpenWorkRequestModal(false);
+        setSelectedWork(undefined);
+        setRequestSubtitle(undefined);
+    }
+
     const handleTabChange = (event, value) => {
         setWorkStatus(value);
+        setPage(1);
     }
 
     const handleStatusChange = async (data, status) => {
@@ -357,20 +378,23 @@ const Works = () => {
                                 <StyledTableCell align="left">Vehicle</StyledTableCell>
                                 <StyledTableCell align="left">Registration</StyledTableCell>
                                 <StyledTableCell align="left">View/Edit/Delete</StyledTableCell>
-                                <StyledTableCell align="left">Change Status</StyledTableCell>        
+                                <StyledTableCell align="left">Change Status</StyledTableCell>
+                                {['IN_WORKSHOP', 'WORK_COMMENCED'].includes(workStatus) && 
+                                    (<StyledTableCell align="left">Work Approvals</StyledTableCell>)
+                                }
                             </TableRow>
                         </TableHead>
                         <TableBody>
                         {works.map((row) => (
                             <>
                                 <TableRow key={row.id} sx={{ backgroundColor: row.id === updatedWorkId ? '#D4DBFC' : 'none' }}>
-                                    <StyledTableCell align="left" width="10%" className={row.note ? 'top' : ''}>
+                                    <StyledTableCell align="left" width="10%" className='top'>
                                         {row.date_time_pickup ? format(parseISO(row.date_time_pickup), DATE_DISPLAY_FORMAT) : ''}
                                     </StyledTableCell>
-                                    <StyledTableCell align="left" width="18%" className={row.note ? 'top' : ''}>{row.customer_name}</StyledTableCell>
-                                    <StyledTableCell align="left" width="18%" className={row.note ? 'top' : ''}>{row.car_model}</StyledTableCell>
-                                    <StyledTableCell align="left" width="15%" className={row.note ? 'top' : ''}>{row.plate_no}</StyledTableCell>
-                                    <StyledTableCell align="left" width="18%" className={row.note ? 'top' : ''}>
+                                    <StyledTableCell align="left" width="18%" className='top'>{row.customer_name}</StyledTableCell>
+                                    <StyledTableCell align="left" width="18%" className='top'>{row.car_model}</StyledTableCell>
+                                    <StyledTableCell align="left" width="15%" className='top'>{row.plate_no}</StyledTableCell>
+                                    <StyledTableCell align="left" width="18%" className='top'>
                                         <IconButton onClick={() => handleOpenCustomerViewModal(row)}>
                                             <PageViewIcon color='info'/>
                                         </IconButton>
@@ -381,7 +405,7 @@ const Works = () => {
                                             <DeleteIcon color='error'/>
                                         </IconButton>
                                     </StyledTableCell>
-                                    <StyledTableCell align="left" width="21%" className={row.note ? 'top' : ''}>
+                                    <StyledTableCell align="left" width="21%" className='top'>
                                         <StyledSelect labelId='work-status-select'
                                             id='work-status'
                                             defaultValue={row.status}
@@ -425,18 +449,39 @@ const Works = () => {
                                             </StyledMenuItem>
                                         </StyledSelect>
                                     </StyledTableCell>
+                                    {['IN_WORKSHOP', 'WORK_COMMENCED'].includes(workStatus) && (<StyledTableCell width="18%" className='top'>
+                                        <Box component="div" 
+                                            sx={{ backgroundColor: '#E3E6EB', borderRadius: '4px', 
+                                                padding: 1 ,display: 'flex', flexDirection: 'row', 
+                                                justifyContent: 'space-between', alignItems: 'center' }}>
+                                           <CheckCircleIcon color='info' />
+                                           <WatchLaterIcon color='warning' />
+                                           <CancelIcon color='error' />
+                                        </Box>
+                                    </StyledTableCell>
+                                    )}
                                 </TableRow>
-                                {row.note && (
-                                    <TableRow key={'note_' + row.id} sx={{ backgroundColor: row.id === updatedWorkId ? '#D4DBFC' : 'none' }}>
-                                        <StyledTableCell className="bottom"/>
-                                        <StyledTableCell colSpan={3} className="bottom">
-                                            <Typography sx={{ fontWeight: 600, fontSize: 13, display: 'inline' }}>Details:</Typography> &nbsp; 
-                                            <Typography sx={{ fontSize: 13, color: '#82868C', fontWeight: 500, display: 'inline', whiteSpace: 'pre-line' }}>{row.note}</Typography>
+                                <TableRow key={'note_' + row.id} sx={{ backgroundColor: row.id === updatedWorkId ? '#D4DBFC' : 'none' }}>
+                                    <StyledTableCell className="bottom"/>
+                                    <StyledTableCell colSpan={3} className="bottom">
+                                        {row.note && (
+                                            <>
+                                                <Typography sx={{ fontWeight: 600, fontSize: 13, display: 'inline' }}>Details:</Typography> &nbsp; 
+                                                <Typography sx={{ fontSize: 13, color: '#82868C', fontWeight: 500, display: 'inline', whiteSpace: 'pre-line' }}>{row.note}</Typography>
+                                            </>
+                                        )}
+                                    </StyledTableCell>
+                                    <StyledTableCell className="bottom"/>
+                                    <StyledTableCell className="bottom"/>
+                                    {['IN_WORKSHOP', 'WORK_COMMENCED'].includes(workStatus) && 
+                                        (<StyledTableCell className="bottom">
+                                            <Button variant="contained" sx={{ lineHeight: "16px", backgroundColor: '#142297' }} onClick={() => handleOpenWorkRequestModal(row)}>
+                                                <AddIcon color="#fff" sx={{ mr: 1 }} />
+                                                Approval
+                                            </Button>
                                         </StyledTableCell>
-                                        <StyledTableCell className="bottom"/>
-                                        <StyledTableCell className="bottom"/>
-                                    </TableRow>
-                                )}
+                                    )}
+                                </TableRow>
                             </>
                         ))}
                         </TableBody>
@@ -455,7 +500,7 @@ const Works = () => {
                     <WorkView work={selectedWork}  />
             </PresentationModal>
             <PresentationModal 
-                title={formTitle}
+                title={workFormTitle}
                 open={openCustomerFormModal}
                 handleClose={handleCloseCustomerFormModal}>
                     <WorkForm work={selectedWork} postSubmitAction={handleCloseCustomerFormModal} />
@@ -466,6 +511,13 @@ const Works = () => {
                 handleClose={handleCloseCustomerRemovalModal}>
                     <WorkRemoval work={selectedWork} postSubmitAction={handleCloseCustomerRemovalModal} />
              </PresentationModal>
+             <PresentationModal 
+                title="Work Approval Request"
+                subtitle={requestSubtitle}
+                open={openWorkRequestModal}
+                handleClose={handleCloseWorkRequestModal}>
+                    <WorkRequestForm work={selectedWork} postSubmitAction={handleCloseWorkRequestModal} />
+            </PresentationModal>
         </WorkAlertContext.Provider>
     )
 };

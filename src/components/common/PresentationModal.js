@@ -22,7 +22,7 @@ const style = {
   
 
 const PresentationModal = (props) => {
-    const {title, open, children, handleClose, ...other} = props;
+    const {title, subtitle, open, children, handleClose, ...other} = props;
 
     return (
         <Modal open={open}
@@ -31,7 +31,20 @@ const PresentationModal = (props) => {
             {...other}>
             <Box sx={style}>
                 <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-                    <Typography variant="h3" id="modal-title" sx={{ fontWeight: 'bold' }}>{title}</Typography>
+                    <Box component="div">
+                        <Typography variant="h3" id="modal-title" sx={{ fontWeight: 'bold' }}>{title}</Typography>
+                        {subtitle && (
+                            <Box component='div'>
+                                <Typography variant="body2" id="modal-subtitle" sx={{
+                                    fontWeight: 500,
+                                    fontSize: "14px",
+                                    color: "#82868C"
+                                }}>
+                                    {subtitle}
+                                </Typography>
+                            </Box>
+                        )}
+                    </Box>
                     <IconButton aria-label="close" onClick={handleClose}>
                         <CloseIcon />
                     </IconButton>
@@ -45,6 +58,8 @@ const PresentationModal = (props) => {
 };
 
 PresentationModal.propTypes = {
+    title: PropTypes.string.isRequired,
+    subtitle: PropTypes.string,
     open: PropTypes.bool,
     handleClose: PropTypes.func.isRequired,
     children: PropTypes.node
