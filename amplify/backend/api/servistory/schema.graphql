@@ -29,8 +29,8 @@ type Work {
   customer_name: String!
   customer_phone: String!
   tracking_no: String
-  car_model: String!
-  plate_no: String!
+  car_model: String
+  plate_no: String
   note: String
   date_time_arrived: AWSDateTime
   date_time_pickup: AWSDateTime
@@ -253,8 +253,8 @@ input CreateWorkInput {
   customer_name: String!
   customer_phone: String!
   tracking_no: String
-  car_model: String!
-  plate_no: String!
+  car_model: String
+  plate_no: String
   note: String
   date_time_arrived: AWSDateTime
   date_time_pickup: AWSDateTime
@@ -294,6 +294,7 @@ input WorkRequestFilterInput {
   tracking_no: StringInput
   title: StringInput
   description: StringInput
+  reason: StringInput
   approval_url: StringInput
   price: FloatInput
   date_time_completed: StringInput
@@ -308,6 +309,7 @@ input WorkRequestConditionInput {
   tracking_no: StringInput
   title: StringInput
   description: StringInput
+  reason: StringInput
   approval_url: StringInput
   price: FloatInput
   date_time_completed: StringInput
@@ -323,6 +325,7 @@ input CreateWorkRequestInput {
   tracking_no: String
   title: String!
   description: String
+  reason: String
   approval_url: String
   price: Float
   date_time_completed: AWSDateTime
@@ -334,6 +337,7 @@ input UpdateWorkRequestInput {
   id: ID!
   title: String
   description: String
+  reason: String
   price: Float
   date_time_completed: AWSDateTime
   status: RequestStatus

@@ -134,11 +134,8 @@ export const listWorks = /* GraphQL */ `
         }
         requests {
           total
-          items {
-            id
-            title
-            status
-          }
+          previousToken
+          nextToken
         }
         date_time_created
         date_time_updated
