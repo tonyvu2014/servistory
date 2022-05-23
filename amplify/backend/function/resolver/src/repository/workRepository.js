@@ -18,7 +18,8 @@ exports.workRepository = {
                 date_time_arrived, date_time_pickup, status, date_time_created, date_time_updated) 
             VALUES (:id, :vendor_id, :customer_name, :customer_phone, :car_model, :plate_no, :note, :tracking_no,
                 :date_time_arrived, :date_time_pickup, :status, :date_time_created, :date_time_updated)
-        `, { id, vendor_id, customer_name, customer_phone, car_model, plate_no, note: note ?? null, tracking_no: nanoid(10),
+        `, { id, vendor_id, customer_name, customer_phone, car_model: car_model ?? null, 
+            plate_no: plate_no ?? null, note: note ?? null, tracking_no: nanoid(10), 
             date_time_arrived: date_time_arrived ? format(parseISO(date_time_arrived), constant.DEFAULT_DB_DATE_FORMAT) : null, 
             date_time_pickup: date_time_pickup ? format(parseISO(date_time_pickup), constant.DEFAULT_DB_DATE_FORMAT) : null, 
             status: 'PENDING', date_time_created: now, date_time_updated: now }
