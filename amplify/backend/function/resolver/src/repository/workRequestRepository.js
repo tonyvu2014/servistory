@@ -8,10 +8,11 @@ const { nanoid } = require('nanoid')
 
 exports.workRequestRepository = {
     create: async function(request) {
-        const { id, work_id, title, description, reason, price, date_time_completed } = request;
+        const { id, work_id, title, description, reason, 
+                price, tracking_no, date_time_completed } = request;
 
         const now = format(new Date(), constant.DEFAULT_DB_DATE_FORMAT);
-        const tracking_no = nanoid(10);
+        const final_tracking_no = tracking_no ?? nanoid(10);
 
         const result = await dataApiClient.query(`
             INSERT INTO WorkRequest (id, work_id, title, description, reason, 
@@ -22,7 +23,7 @@ exports.workRequestRepository = {
                 :date_time_created, :date_time_updated)
         `, { id, work_id, title, description: description ?? null, reason: reason ?? null,
             price: price ?? null, date_time_completed: date_time_completed ? format(parseISO(date_time_completed), constant.DEFAULT_DB_DATE_FORMAT) : null, 
-            tracking_no, approval_url: `request/${tracking_no}`, 
+            tracking_no: final_tracking_no, approval_url: `request/${final_tracking_no}`, 
             status: 'PENDING', date_time_created: now, date_time_updated: now }
         );
 

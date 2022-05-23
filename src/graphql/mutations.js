@@ -146,6 +146,7 @@ export const createWork = /* GraphQL */ `
           tracking_no
           title
           description
+          reason
           approval_url
           price
           date_time_completed
@@ -200,6 +201,7 @@ export const updateWork = /* GraphQL */ `
           tracking_no
           title
           description
+          reason
           approval_url
           price
           date_time_completed
@@ -254,6 +256,7 @@ export const deleteWork = /* GraphQL */ `
           tracking_no
           title
           description
+          reason
           approval_url
           price
           date_time_completed
@@ -281,6 +284,7 @@ export const createWorkRequest = /* GraphQL */ `
       tracking_no
       title
       description
+      reason
       approval_url
       price
       date_time_completed
@@ -330,6 +334,7 @@ export const updateWorkRequest = /* GraphQL */ `
       tracking_no
       title
       description
+      reason
       approval_url
       price
       date_time_completed
@@ -379,6 +384,7 @@ export const deleteWorkRequest = /* GraphQL */ `
       tracking_no
       title
       description
+      reason
       approval_url
       price
       date_time_completed

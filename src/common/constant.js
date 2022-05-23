@@ -1,5 +1,7 @@
  
 const DATE_PICKER_FORMAT = "yyyy-MM-dd";
+const TIME_PICKER_FORMAT = "HH:mm";
+const DATE_TIME_PICKER_FORMAT = "yyyy-MM-dd HH:mm";
 
 const DATE_DISPLAY_FORMAT = "dd MMM yyyy";
 
@@ -7,6 +9,8 @@ const WORKS_PER_PAGE = 10;
 
 export { 
     DATE_PICKER_FORMAT,
+    TIME_PICKER_FORMAT,
+    DATE_TIME_PICKER_FORMAT,
     DATE_DISPLAY_FORMAT,
     WORKS_PER_PAGE
 };

@@ -91,6 +91,7 @@ export const getWork = /* GraphQL */ `
           tracking_no
           title
           description
+          reason
           approval_url
           price
           date_time_completed
@@ -133,6 +134,20 @@ export const listWorks = /* GraphQL */ `
           date_time_updated
         }
         requests {
+          items {
+            id
+            tracking_no
+            title
+            description
+            reason
+            approval_url
+            price
+            date_time_completed
+            status
+            date_time_created
+            date_time_updated
+            work_id
+          }
           total
           previousToken
           nextToken
@@ -153,6 +168,7 @@ export const getWorkRequest = /* GraphQL */ `
       tracking_no
       title
       description
+      reason
       approval_url
       price
       date_time_completed
@@ -204,6 +220,7 @@ export const listWorkRequests = /* GraphQL */ `
         tracking_no
         title
         description
+        reason
         approval_url
         price
         date_time_completed

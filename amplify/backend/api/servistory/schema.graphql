@@ -53,6 +53,7 @@ type WorkRequest {
   tracking_no: String
   title: String!
   description: String
+  reason: String
   approval_url: String
   price: Float
   date_time_completed: AWSDateTime

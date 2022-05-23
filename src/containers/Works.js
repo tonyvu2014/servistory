@@ -103,6 +103,41 @@ const Works = () => {
     }
     replaceWorkRef.current = replaceWork;
 
+    const addWorkRequestRef = useRef(null);
+    const addWorkRequest = (newWorkRequest) => {
+        const updatedWorks = works.map((work) => {
+            if (work.id !== newWorkRequest.work_id) {
+                return work
+            } else {
+                const updatedWorkRequestItems = work.requests.items.push(newWorkRequest);
+                return {
+                    ...work,
+                    items: updatedWorkRequestItems
+                }
+            }
+        });
+        setWorks(updatedWorks);
+    }
+    addWorkRequestRef.current = addWorkRequest;
+
+    const replaceWorkRequestRef = useRef(null);
+    const replaceWorkRequest = (updatedWorkRequest) => {
+        const updatedWorks = works.map((work) => {
+            if (work.id !== updatedWorkRequest.work_id) {
+                return work
+            } else {
+                const updatedWorkRequestItems = work.requests.items.map(request => 
+                    request.id !== updatedWorkRequest.id ? request : updatedWorkRequest);
+                return {
+                    ...work,
+                    items: updatedWorkRequestItems
+                }
+            }
+        });
+        setWorks(updatedWorks);
+    }
+    replaceWorkRequestRef.current = replaceWorkRequest;
+
     useEffect(() => {
         const onCreateWorkSubscription = API.graphql(
             graphqlOperation(subscriptions.onCreateWork)
@@ -120,14 +155,39 @@ const Works = () => {
         ).subscribe({
             next: ({ provider, value }) => {
                 const updatedWork = value.data.onUpdateWork;
+                setUpdatedWorkId(updatedWork.id);
                 replaceWorkRef.current(updatedWork)
             },
             error: error => console.log('onUpdateWork() subscription error', error)
         });
 
+        const onCreateWorkRequestSubscription = API.graphql(
+            graphqlOperation(subscriptions.onCreateWorkRequest)
+        ).subscribe({
+            next: ({ provider, value }) => {
+                const newWorkRequest = value.data.onCreateWorkRequest
+                setUpdatedWorkId(newWorkRequest.work_id);
+                addWorkRef.current(newWorkRequest);
+            },
+            error: error => console.log('onCreateWorkRequest() subscription error', error)
+        });
+
+        const onUpdateWorkRequestSubscription = API.graphql(
+            graphqlOperation(subscriptions.onUpdateWorkRequest)
+        ).subscribe({
+            next: ({ provider, value }) => {
+                const updatedWorkRequest = value.data.onUpdateWorkRequest;
+                setUpdatedWorkId(updatedWorkRequest.work_id);
+                replaceWorkRef.current(updatedWorkRequest)
+            },
+            error: error => console.log('onUpdateWorkRequest() subscription error', error)
+        });
+
         return () => {
             onCreateWorkSubscription.unsubscribe();
             onUpdateWorkSubscription.unsubscribe();
+            onCreateWorkRequestSubscription.unsubscribe();
+            onUpdateWorkRequestSubscription.unsubscribe();
         }
     }, []);
 
@@ -449,19 +509,25 @@ const Works = () => {
                                             </StyledMenuItem>
                                         </StyledSelect>
                                     </StyledTableCell>
-                                    {['IN_WORKSHOP', 'WORK_COMMENCED'].includes(workStatus) && (<StyledTableCell width="18%" className='top'>
+                                    {['IN_WORKSHOP', 'WORK_COMMENCED'].includes(workStatus) && (<StyledTableCell width="21%" className='top'>
                                         <Box component="div" 
                                             sx={{ backgroundColor: '#E3E6EB', borderRadius: '4px', 
-                                                padding: 1 ,display: 'flex', flexDirection: 'row', 
+                                                padding: 1, display: 'flex', flexDirection: 'row', 
                                                 justifyContent: 'space-between', alignItems: 'center' }}>
-                                           <Box sx={{ paddingRight: '2px'}}>         
-                                            {row.requests.items.filter(r => r.status==='APPROVED').length} <CheckCircleIcon color='info' />
+                                           <Box sx={{ paddingRight: '2px', fontSize: '12px', 
+                                                display: 'flex', flexDirection: 'row', alignItems: 'center' }}>         
+                                            {row.requests.items.filter(r => r.status==='APPROVED').length} 
+                                            <CheckCircleIcon color='info' />
                                            </Box>
-                                           <Box sx={{ paddingRight: '2px', paddingLeft: '2px'}}>         
-                                            {row.requests.items.filter(r => r.status==='PENDING').length}<WatchLaterIcon color='warning' />
+                                           <Box sx={{ paddingRight: '2px', paddingLeft: '2px', fontSize: '12px',
+                                                display: 'flex', flexDirection: 'row', alignItems: 'center' }}>         
+                                            {row.requests.items.filter(r => r.status==='PENDING').length}
+                                            <WatchLaterIcon color='warning' />
                                            </Box>
-                                           <Box sx={{ paddingLeft: '2px'}}>
-                                            {row.requests.items.filter(r => r.status==='REJECTED').length}<CancelIcon color='error' />
+                                           <Box sx={{ paddingLeft: '2px', fontSize: '12px', 
+                                                display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                                            {row.requests.items.filter(r => r.status==='REJECTED').length}
+                                            <CancelIcon color='error' />
                                            </Box>
                                         </Box>
                                     </StyledTableCell>
@@ -481,7 +547,8 @@ const Works = () => {
                                     <StyledTableCell className="bottom"/>
                                     {['IN_WORKSHOP', 'WORK_COMMENCED'].includes(workStatus) && 
                                         (<StyledTableCell className="bottom">
-                                            <Button variant="contained" sx={{ lineHeight: "16px", backgroundColor: '#142297' }} onClick={() => handleOpenWorkRequestModal(row)}>
+                                            <Button variant="contained" sx={{ lineHeight: "16px", backgroundColor: '#142297' }} 
+                                                onClick={() => handleOpenWorkRequestModal(row)}>
                                                 <AddIcon color="#fff" sx={{ mr: 1 }} />
                                                 Approval
                                             </Button>

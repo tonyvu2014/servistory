@@ -33,8 +33,11 @@ let mdTheme = createTheme({
       h3: {
         fontSize: 24
       },
-      subtitle2: {
+      subtitle1: {
         fontSize: 13
+      },
+      subtitle2: {
+        fontSize: 10
       },
       body1: {
         fontSize: 14
