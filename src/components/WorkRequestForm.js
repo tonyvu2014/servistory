@@ -12,6 +12,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import SendIcon from '@mui/icons-material/Send';
 import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import * as mutations from "../graphql/mutations";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -64,8 +65,15 @@ const WorkRequestForm = (props) => {
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
-        selectedFiles.push(file);
-        setSelectedFiles([...selectedFiles]);
+        if (file) {
+            selectedFiles.push(file);
+            setSelectedFiles([...selectedFiles]);
+        }
+    }
+
+    const handleFileRemoval = (fileName) => {
+        const updatedSelectedFiles = selectedFiles.filter(f => f.name !== fileName);
+        setSelectedFiles([...updatedSelectedFiles]);
     }
 
     const onSubmit = async (data) => {
@@ -75,7 +83,7 @@ const WorkRequestForm = (props) => {
 
         console.log('Work request data to be saved', data);
 
-        const request = omit(data, ['date_completed', 'time_pickup', 'files']);
+        const requestData = omit(data, ['date_completed', 'time_pickup', 'files']);
         let date_time_completed = data.date_completed;
         let isPickupTimeUpdated = false;
         if (data.time_pickup) {
@@ -93,12 +101,16 @@ const WorkRequestForm = (props) => {
                 action = 'Updated';
                 tracking_no = request?.tracking_no;
                 const approval_url = selectedFiles.map(f => `${tracking_no}/${f.name}`).join(',');
-                await API.graphql({ query: mutations.updateWorkRequest, variables: { input: { id: request.id, ...request, work_id: work.id, approval_url, date_time_completed } } });
+                let input = { id: request.id, ...requestData, work_id: work.id, date_time_completed };
+                if (approval_url !== request.approval_url) {
+                    input = {...input, approval_url}
+                }
+                await API.graphql({ query: mutations.updateWorkRequest, variables: { input } });
             } else {
                 action = 'Added'
                 tracking_no = nanoid(10);
                 const approval_url = selectedFiles.map(f => `${tracking_no}/${f.name}`).join(',');
-                await API.graphql({ query: mutations.createWorkRequest, variables: { input: {...request, work_id: work.id, tracking_no, approval_url, date_time_completed } } });
+                await API.graphql({ query: mutations.createWorkRequest, variables: { input: {...requestData, work_id: work.id, tracking_no, approval_url, date_time_completed } } });
             }
             // Update work pickup time
             if (isPickupTimeUpdated) {
@@ -108,7 +120,6 @@ const WorkRequestForm = (props) => {
             //Upload files to s3
             selectedFiles.forEach(f => {
                 const fileName = `${tracking_no}/${f.name}`;
-                console.log('Uploading file', fileName);
                 s3Client.uploadFile(f, fileName)
                     .then(data => console.log('response', data))
                     .catch(err => console.log('File upload error', err));
@@ -200,13 +211,19 @@ const WorkRequestForm = (props) => {
                     <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>Upload Images</Typography>
                     <Box component="div" className='uploadBox'>
                         {selectedFiles.map(f => (
-                            <img alt='' className="displayFile" src={URL.createObjectURL(f)} />
+                            <div key={f.name} className="displayFile">
+                                <img alt='' src={URL.createObjectURL(f)} className="displayImage" />
+                                <div className="topRight" onClick={() => handleFileRemoval(f.name)}>
+                                    <DeleteForeverIcon color='#82868C' />
+                                </div>
+                            </div>
                         ))}
-                        {selectedFiles?.length < 3 && (<InputLabel htmlFor="files" className="addFile">
-                            <AddIcon color='#82868C' />
-                            <Typography variant="body2" sx={{ fontWeight: 600, color: '#3A3C40' }}>Choose a file</Typography>
-                            <Typography variant="body2" sx={{ fontWeight: 400, color: '#3A3C40' }}>or drag it here</Typography>
-                        </InputLabel>
+                        {selectedFiles?.length < 3 && (
+                            <InputLabel htmlFor="files" className="addFile">
+                                <AddIcon color='#82868C' />
+                                <Typography variant="body2" sx={{ fontWeight: 600, color: '#3A3C40' }}>Choose a file</Typography>
+                                <Typography variant="body2" sx={{ fontWeight: 400, color: '#3A3C40' }}>or drag it here</Typography>
+                            </InputLabel>
                         )}
                         <Input
                             sx={{ display: 'none' }}
@@ -214,11 +231,9 @@ const WorkRequestForm = (props) => {
                             name="files"
                             type="file"
                             {...register('files')}
-                            error={!!errors.files}
                             variant="outlined"
                             onChange={handleFileChange}
                             fullWidth
-                            helperText={errors.files && errors.files.message}
                         />
                     </Box>
                 </Stack>

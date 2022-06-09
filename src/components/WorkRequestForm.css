@@ -23,7 +23,38 @@
 
 .displayFile {
     border-radius: 8px;
-    width: 142px;
-    height: 118px;
+    width: auto;
+    max-width: 142px;
+    height: auto;
+    max-height: 118px;
     margin: 6px !important;
+    position: relative;
+    display: flex;
+}
+
+.displayImage {
+    border-radius: 8px;
+    width: 100%;
+    height: auto;
+    opacity: 1;
+    transition: .5s ease;
+    backface-visibility: hidden;
+}
+
+.topRight {
+    transition: .5s ease;
+    opacity: 0;
+    position: absolute;
+    top: 10%;
+    left: 100%;
+    transform: translate(-115%, -20%);
+    -ms-transform: translate(-115%, -20%);
+}
+
+.displayFile:hover .displayImage {
+    opacity: 0.3;
+}
+
+.displayFile:hover .topRight {
+    opacity: 1;
 }

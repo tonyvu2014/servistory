@@ -446,8 +446,8 @@ const Works = () => {
                         </TableHead>
                         <TableBody>
                         {works.map((row) => (
-                            <>
-                                <TableRow key={row.id} sx={{ backgroundColor: row.id === updatedWorkId ? '#D4DBFC' : 'none' }}>
+                            <React.Fragment key={row.id}>
+                                <TableRow sx={{ backgroundColor: row.id === updatedWorkId ? '#D4DBFC' : 'none' }}>
                                     <StyledTableCell align="left" width="10%" className='top'>
                                         {row.date_time_pickup ? format(parseISO(row.date_time_pickup), DATE_DISPLAY_FORMAT) : ''}
                                     </StyledTableCell>
@@ -533,7 +533,7 @@ const Works = () => {
                                     </StyledTableCell>
                                     )}
                                 </TableRow>
-                                <TableRow key={'note_' + row.id} sx={{ backgroundColor: row.id === updatedWorkId ? '#D4DBFC' : 'none' }}>
+                                <TableRow sx={{ backgroundColor: row.id === updatedWorkId ? '#D4DBFC' : 'none' }}>
                                     <StyledTableCell className="bottom"/>
                                     <StyledTableCell colSpan={3} className="bottom">
                                         {row.note && (
@@ -555,7 +555,7 @@ const Works = () => {
                                         </StyledTableCell>
                                     )}
                                 </TableRow>
-                            </>
+                            </React.Fragment>
                         ))}
                         </TableBody>
                     </Table>
