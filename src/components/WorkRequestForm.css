@@ -1,0 +1,29 @@
+.uploadBox {
+    background-color: #E3E6EB;
+    border: 2px dashed #BABFC5;
+    border-radius: 8px;
+    height: 130px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.addFile {
+    background-color: #F5F5F7;
+    border-radius: 8px;
+    width: 142px;
+    height: 118px;
+    margin: 6px !important;
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.displayFile {
+    border-radius: 8px;
+    width: 142px;
+    height: 118px;
+    margin: 6px !important;
+}

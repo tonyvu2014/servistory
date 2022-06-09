@@ -1,27 +1,37 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import PropTypes from 'prop-types';
 import { API } from 'aws-amplify';
 import Box from "@mui/material/Box";
 import Stack from '@mui/material/Stack';
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
+import Input from "@mui/material/Input";
 import Typography from "@mui/material/Typography";
+import InputLabel from '@mui/material/InputLabel';
 import InputAdornment from '@mui/material/InputAdornment';
 import SendIcon from '@mui/icons-material/Send';
 import EditIcon from '@mui/icons-material/Edit';
+import AddIcon from '@mui/icons-material/Add';
 import * as mutations from "../graphql/mutations";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
 import format from 'date-fns/format';
 import parseISO from 'date-fns/parseISO';
 import parse from 'date-fns/parse';
-import { DATE_PICKER_FORMAT, TIME_PICKER_FORMAT, DATE_TIME_PICKER_FORMAT } from '../common/constant';
+import { DATE_PICKER_FORMAT, DATE_TIME_PICKER_FORMAT } from '../common/constant';
 import * as yup from 'yup';
 import { WorkAlertContext } from '../containers/Works';
 import omit from 'lodash/omit';
+import { s3Client } from '../common/s3Client';
+import { nanoid } from 'nanoid';
+import './WorkRequestForm.css';
+
+window.Buffer = window.Buffer || require("buffer").Buffer;
 
 const WorkRequestForm = (props) => {
     const { setAlertState } = useContext(WorkAlertContext);
+
+    const [selectedFiles, setSelectedFiles] = useState([]);
 
     const { preSubmitAction, postSubmitAction, work, request } = props;
 
@@ -32,6 +42,7 @@ const WorkRequestForm = (props) => {
         title: yup.string().required('Title is required'),
         description: yup.string(),
         reason: yup.string(),
+        files: yup.mixed(),
         date_completed: yup.date().typeError('Invalid date')
             .required('Completion date is required'),
         time_pickup: yup.string(),
@@ -39,7 +50,7 @@ const WorkRequestForm = (props) => {
             .min(0).required('Cost is required')
     });
 
-    const { handleSubmit, control, formState: { errors } } = useForm({
+    const { register, handleSubmit, control, formState: { errors } } = useForm({
         defaultValues: {
             title: request?.title || '',
             description: request?.description || '',
@@ -51,6 +62,12 @@ const WorkRequestForm = (props) => {
         resolver: yupResolver(validationSchema)
     });
 
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        selectedFiles.push(file);
+        setSelectedFiles([...selectedFiles]);
+    }
+
     const onSubmit = async (data) => {
         if (preSubmitAction) {
             preSubmitAction();
@@ -58,7 +75,7 @@ const WorkRequestForm = (props) => {
 
         console.log('Work request data to be saved', data);
 
-        const request = omit(data, ['date_completed', 'time_pickup']);
+        const request = omit(data, ['date_completed', 'time_pickup', 'files']);
         let date_time_completed = data.date_completed;
         let isPickupTimeUpdated = false;
         if (data.time_pickup) {
@@ -70,17 +87,33 @@ const WorkRequestForm = (props) => {
         }
         
         let action;
+        let tracking_no;
         try {
             if (request?.id) {
                 action = 'Updated';
-                await API.graphql({ query: mutations.updateWorkRequest, variables: { input: { id: request.id, ...request, work_id: work.id, date_time_completed } } });
+                tracking_no = request?.tracking_no;
+                const approval_url = selectedFiles.map(f => `${tracking_no}/${f.name}`).join(',');
+                await API.graphql({ query: mutations.updateWorkRequest, variables: { input: { id: request.id, ...request, work_id: work.id, approval_url, date_time_completed } } });
             } else {
                 action = 'Added'
-                await API.graphql({ query: mutations.createWorkRequest, variables: { input: {...request, work_id: work.id, date_time_completed } } });
+                tracking_no = nanoid(10);
+                const approval_url = selectedFiles.map(f => `${tracking_no}/${f.name}`).join(',');
+                await API.graphql({ query: mutations.createWorkRequest, variables: { input: {...request, work_id: work.id, tracking_no, approval_url, date_time_completed } } });
             }
+            // Update work pickup time
             if (isPickupTimeUpdated) {
                 await API.graphql({ query: mutations.updateWork, variables: { input: { id: work.id, date_time_pickup: date_time_completed }} });
             }
+
+            //Upload files to s3
+            selectedFiles.forEach(f => {
+                const fileName = `${tracking_no}/${f.name}`;
+                console.log('Uploading file', fileName);
+                s3Client.uploadFile(f, fileName)
+                    .then(data => console.log('response', data))
+                    .catch(err => console.log('File upload error', err));
+            });
+
             setAlertState({
                 open: true,
                 severity: 'success',
@@ -105,7 +138,7 @@ const WorkRequestForm = (props) => {
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
             <Box>
-                <Stack direction="row" spacing={2} sx={{ my: 3 }}>
+                <Stack direction="row" spacing={1} sx={{ my: 2 }}>
                     <Controller
                         name = "title"
                         render = {({ field }) =>
@@ -123,7 +156,7 @@ const WorkRequestForm = (props) => {
                         control={control}
                     />
                 </Stack>
-                <Stack direction="row" spacing={2} sx={{ my: 3 }}>
+                <Stack direction="row" spacing={1} sx={{ my: 2 }}>
                     <Controller
                         name = "description"
                         render = {({ field }) =>
@@ -143,7 +176,7 @@ const WorkRequestForm = (props) => {
                         control={control}
                     />
                 </Stack>
-                <Stack direction="row" spacing={2} sx={{ my: 3 }}>
+                <Stack direction="row" spacing={1} sx={{ my: 2 }}>
                     <Controller
                         name = "reason"
                         render = {({ field }) =>
@@ -163,7 +196,33 @@ const WorkRequestForm = (props) => {
                         control={control}
                     />
                 </Stack>
-                <Stack direction="row" spacing={2} sx={{ mt: 3 }}>
+                <Stack direction="column" spacing={1} sx={{ my: 2 }}>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>Upload Images</Typography>
+                    <Box component="div" className='uploadBox'>
+                        {selectedFiles.map(f => (
+                            <img alt='' className="displayFile" src={URL.createObjectURL(f)} />
+                        ))}
+                        {selectedFiles?.length < 3 && (<InputLabel htmlFor="files" className="addFile">
+                            <AddIcon color='#82868C' />
+                            <Typography variant="body2" sx={{ fontWeight: 600, color: '#3A3C40' }}>Choose a file</Typography>
+                            <Typography variant="body2" sx={{ fontWeight: 400, color: '#3A3C40' }}>or drag it here</Typography>
+                        </InputLabel>
+                        )}
+                        <Input
+                            sx={{ display: 'none' }}
+                            id="files"
+                            name="files"
+                            type="file"
+                            {...register('files')}
+                            error={!!errors.files}
+                            variant="outlined"
+                            onChange={handleFileChange}
+                            fullWidth
+                            helperText={errors.files && errors.files.message}
+                        />
+                    </Box>
+                </Stack>
+                <Stack direction="row" spacing={1} sx={{ mt: 3 }}>
                     <Controller
                         name = "date_completed"
                         render = {({ field }) =>
@@ -219,7 +278,7 @@ const WorkRequestForm = (props) => {
                         control={control}
                     />
                 </Stack>
-                <Stack direction="row" spacing={2} sx={{ mb: 3 }}>
+                <Stack direction="row" spacing={1} sx={{ mb: 3 }}>
                     <Typography variant="body2" sx={{ color: '#82868C', fontStyle: 'normal' }}>
                         If customer does not approve within <strong>2 hours</strong>, the expected <br />
                         completion date will be automatically extended by 1 business day
