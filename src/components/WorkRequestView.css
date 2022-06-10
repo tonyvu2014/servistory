@@ -1,0 +1,40 @@
+.uploadBox {
+    background-color: #E3E6EB;
+    border: 2px dashed #BABFC5;
+    border-radius: 8px;
+    height: 130px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.displayFile {
+    border-radius: 8px;
+    width: auto;
+    max-width: 142px;
+    height: auto;
+    max-height: 118px;
+    margin: 6px !important;
+    position: relative;
+    display: flex;
+}
+
+.displayImage {
+    border-radius: 8px;
+    width: 100%;
+    height: auto;
+    opacity: 1;
+    transition: .5s ease;
+    backface-visibility: hidden;
+}
+
+.approvalButton {
+    background-color: #167E8D !important;
+    color: #fff !important;
+}
+
+.cancelButton {
+    background-color: #932825 !important;
+    color: #fff !important; 
+}

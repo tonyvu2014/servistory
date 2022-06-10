@@ -133,7 +133,7 @@ const WorkRequestForm = (props) => {
                 severity: 'success',
                 title: `Work Request ${action} Successfully`,
                 message: 'SMS has been sent to customer'
-            })
+            });
         } catch (e) {
             console.log('Error in saving work request', e);
             setAlertState({
@@ -212,7 +212,7 @@ const WorkRequestForm = (props) => {
                     />
                 </Stack>
                 <Stack direction="column" spacing={1} sx={{ my: 2 }}>
-                    <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>Upload Images</Typography>
+                    <Typography variant="subtitle1">Upload Images</Typography>
                     <Box component="div" className='uploadBox'>
                         {selectedFiles.map(f => (
                             <div key={f.name} className="displayFile">

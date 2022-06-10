@@ -5,6 +5,8 @@ import Modal from '@mui/material/Modal';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
 const style = {
     position: 'absolute',
@@ -22,7 +24,7 @@ const style = {
   
 
 const PresentationModal = (props) => {
-    const {title, subtitle, open, children, handleClose, ...other} = props;
+    const {title, subtitle, open, children, handleClose, handleMoveBack, handleMoveForward,...other} = props;
 
     return (
         <Modal open={open}
@@ -31,6 +33,11 @@ const PresentationModal = (props) => {
             {...other}>
             <Box sx={style}>
                 <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                    {handleMoveBack && (
+                        <IconButton aria-label="close" onClick={handleMoveBack}>
+                            <ArrowBackIcon />
+                        </IconButton>
+                    )}
                     <Box component="div">
                         <Typography variant="h3" id="modal-title" sx={{ fontWeight: 'bold' }}>{title}</Typography>
                         {subtitle && (
@@ -45,6 +52,11 @@ const PresentationModal = (props) => {
                             </Box>
                         )}
                     </Box>
+                    {handleMoveForward && (
+                        <IconButton aria-label="close" onClick={handleMoveForward}>
+                            <ArrowForwardIcon />
+                        </IconButton>
+                    )}
                     <IconButton aria-label="close" onClick={handleClose}>
                         <CloseIcon />
                     </IconButton>
@@ -62,7 +74,9 @@ PresentationModal.propTypes = {
     subtitle: PropTypes.string,
     open: PropTypes.bool,
     handleClose: PropTypes.func.isRequired,
-    children: PropTypes.node
+    children: PropTypes.node,
+    handleMoveBack: PropTypes.func,
+    handleMoveForward: PropTypes.func
 };
 
 export default PresentationModal;

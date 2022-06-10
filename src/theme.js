@@ -34,7 +34,8 @@ let mdTheme = createTheme({
         fontSize: 24
       },
       subtitle1: {
-        fontSize: 13
+        fontSize: 14,
+        fontWeight: 600
       },
       subtitle2: {
         fontSize: 10
@@ -65,7 +66,6 @@ let mdTheme = createTheme({
             borderRadius: "4px",
             padding: "10px 15px",
             textTransform: "none",
-            backgroundColor: mdTheme.palette.primary.main
           }
         }
       },

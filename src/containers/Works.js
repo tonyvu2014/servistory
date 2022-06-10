@@ -30,6 +30,7 @@ import WorkForm from '../components/WorkForm';
 import WorkView from '../components/WorkView';
 import WorkRemoval from '../components/WorkRemoval';
 import WorkRequestForm from '../components/WorkRequestForm';
+import WorkRequestView from '../components/WorkRequestView';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell, { tableCellClasses } from '@mui/material/TableCell';
@@ -50,6 +51,7 @@ import { DATE_DISPLAY_FORMAT, WORKS_PER_PAGE } from '../common/constant';
 import * as subscriptions from '../graphql/subscriptions';
 import debounce from 'lodash/debounce';
 import { LoadingContext } from '../App';
+import './Works.css';
 
 const defaultAlertState = {
     open: false,
@@ -77,6 +79,7 @@ const Works = () => {
     const [total, setTotal] = useState(0);
     const [page, setPage] = useState(1);
     const [requestSubtitle, setRequestSubtitle] = useState(undefined);
+    const [selectedRequestIndex, setSelectedRequestIndex] = useState(0);
 
     const handleCloseAlert = () => {
         setAlertState(defaultAlertState);
@@ -236,6 +239,8 @@ const Works = () => {
     const [openCustomerViewModal, setOpenCustomerViewModal] = useState(false);
     const [openCustomerRemovalModal, setOpenCustomerRemovalModal] = useState(false);
     const [openWorkRequestModal, setOpenWorkRequestModal] = useState(false);
+    const [openWorkRequestViewModal, setOpenWorkRequestViewModal] = useState(false);
+
 
     const handleOpenCustomerFormModal = (data) => {
         if (data) {
@@ -284,6 +289,34 @@ const Works = () => {
         setOpenWorkRequestModal(false);
         setSelectedWork(undefined);
         setRequestSubtitle(undefined);
+    }
+
+    const handleOpenWorkRequestViewModal = (data) => {
+        setSelectedWork(data);
+        setSelectedRequestIndex(0);
+        if (data) {
+            setRequestSubtitle(`${data.customer_name} | ${data.plate_no} | ${data.car_model}`);
+        }
+
+        if (data.requests.total > 0) {
+            setOpenWorkRequestViewModal(true);
+        }
+    }
+
+    const handleCloseWorkRequestViewModal = () => {
+        setOpenWorkRequestViewModal(false);
+        setSelectedWork(undefined);
+        setRequestSubtitle(undefined);
+    }
+
+    const handleMoveRequestBack = () => {
+        const newSelectedRequestIndex = selectedRequestIndex - 1;
+        setSelectedRequestIndex(newSelectedRequestIndex);
+    }
+
+    const handleMoveRequestForward = () => {
+        const newSelectedRequestIndex = selectedRequestIndex + 1;
+        setSelectedRequestIndex(newSelectedRequestIndex);
     }
 
     const handleTabChange = (event, value) => {
@@ -515,22 +548,17 @@ const Works = () => {
                                         </StyledSelect>
                                     </StyledTableCell>
                                     {['IN_WORKSHOP', 'WORK_COMMENCED'].includes(workStatus) && (<StyledTableCell width="21%" className='top'>
-                                        <Box component="div" 
-                                            sx={{ backgroundColor: '#E3E6EB', borderRadius: '4px', 
-                                                padding: 1, display: 'flex', flexDirection: 'row', 
-                                                justifyContent: 'space-between', alignItems: 'center' }}>
-                                           <Box sx={{ paddingRight: '2px', fontSize: '12px', 
-                                                display: 'flex', flexDirection: 'row', alignItems: 'center' }}>         
+                                        <Box component="div" onClick={() => handleOpenWorkRequestViewModal(row)}
+                                            className='approvalStatusBox'>
+                                           <Box className='approvalStatusItem'>         
                                             {row.requests.items.filter(r => r.status==='APPROVED').length} 
                                             <CheckCircleIcon color='info' />
                                            </Box>
-                                           <Box sx={{ paddingRight: '2px', paddingLeft: '2px', fontSize: '12px',
-                                                display: 'flex', flexDirection: 'row', alignItems: 'center' }}>         
+                                           <Box className='approvalStatusItem'>         
                                             {row.requests.items.filter(r => r.status==='PENDING').length}
                                             <WatchLaterIcon color='warning' />
                                            </Box>
-                                           <Box sx={{ paddingLeft: '2px', fontSize: '12px', 
-                                                display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                                           <Box className='approvalStatusItem'>
                                             {row.requests.items.filter(r => r.status==='REJECTED').length}
                                             <CancelIcon color='error' />
                                            </Box>
@@ -595,6 +623,17 @@ const Works = () => {
                 open={openWorkRequestModal}
                 handleClose={handleCloseWorkRequestModal}>
                     <WorkRequestForm work={selectedWork} preSubmitAction={handleCloseWorkRequestModal} />
+            </PresentationModal>
+            <PresentationModal
+                title="Sent Request"
+                subtitle={requestSubtitle}
+                open={openWorkRequestViewModal}
+                handleMoveBack={selectedRequestIndex === 0 ? undefined : handleMoveRequestBack}
+                handleMoveForward={selectedRequestIndex === selectedWork?.requests.total-1 ? undefined : handleMoveRequestForward}
+                handleClose={handleCloseWorkRequestViewModal}>
+                    <WorkRequestView 
+                        request={selectedWork?.requests.items[selectedRequestIndex]} 
+                        preSubmitAction={handleCloseWorkRequestViewModal} />
             </PresentationModal>
         </WorkAlertContext.Provider>
     )
