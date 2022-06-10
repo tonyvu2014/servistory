@@ -1,4 +1,4 @@
-import React, { useState, createContext, useMemo, useEffect, useRef } from 'react';
+import React, { useState, createContext, useMemo, useEffect, useRef, useContext } from 'react';
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Snackbar from '@mui/material/Snackbar';
@@ -49,6 +49,7 @@ import { updateWork } from '../graphql/mutations';
 import { DATE_DISPLAY_FORMAT, WORKS_PER_PAGE } from '../common/constant';
 import * as subscriptions from '../graphql/subscriptions';
 import debounce from 'lodash/debounce';
+import { LoadingContext } from '../App';
 
 const defaultAlertState = {
     open: false,
@@ -63,6 +64,8 @@ export const WorkAlertContext = createContext({
 }); 
 
 const Works = () => { 
+
+    const { setLoadingState } = useContext(LoadingContext);
 
     const [works, setWorks] = useState([]);
     const [workFormTitle, setWorkFormTitle] = useState('');
@@ -194,6 +197,7 @@ const Works = () => {
     useEffect(() => {
         async function fetchData() {
             try {
+                setLoadingState(true);
                 let filterCondition = { status: { eq: workStatus } }
                 if (searchQuery) {
                     filterCondition = { status: { eq: workStatus }, and: {
@@ -222,6 +226,7 @@ const Works = () => {
                     message: 'Please try again later'
                 })
             }
+            setLoadingState(false);
         };
         const debouncedFetch = debounce(fetchData, 1000);
         debouncedFetch();
@@ -576,20 +581,20 @@ const Works = () => {
                 title={workFormTitle}
                 open={openCustomerFormModal}
                 handleClose={handleCloseCustomerFormModal}>
-                    <WorkForm work={selectedWork} postSubmitAction={handleCloseCustomerFormModal} />
+                    <WorkForm work={selectedWork} preSubmitAction={handleCloseCustomerFormModal} />
             </PresentationModal>
             <PresentationModal
                 title="Remove Customer Card"
                 open={openCustomerRemovalModal}
                 handleClose={handleCloseCustomerRemovalModal}>
-                    <WorkRemoval work={selectedWork} postSubmitAction={handleCloseCustomerRemovalModal} />
+                    <WorkRemoval work={selectedWork} preSubmitAction={handleCloseCustomerRemovalModal} />
              </PresentationModal>
              <PresentationModal 
                 title="Work Approval Request"
                 subtitle={requestSubtitle}
                 open={openWorkRequestModal}
                 handleClose={handleCloseWorkRequestModal}>
-                    <WorkRequestForm work={selectedWork} postSubmitAction={handleCloseWorkRequestModal} />
+                    <WorkRequestForm work={selectedWork} preSubmitAction={handleCloseWorkRequestModal} />
             </PresentationModal>
         </WorkAlertContext.Provider>
     )

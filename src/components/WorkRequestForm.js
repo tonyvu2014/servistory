@@ -26,11 +26,13 @@ import omit from 'lodash/omit';
 import { s3Client } from '../common/s3Client';
 import { nanoid } from 'nanoid';
 import './WorkRequestForm.css';
+import { LoadingContext } from '../App';
 
 window.Buffer = window.Buffer || require("buffer").Buffer;
 
 const WorkRequestForm = (props) => {
     const { setAlertState } = useContext(WorkAlertContext);
+    const { setLoadingState } = useContext(LoadingContext);
 
     const [selectedFiles, setSelectedFiles] = useState([]);
 
@@ -83,6 +85,7 @@ const WorkRequestForm = (props) => {
 
         console.log('Work request data to be saved', data);
 
+        setLoadingState(true);
         const requestData = omit(data, ['date_completed', 'time_pickup', 'files']);
         let date_time_completed = data.date_completed;
         let isPickupTimeUpdated = false;
@@ -141,6 +144,7 @@ const WorkRequestForm = (props) => {
             });
         }    
 
+        setLoadingState(false);
         if (postSubmitAction) {
             postSubmitAction();
         }

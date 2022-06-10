@@ -1,3 +1,4 @@
+import React, { useState, createContext, useMemo } from 'react';
 import { Amplify } from 'aws-amplify';
 import AppBar from '@mui/material/AppBar';
 import logo from './assets/servistory.svg';
@@ -6,6 +7,8 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import LogoutIcon from '@mui/icons-material/Logout';
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 import { withAuthenticator } from '@aws-amplify/ui-react';
 import '@aws-amplify/ui-react/styles.css';
 import awsExports from './aws-exports';
@@ -16,7 +19,19 @@ import mdTheme from './theme';
 
 Amplify.configure(awsExports);
 
+export const LoadingContext = createContext({
+  loadingState: false,
+  setLoadingState: () => false
+});
+
 function App({ signOut, user }) {
+
+  const [loadingState, setLoadingState] = useState(false);
+  const loadingValue = useMemo(
+    () => ({ loadingState, setLoadingState }),
+    [loadingState]
+  );
+
   return (
     <ThemeProvider theme={mdTheme}>
       <Box sx={{ display: 'flex' }}>
@@ -43,7 +58,15 @@ function App({ signOut, user }) {
             }}
         >
           <Toolbar />
-          <Works />
+          <LoadingContext.Provider value={loadingValue}>
+            <Works />
+            <Backdrop
+              sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 2 }}
+              open={loadingState}
+            >
+              <CircularProgress color="primary" />
+            </Backdrop>
+          </LoadingContext.Provider>
         </Box>
       </Box>
     </ThemeProvider>

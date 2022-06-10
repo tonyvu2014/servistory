@@ -15,9 +15,11 @@ import parseISO from 'date-fns/parseISO';
 import { DATE_PICKER_FORMAT } from '../common/constant';
 import * as yup from 'yup';
 import { WorkAlertContext } from '../containers/Works';
+import { LoadingContext } from '../App';
 
 const WorkForm = (props) => {
     const { setAlertState } = useContext(WorkAlertContext);
+    const { setLoadingState } = useContext(LoadingContext);
 
     const { preSubmitAction, postSubmitAction, work } = props;
 
@@ -69,6 +71,7 @@ const WorkForm = (props) => {
         let action;
 
         try {
+            setLoadingState(true);
             if (work?.id) {
                 action = 'Updated';
                 await API.graphql({ query: mutations.updateWork, variables: { input: { id: work.id, ...data } } });
@@ -92,6 +95,7 @@ const WorkForm = (props) => {
             });
         }    
 
+        setLoadingState(false);
         if (postSubmitAction) {
             postSubmitAction();
         }

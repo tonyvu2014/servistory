@@ -8,9 +8,11 @@ import Button from "@mui/material/Button";
 import * as mutations from "../graphql/mutations";
 import DeleteIcon from '@mui/icons-material/Delete';
 import { WorkAlertContext } from '../containers/Works';
+import { LoadingContext } from '../App';
 
 const WorkRemoval = (props) => {
     const { setAlertState } = useContext(WorkAlertContext);
+    const { setLoadingState } = useContext(LoadingContext);
 
     const { preSubmitAction, postSubmitAction, work } = props;
 
@@ -20,6 +22,7 @@ const WorkRemoval = (props) => {
         }
 
         try {
+            setLoadingState(true);
             await API.graphql({ query: mutations.updateWork, variables: { input: { id: work.id, status: 'CANCELLED' } } });
             setAlertState({
                 open: true,
@@ -37,6 +40,7 @@ const WorkRemoval = (props) => {
             });
         }    
 
+        setLoadingState(false);
         if (postSubmitAction) {
             postSubmitAction();
         }
