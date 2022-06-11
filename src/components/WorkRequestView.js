@@ -25,6 +25,7 @@ const WorkRequestView = (props) => {
     const { approval_url } = request;
 
     const objectKeys = approval_url.split(',');
+    //TODO: a better way to filter out invalid s3 object paths
     const objectPaths = objectKeys
         .filter(x => !x.startsWith('request'));
 
@@ -81,23 +82,22 @@ const WorkRequestView = (props) => {
                     <Grid item xs={4}>
                         <Typography variant="body1">{request.status.slice(0, 1).toUpperCase()}{request.status.slice(1).toLowerCase()}</Typography>
                     </Grid>
-                    {request.status !== 'REJECTED' && (<>    
+                    {request.status !== 'CANCELLED' && (<>    
                         <Grid item xs={12}>
                             &nbsp;
                         </Grid>
                         <Grid item xs={2}>
                             &nbsp;
                         </Grid>
-                        <Grid item xs={5} sx={{ textAlign: 'right' }}>
-                            {request.status === 'PENDING' && (<Button className='approvalButton' onClick={() => updateWorkRequestStatus('APPROVED')}>
-                                    <PhoneIcon />&nbsp;Mark as Approved
-                                </Button>
+                        <Grid item xs={10} sx={{ textAlign: 'right' }}>
+                            {request.status !== 'APPROVED' && (<Button className='approvalButton' onClick={() => updateWorkRequestStatus('APPROVED')}>
+                                <PhoneIcon />&nbsp;Mark as Approved
+                            </Button>
                             )}
-                        </Grid>
-                        <Grid item xs={5} sx={{ textAlign: 'right' }}>
-                            <Button className='cancelButton' onClick={() => updateWorkRequestStatus('REJECTED')}>
+                            {request.status !== 'REJECTED' && (<Button className='cancelButton' onClick={() => updateWorkRequestStatus('REJECTED')}>
                                 <CancelIcon />&nbsp; Cancel Request
                             </Button>
+                            )}
                         </Grid>
                     </>
                     )}
@@ -125,10 +125,10 @@ const WorkRequestView = (props) => {
             <Stack direction="row" spacing={1} sx={{ my: 2 }}>
                 <Box sx={{ width: '100%' }}>
                     <Typography variant="subtitle1">Uploaded Images</Typography>
-                    <Box component="div" className="uploadBox">
+                    <Box component="div" className="requestUploadBox">
                         {objectPaths.map(path => (
-                            <div key={path} className="displayFile">
-                                <img alt='' src={getPublicUrl(path)} className="displayImage" />
+                            <div key={path} className="requestDisplayFile">
+                                <img alt='' src={getPublicUrl(path)} className="requestDisplayImage" />
                             </div>
                         ))}                
                     </Box>

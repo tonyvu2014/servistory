@@ -1,4 +1,4 @@
-.uploadBox {
+.requestUploadBox {
     background-color: #E3E6EB;
     border: 2px dashed #BABFC5;
     border-radius: 8px;
@@ -9,7 +9,7 @@
     align-items: center;
 }
 
-.displayFile {
+.requestDisplayFile {
     border-radius: 8px;
     width: auto;
     max-width: 142px;
@@ -20,7 +20,7 @@
     display: flex;
 }
 
-.displayImage {
+.requestDisplayImage {
     border-radius: 8px;
     width: 100%;
     height: auto;
@@ -32,9 +32,11 @@
 .approvalButton {
     background-color: #167E8D !important;
     color: #fff !important;
+    margin: 0 2px !important;
 }
 
 .cancelButton {
     background-color: #932825 !important;
     color: #fff !important; 
+    margin: 0 2px !important;
 }

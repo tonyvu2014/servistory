@@ -320,12 +320,15 @@ const Works = () => {
     }
 
     const handleTabChange = (event, value) => {
+        setWorks([]);
+        setTotal(0);
         setWorkStatus(value);
         setPage(1);
     }
 
     const handleStatusChange = async (data, status) => {
         try {
+            setLoadingState(true);
             await API.graphql(graphqlOperation(updateWork, {
                 input: {
                     id: data.id,
@@ -348,6 +351,7 @@ const Works = () => {
                 message: 'Please try again later'
             });
         }
+        setLoadingState(false);
     }
 
     const handlePageChange = (event, value) => {
