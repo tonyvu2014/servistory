@@ -173,7 +173,7 @@ const Works = () => {
             next: ({ provider, value }) => {
                 const newWorkRequest = value.data.onCreateWorkRequest
                 setUpdatedWorkId(newWorkRequest.work_id);
-                addWorkRef.current(newWorkRequest);
+                addWorkRequestRef.current(newWorkRequest);
             },
             error: error => console.log('onCreateWorkRequest() subscription error', error)
         });
@@ -184,7 +184,7 @@ const Works = () => {
             next: ({ provider, value }) => {
                 const updatedWorkRequest = value.data.onUpdateWorkRequest;
                 setUpdatedWorkId(updatedWorkRequest.work_id);
-                replaceWorkRef.current(updatedWorkRequest)
+                replaceWorkRequestRef.current(updatedWorkRequest)
             },
             error: error => console.log('onUpdateWorkRequest() subscription error', error)
         });
