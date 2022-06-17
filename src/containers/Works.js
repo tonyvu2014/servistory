@@ -620,8 +620,8 @@ const Works = () => {
                 open={openCustomerRemovalModal}
                 handleClose={handleCloseCustomerRemovalModal}>
                     <WorkRemoval work={selectedWork} preSubmitAction={handleCloseCustomerRemovalModal} />
-             </PresentationModal>
-             <PresentationModal 
+            </PresentationModal>
+            <PresentationModal 
                 title="Work Approval Request"
                 subtitle={requestSubtitle}
                 open={openWorkRequestModal}
@@ -635,7 +635,8 @@ const Works = () => {
                 handleMoveBack={selectedRequestIndex === 0 ? undefined : handleMoveRequestBack}
                 handleMoveForward={selectedRequestIndex === selectedWork?.requests.total-1 ? undefined : handleMoveRequestForward}
                 handleClose={handleCloseWorkRequestViewModal}>
-                    <WorkRequestView 
+                    <WorkRequestView
+                        work={selectedWork}
                         request={selectedWork?.requests.items[selectedRequestIndex]} 
                         preSubmitAction={handleCloseWorkRequestViewModal} />
             </PresentationModal>

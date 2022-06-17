@@ -340,6 +340,7 @@ input UpdateWorkRequestInput {
   description: String
   reason: String
   price: Float
+  approval_url: String
   date_time_completed: AWSDateTime
   status: RequestStatus
   work_id: ID

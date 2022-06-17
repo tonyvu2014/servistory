@@ -58,7 +58,7 @@ const WorkRequestForm = (props) => {
             title: request?.title || '',
             description: request?.description || '',
             reason: request?.reason || '',
-            date_completed: request?.date_time_completed ? format(parseISO(work?.date_time_completed), DATE_PICKER_FORMAT) : format(today, DATE_PICKER_FORMAT),
+            date_completed: request?.date_time_completed ? format(parseISO(work?.date_time_pickup), DATE_PICKER_FORMAT) : format(today, DATE_PICKER_FORMAT),
             time_pickup: '',
             price: request?.price || 0
         },

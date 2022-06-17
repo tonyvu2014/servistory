@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import PropTypes from 'prop-types';
 import { API } from 'aws-amplify';
 import * as mutations from "../graphql/mutations";
@@ -11,6 +11,10 @@ import format from 'date-fns/format';
 import parseISO from 'date-fns/parseISO';
 import PhoneIcon from '@mui/icons-material/Phone';
 import CancelIcon from '@mui/icons-material/Cancel';
+import EditIcon from '@mui/icons-material/Edit';
+import IconButton from '@mui/material/IconButton';
+import PresentationModal from './common/PresentationModal';
+import WorkRequestForm from './WorkRequestForm';
 import { getPublicUrl } from '../common/s3Helper';
 import './WorkRequestView.css';
 import { WorkAlertContext } from '../containers/Works';
@@ -21,7 +25,11 @@ const WorkRequestView = (props) => {
     const { setAlertState } = useContext(WorkAlertContext);
     const { setLoadingState } = useContext(LoadingContext);
 
-    const { request, preSubmitAction, postSubmitAction } = props;
+    const [openWorkRequestModal, setOpenWorkRequestModal] = useState(false);
+
+    const { work, request, preSubmitAction, postSubmitAction } = props;
+    console.log('work', work);
+
     const { approval_url } = request;
 
     const objectKeys = approval_url.split(',');
@@ -60,6 +68,10 @@ const WorkRequestView = (props) => {
         }
     }
 
+    const handleOpenWorkRequestFormModal = () => {
+        console.log('Handle work request form');
+    }
+
     return (
         <Box>
             <Stack direction="row" spacing={1} sx={{ my: 3 }}>
@@ -86,8 +98,10 @@ const WorkRequestView = (props) => {
                         <Grid item xs={12}>
                             &nbsp;
                         </Grid>
-                        <Grid item xs={2}>
-                            &nbsp;
+                        <Grid item xs={2} sx={{ textAlign: 'left' }}>
+                            <IconButton onClick={() => setOpenWorkRequestModal(true)}>
+                                <EditIcon color='warning'/>
+                            </IconButton>
                         </Grid>
                         <Grid item xs={10} sx={{ textAlign: 'right' }}>
                             {request.status !== 'APPROVED' && (<Button className='approvalButton' onClick={() => updateWorkRequestStatus('APPROVED')}>
@@ -150,7 +164,13 @@ const WorkRequestView = (props) => {
                     </Grid>
                 </Grid>
             </Stack>
-
+            <PresentationModal 
+                title="Work Approval Request"
+                subtitle={`${work.customer_name} | ${work.plate_no} | ${work.car_model}`}
+                open={openWorkRequestModal}
+                handleClose={() => setOpenWorkRequestModal(false)}>
+                    <WorkRequestForm work={work} request={request} preSubmitAction={preSubmitAction} postSubmitAction={postSubmitAction} />
+            </PresentationModal>
         </Box>
     );
 }
@@ -158,6 +178,7 @@ const WorkRequestView = (props) => {
 WorkRequestView.propTypes = {
     preSubmitAction: PropTypes.func,
     postSubmitAction: PropTypes.func,
+    work: PropTypes.object,
     request: PropTypes.object
 };
 
