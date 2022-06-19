@@ -19,6 +19,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import format from 'date-fns/format';
 import parseISO from 'date-fns/parseISO';
 import parse from 'date-fns/parse';
+import { getPublicUrl } from '../common/s3Helper';
 import { DATE_PICKER_FORMAT, DATE_TIME_PICKER_FORMAT } from '../common/constant';
 import * as yup from 'yup';
 import { WorkAlertContext } from '../containers/Works';
@@ -37,6 +38,26 @@ const WorkRequestForm = (props) => {
     const [selectedFiles, setSelectedFiles] = useState([]);
 
     const { preSubmitAction, postSubmitAction, work, request } = props;
+
+    if (request?.id) {
+        const { approval_url } = request;
+
+        const objectKeys = approval_url.split(',');
+        //TODO: a better way to filter out invalid s3 object paths
+        const objectPaths = objectKeys
+            .filter(x => !x.startsWith('request')); 
+
+        const fileList = objectPaths.map(async (p) => {
+            const response = await fetch(getPublicUrl(p));
+            const data = await response.blob();
+            return new File([data], p.split('/').slice(-1)[0], { type: data.type });
+        });
+
+        Promise.all(fileList).then(values => {
+            console.log('values', values);
+            setSelectedFiles([...values]);
+        })
+    }
 
     let today = new Date();
     today.setHours(0, 0, 0, 0);
