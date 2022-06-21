@@ -19,7 +19,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import format from 'date-fns/format';
 import parseISO from 'date-fns/parseISO';
 import parse from 'date-fns/parse';
-import { DATE_PICKER_FORMAT, DATE_TIME_PICKER_FORMAT } from '../common/constant';
+import { DATE_PICKER_FORMAT, DATE_TIME_PICKER_FORMAT, TIME_PICKER_FORMAT } from '../common/constant';
 import * as yup from 'yup';
 import { WorkAlertContext } from '../containers/Works';
 import omit from 'lodash/omit';
@@ -58,8 +58,8 @@ const WorkRequestForm = (props) => {
             title: request?.title || '',
             description: request?.description || '',
             reason: request?.reason || '',
-            date_completed: request?.date_time_completed ? format(parseISO(work?.date_time_pickup), DATE_PICKER_FORMAT) : format(today, DATE_PICKER_FORMAT),
-            time_pickup: '',
+            date_completed: request?.date_time_completed ? format(parseISO(request?.date_time_completed), DATE_PICKER_FORMAT) : format(today, DATE_PICKER_FORMAT),
+            time_pickup: request?.date_time_completed ? format(parseISO(request?.date_time_completed), TIME_PICKER_FORMAT) : format(today, TIME_PICKER_FORMAT),
             price: request?.price || 0
         },
         resolver: yupResolver(validationSchema)

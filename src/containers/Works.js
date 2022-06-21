@@ -119,7 +119,11 @@ const Works = () => {
                 updatedWorkRequestItems.push(newWorkRequest);
                 return {
                     ...work,
-                    items: updatedWorkRequestItems
+                    requests: {
+                        ...work.requests,
+                        total: work.requests.total + 1,
+                        items: updatedWorkRequestItems
+                    }
                 }
             }
         });
@@ -137,7 +141,10 @@ const Works = () => {
                     request.id !== updatedWorkRequest.id ? request : updatedWorkRequest);
                 return {
                     ...work,
-                    items: updatedWorkRequestItems
+                    requests: {
+                        ...work.requests,
+                        items: updatedWorkRequestItems
+                    }
                 }
             }
         });
