@@ -28,7 +28,6 @@ const WorkRequestView = (props) => {
     const [openWorkRequestModal, setOpenWorkRequestModal] = useState(false);
 
     const { work, request, preSubmitAction, postSubmitAction } = props;
-    console.log('work', work);
 
     const { approval_url } = request;
 
@@ -66,10 +65,6 @@ const WorkRequestView = (props) => {
         if (postSubmitAction) {
             postSubmitAction();
         }
-    }
-
-    const handleOpenWorkRequestFormModal = () => {
-        console.log('Handle work request form');
     }
 
     return (

@@ -115,7 +115,8 @@ const Works = () => {
             if (work.id !== newWorkRequest.work_id) {
                 return work
             } else {
-                const updatedWorkRequestItems = work.requests.items.push(newWorkRequest);
+                const updatedWorkRequestItems = work.requests.items;
+                updatedWorkRequestItems.push(newWorkRequest);
                 return {
                     ...work,
                     items: updatedWorkRequestItems

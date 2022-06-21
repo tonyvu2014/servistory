@@ -43,6 +43,8 @@ exports.workRequestRepository = {
         const updateSetStatement = [
             'title', 'description', 
             'price', 'status', 
+            'approval_url', 'reason',
+            'date_time_completed'
         ]
             .filter(field => request[field] != null)
             .map(field => `${field} = :${field}`)

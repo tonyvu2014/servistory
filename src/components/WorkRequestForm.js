@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { API } from 'aws-amplify';
 import Box from "@mui/material/Box";
@@ -19,12 +19,11 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import format from 'date-fns/format';
 import parseISO from 'date-fns/parseISO';
 import parse from 'date-fns/parse';
-import { getPublicUrl } from '../common/s3Helper';
 import { DATE_PICKER_FORMAT, DATE_TIME_PICKER_FORMAT } from '../common/constant';
 import * as yup from 'yup';
 import { WorkAlertContext } from '../containers/Works';
 import omit from 'lodash/omit';
-import { s3Client } from '../common/s3Client';
+import { s3Client, s3 } from '../common/s3Helper';
 import { nanoid } from 'nanoid';
 import './WorkRequestForm.css';
 import { LoadingContext } from '../App';
@@ -38,26 +37,6 @@ const WorkRequestForm = (props) => {
     const [selectedFiles, setSelectedFiles] = useState([]);
 
     const { preSubmitAction, postSubmitAction, work, request } = props;
-
-    if (request?.id) {
-        const { approval_url } = request;
-
-        const objectKeys = approval_url.split(',');
-        //TODO: a better way to filter out invalid s3 object paths
-        const objectPaths = objectKeys
-            .filter(x => !x.startsWith('request')); 
-
-        const fileList = objectPaths.map(async (p) => {
-            const response = await fetch(getPublicUrl(p));
-            const data = await response.blob();
-            return new File([data], p.split('/').slice(-1)[0], { type: data.type });
-        });
-
-        Promise.all(fileList).then(values => {
-            console.log('values', values);
-            setSelectedFiles([...values]);
-        })
-    }
 
     let today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -127,6 +106,7 @@ const WorkRequestForm = (props) => {
                 const approval_url = selectedFiles.map(f => `${tracking_no}/${f.name}`).join(',');
                 let input = { id: request.id, ...requestData, work_id: work.id, date_time_completed };
                 if (approval_url !== request.approval_url) {
+                    console.log('approval_url', approval_url);
                     input = {...input, approval_url}
                 }
                 await API.graphql({ query: mutations.updateWorkRequest, variables: { input } });
@@ -170,6 +150,33 @@ const WorkRequestForm = (props) => {
             postSubmitAction();
         }
     }
+
+    useEffect(() => {
+        if (request?.id) {
+            const { approval_url } = request;
+    
+            const objectKeys = approval_url.split(',');
+            //TODO: a better way to filter out invalid s3 object paths
+            const objectPaths = objectKeys
+                .filter(x => !x.startsWith('request')); 
+    
+            const fileListPromise = objectPaths.map(async (p) => {
+                try {
+                    const data = await (s3.getObject({
+                        Bucket: process.env.REACT_APP_S3_BUCKET_NAME,
+                        Key: `attachments/${p}`
+                    }).promise());
+                    return new File([data.Body], p.split('/').slice(-1)[0], { type: data.ContentType });
+                } catch (error) {
+                    console.log(`Error fetching file ${p}`, error);
+                }
+            });
+
+            Promise.all(fileListPromise).then(fileList => {
+                setSelectedFiles(fileList)
+            });
+        }
+    }, []);
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
