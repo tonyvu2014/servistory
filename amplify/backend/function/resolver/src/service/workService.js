@@ -1,6 +1,8 @@
 const workRepo = require('../repository/workRepository').workRepository;
 const { ValidationError } = require('../exception/error');
 const { v4: uuidv4 } = require('uuid');
+const smsService = require('./smService');
+const vendorService = require('./vendorService');
 
 exports.workService = {
     createWork: async function(input) {
@@ -20,13 +22,54 @@ exports.workService = {
     },
 
     updateWork: async function(input) {
-        const { id } = input;
+        const { id, status } = input;
 
         if (id == null) {
             throw new ValidationError('Id is required');
         }
 
+        // send sms notifications to customer 
+        if (status && ['PENDING', 'WORK_COMMENCED', 'COMPLETED'].includes(status)) {
+            this.notifyCustomer(id, status);
+        }
+
         return await workRepo.update(input);
+    },
+
+    notifyCustomer: async function(id, status) {
+        const work = await this.getWork(id);
+        const vendorId = work.vendor_id;
+
+        const vendor = await vendorService.getVendor(vendorId);
+
+        let message;
+        switch (status) {
+            case 'PENDING': 
+                message = ```Hi ${work.customer_name}, thanks for trusting us with your vehicle at ${vendor.name}.
+                We'll keep you updated, and you can also contact us on ${vendor.phone}
+                ```;
+                break;
+            case 'WORK_COMMENCED':
+                message = ```Hi ${work.customer_name},  good news: we’re beginning work on your vehicle. 
+                We’ll let you know in advance if we identify any new items for maintenance. 
+                Otherwise, we’ll just notify you once your vehicle is ready for collection.```
+                break;
+            case 'COMPLETED':
+                message = ```Your vehicle is now ready for collection. Thanks for choosing ${vendor.name}. 
+                If you have any feedback or questions please let us know and we hope to see you next time ${work.customer_name}!
+                ```;
+                break;
+            default:         
+        }
+
+        if (message) {
+            await smsService.sendMessage(
+                work.customer_phone,
+                message,
+                work.customer_name
+            );
+        }
+
     },
 
     getWork: async function(id) {
