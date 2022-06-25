@@ -1,8 +1,8 @@
 const workRepo = require('../repository/workRepository').workRepository;
 const { ValidationError } = require('../exception/error');
 const { v4: uuidv4 } = require('uuid');
-const smsService = require('./smService');
-const vendorService = require('./vendorService');
+const smsService = require('smService');
+const vendorService = require('vendorService');
 
 exports.workService = {
     createWork: async function(input) {
@@ -18,7 +18,11 @@ exports.workService = {
 
         const work = id == null ? {...input, id: uuidv4() } : input;
 
-        return await workRepo.create(work);
+        const newWork =  await workRepo.create(work);
+
+        this.notifyCustomer(newWork);
+
+        return newWork;
     },
 
     updateWork: async function(input) {
@@ -28,22 +32,21 @@ exports.workService = {
             throw new ValidationError('Id is required');
         }
 
-        // send sms notifications to customer 
-        if (status && ['PENDING', 'WORK_COMMENCED', 'COMPLETED'].includes(status)) {
-            this.notifyCustomer(id, status);
-        }
+        const updatedWork = await workRepo.update(input);
 
-        return await workRepo.update(input);
+         // send sms notifications to customer 
+         if (status && ['PENDING', 'WORK_COMMENCED', 'COMPLETED'].includes(status)) {
+            this.notifyCustomer(updatedWork);
+        }
     },
 
-    notifyCustomer: async function(id, status) {
-        const work = await this.getWork(id);
+    notifyCustomer: async function(work) {
         const vendorId = work.vendor_id;
 
         const vendor = await vendorService.getVendor(vendorId);
 
         let message;
-        switch (status) {
+        switch (work.status) {
             case 'PENDING': 
                 message = ```Hi ${work.customer_name}, thanks for trusting us with your vehicle at ${vendor.name}.
                 We'll keep you updated, and you can also contact us on ${vendor.phone}
