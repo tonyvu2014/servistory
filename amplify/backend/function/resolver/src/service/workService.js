@@ -1,8 +1,10 @@
 const workRepo = require('../repository/workRepository').workRepository;
 const { ValidationError } = require('../exception/error');
 const { v4: uuidv4 } = require('uuid');
-const smsService = require('smService');
-const vendorService = require('vendorService');
+const format = require('date-fns/format');
+const parseISO = require('date-fns/parseISO');
+const { smsService } = require('./smsService');
+const { vendorService } = require('./vendorService');
 
 exports.workService = {
     createWork: async function(input) {
@@ -45,22 +47,24 @@ exports.workService = {
 
         const vendor = await vendorService.getVendor(vendorId);
 
+        console.log('date time arrived', work.date_time_arrived);
+        console.log('date time pickup', work.date_time_pickup);
+
         let message;
         switch (work.status) {
             case 'PENDING': 
-                message = ```Hi ${work.customer_name}, thanks for trusting us with your vehicle at ${vendor.name}.
-                We'll keep you updated, and you can also contact us on ${vendor.phone}
-                ```;
+                message = `Hi ${work.customer_name}, thanks for trusting us with your vehicle at ${vendor.name}. \
+                Your vehicle is booked to be in our workshop on the ${format(parseISO(work.date_time_arrived), 'dd/MM/yyyy')} with a current expected pick-up date of ${format(parseISO(work.date_time_pickup), 'dd/MM/yyyy')}. \
+                We'll keep you updated, and you can also contact us on ${vendor.phone}.`;
                 break;
             case 'WORK_COMMENCED':
-                message = ```Hi ${work.customer_name},  good news: we’re beginning work on your vehicle. 
-                We’ll let you know in advance if we identify any new items for maintenance. 
-                Otherwise, we’ll just notify you once your vehicle is ready for collection.```
+                message = `Hi ${work.customer_name},  good news: we’re beginning work on your vehicle. \
+                We’ll let you know in advance if we identify any new items for maintenance. \
+                Otherwise, we’ll just notify you once your vehicle is ready for collection.`
                 break;
             case 'COMPLETED':
-                message = ```Your vehicle is now ready for collection. Thanks for choosing ${vendor.name}. 
-                If you have any feedback or questions please let us know and we hope to see you next time ${work.customer_name}!
-                ```;
+                message = `Your vehicle is now ready for collection. Thanks for choosing ${vendor.name}. \
+                If you have any feedback or questions please let us know and we hope to see you next time ${work.customer_name}!`;
                 break;
             default:         
         }
