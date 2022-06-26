@@ -14,6 +14,7 @@ import format from 'date-fns/format';
 import parseISO from 'date-fns/parseISO';
 import { DATE_PICKER_FORMAT } from '../common/constant';
 import * as yup from 'yup';
+import omit from 'lodash/omit';
 import { WorkAlertContext } from '../containers/Works';
 import { LoadingContext } from '../App';
 
@@ -73,7 +74,17 @@ const WorkForm = (props) => {
             setLoadingState(true);
             if (work?.id) {
                 action = 'updated'
-                await API.graphql({ query: mutations.updateWork, variables: { input: { id: work.id, ...data } } });
+
+                const originalPickupDate = format(parseISO(work.date_time_pickup), 'dd/MM/yyyy');
+                const newPickupDate = format(data.date_time_pickup, 'dd/MM/yyyy');
+
+                let workData = data;
+                // No update in pickup date
+                if (originalPickupDate === newPickupDate) {
+                    workData = omit(workData, ['date_time_pickup']);
+                }
+
+                await API.graphql({ query: mutations.updateWork, variables: { input: { id: work.id, ...workData } } });
             } else {
                 action = 'added'
                 await API.graphql({ query: mutations.createWork, variables: { input: {...data, vendor_id: attributes['custom:org_id']} } });

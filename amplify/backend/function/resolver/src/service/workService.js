@@ -22,7 +22,7 @@ exports.workService = {
         const newWork =  await workRepo.create(work);
 
         try {
-            await this.notifyCustomer(newWork);
+            await this.notifyStatusChange(newWork);
         } catch (err) {
             throw new NotificationError(`Notification error: ${err}`);
         }
@@ -31,7 +31,7 @@ exports.workService = {
     },
 
     updateWork: async function(input) {
-        const { id, status } = input;
+        const { id, status, date_time_pickup } = input;
 
         if (id == null) {
             throw new ValidationError('Id is required');
@@ -39,10 +39,19 @@ exports.workService = {
 
         const updatedWork = await workRepo.update(input);
 
-         // send sms notifications to customer 
-         if (status && ['PENDING', 'WORK_COMMENCED', 'COMPLETED'].includes(status)) {
+        // send sms notifications to customer to notify about status change
+        if (status && ['PENDING', 'WORK_COMMENCED', 'COMPLETED'].includes(status)) {
             try {
-                await this.notifyCustomer(updatedWork);
+                await this.notifyStatusChange(updatedWork);
+            } catch (err) {
+                throw new NotificationError(`Notification error: ${err}`);
+            }
+        }
+
+        // send sms notifications to customer to notify about pickup date change
+        if (date_time_pickup) {
+            try {
+                await this.notifyPickupDateChange(updatedWork);
             } catch (err) {
                 throw new NotificationError(`Notification error: ${err}`);
             }
@@ -51,7 +60,7 @@ exports.workService = {
         return updatedWork;
     },
 
-    notifyCustomer: async function(work) {
+    notifyStatusChange: async function(work) {
         const vendorId = work.vendor_id;
 
         const vendor = await vendorService.getVendor(vendorId);
@@ -74,6 +83,23 @@ exports.workService = {
                 break;
             default:         
         }
+
+        if (message) {
+            await smsService.sendMessage(
+                work.customer_phone,
+                message,
+                work.customer_name
+            );
+        }
+    },
+
+    notifyPickupDateChange: async function(work) {
+        const vendorId = work.vendor_id;
+
+        const vendor = await vendorService.getVendor(vendorId);
+
+        const message = `We’ve updated your vehicle ready date to ${formatInTimeZone(work.date_time_pickup, vendor.timezone ,'dd/MM/yyyy')} at ${formatInTimeZone(work.date_time_pickup, vendor.timezone ,'h:mm a')}. ` +
+        `If you have any questions please let us know on ${vendor.phone}. Thanks ${work.customer_name}`
 
         if (message) {
             await smsService.sendMessage(

@@ -83,8 +83,6 @@ const WorkRequestForm = (props) => {
             preSubmitAction();
         }
 
-        console.log('Work request data to be saved', data);
-
         setLoadingState(true);
         const requestData = omit(data, ['date_completed', 'time_pickup', 'files']);
         let date_time_completed = data.date_completed;
