@@ -66,33 +66,41 @@ const WorkForm = (props) => {
             preSubmitAction();
         }
 
-        console.log('Work data to be saved', data);
         const { attributes } = await Auth.currentAuthenticatedUser();
         let action;
 
         try {
             setLoadingState(true);
             if (work?.id) {
-                action = 'Updated';
+                action = 'updated'
                 await API.graphql({ query: mutations.updateWork, variables: { input: { id: work.id, ...data } } });
             } else {
-                action = 'Added'
+                action = 'added'
                 await API.graphql({ query: mutations.createWork, variables: { input: {...data, vendor_id: attributes['custom:org_id']} } });
             }
             setAlertState({
                 open: true,
                 severity: 'success',
-                title: `Card ${action} Successfully`,
-                message: 'Card are sorted by drop-off date'
+                title: `Card ${action} successfully`,
+                message: 'Cards are sorted by pick-up date'
             })
         } catch (e) {
             console.log('Error in saving work', e);
-            setAlertState({
-                open: true,
-                severity: 'error',
-                title: `Card ${action} Error`,
-                message: 'Please try again later'
-            });
+            if (e?.errors?.map(error => error.message).some(m => m.includes('Notification error'))) {
+                setAlertState({
+                    open: true,
+                    severity: 'error',
+                    title: `SMS notification error`,
+                    message: 'There is an issue with sending SMS notification to customer'
+                });
+            } else {
+                setAlertState({
+                    open: true,
+                    severity: 'error',
+                    title: `Card ${action} error`,
+                    message: 'Please try again later'
+                });
+            }
         }    
 
         setLoadingState(false);

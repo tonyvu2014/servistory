@@ -6,6 +6,7 @@ type Vendor {
   id: ID!
   name: String!
   address: String
+  timezone: String!
   email: String
   phone: String!
   works(filter: WorkFilterInput, limit: Int, token: String): WorkConnection
@@ -42,6 +43,7 @@ type Work {
 }
 
 enum RequestStatus {
+  DRAFT
   PENDING
   APPROVED
   REJECTED
@@ -54,7 +56,7 @@ type WorkRequest {
   title: String!
   description: String
   reason: String
-  approval_url: String
+  attachments: String
   price: Float
   date_time_completed: AWSDateTime
   status: RequestStatus!
@@ -296,7 +298,7 @@ input WorkRequestFilterInput {
   title: StringInput
   description: StringInput
   reason: StringInput
-  approval_url: StringInput
+  attachments: StringInput
   price: FloatInput
   date_time_completed: StringInput
   status: RequestStatusInput
@@ -311,7 +313,7 @@ input WorkRequestConditionInput {
   title: StringInput
   description: StringInput
   reason: StringInput
-  approval_url: StringInput
+  attachments: StringInput
   price: FloatInput
   date_time_completed: StringInput
   status: RequestStatusInput
@@ -327,7 +329,7 @@ input CreateWorkRequestInput {
   title: String!
   description: String
   reason: String
-  approval_url: String
+  attachments: String
   price: Float
   date_time_completed: AWSDateTime
   status: RequestStatus
@@ -340,7 +342,7 @@ input UpdateWorkRequestInput {
   description: String
   reason: String
   price: Float
-  approval_url: String
+  attachments: String
   date_time_completed: AWSDateTime
   status: RequestStatus
   work_id: ID

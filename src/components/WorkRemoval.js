@@ -27,15 +27,15 @@ const WorkRemoval = (props) => {
             setAlertState({
                 open: true,
                 severity: 'success',
-                title: `Card Removed Successfully`,
-                message: 'Card are sorted by drop-off date'
+                title: `Card removed successfully`,
+                message: 'Cards are sorted by pick-up date'
             })
         } catch (e) {
             console.log('Error in removing work', e);
             setAlertState({
                 open: true,
                 severity: 'error',
-                title: `Card Removed Error`,
+                title: `Card removed error`,
                 message: 'Please try again later'
             });
         }    

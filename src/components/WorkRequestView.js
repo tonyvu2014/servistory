@@ -28,10 +28,10 @@ const WorkRequestView = (props) => {
     const [openWorkRequestModal, setOpenWorkRequestModal] = useState(false);
 
     const { work, request, preSubmitAction, postSubmitAction } = props;
+    console.log('request expected completion time', request.date_time_completed);
+    const { attachments } = request;
 
-    const { approval_url } = request;
-
-    const objectKeys = approval_url.split(',');
+    const objectKeys = attachments.split(',');
     //TODO: a better way to filter out invalid s3 object paths
     const objectPaths = objectKeys
         .filter(x => !x.startsWith('request'));
@@ -48,20 +48,30 @@ const WorkRequestView = (props) => {
             setAlertState({
                 open: true,
                 severity: 'success',
-                title: `Work Request Status Update Successfully`,
+                title: `Work request status update successfully`,
                 message: 'SMS has been sent to customer'
             })
         } catch (e) {
-            console.log('Error in updating work request status', e);
-            setAlertState({
-                open: true,
-                severity: 'error',
-                title: `Work Request Status Update Error`,
-                message: 'Please try again later'
-            });
+            console.log('Error in updating work request status', e?.errors?.map(error => error.message));
+            // TODO: a silly way to check if there is an error in sending notification
+            if (e?.errors?.map(error => error.message).some(m => m.includes('Notification error'))) {
+                setAlertState({
+                    open: true,
+                    severity: 'error',
+                    title: `SMS notification error`,
+                    message: 'There is an issue with sending SMS notification to customer'
+                });
+            } else {
+                setAlertState({
+                    open: true,
+                    severity: 'error',
+                    title: `Work request status update error`,
+                    message: 'Please try again later'
+                });
+            }
         }
-        setLoadingState(false);
 
+        setLoadingState(false);
         if (postSubmitAction) {
             postSubmitAction();
         }

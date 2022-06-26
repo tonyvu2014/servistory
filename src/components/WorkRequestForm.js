@@ -19,7 +19,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import format from 'date-fns/format';
 import parseISO from 'date-fns/parseISO';
 import parse from 'date-fns/parse';
-import { DATE_PICKER_FORMAT, DATE_TIME_PICKER_FORMAT, TIME_PICKER_FORMAT } from '../common/constant';
+import { DATE_PICKER_FORMAT, TIME_PICKER_FORMAT, DATE_TIME_PICKER_FORMAT } from '../common/constant';
 import * as yup from 'yup';
 import { WorkAlertContext } from '../containers/Works';
 import omit from 'lodash/omit';
@@ -88,39 +88,30 @@ const WorkRequestForm = (props) => {
         setLoadingState(true);
         const requestData = omit(data, ['date_completed', 'time_pickup', 'files']);
         let date_time_completed = data.date_completed;
-        let isPickupTimeUpdated = false;
         if (data.time_pickup) {
             date_time_completed = parse(`${format(date_time_completed, DATE_PICKER_FORMAT)} ${data.time_pickup}`, 
                 DATE_TIME_PICKER_FORMAT, new Date());
-            
-            // Update work's pick-up datetime
-            isPickupTimeUpdated = true;
         }
         
         let action;
         let tracking_no;
         try {
             if (request?.id) {
-                action = 'Updated';
+                action = 'updated';
                 tracking_no = request?.tracking_no;
-                const approval_url = selectedFiles.map(f => `${tracking_no}/${f.name}`).join(',');
+                const attachments = selectedFiles.map(f => `${tracking_no}/${f.name}`).join(',');
                 let input = { id: request.id, ...requestData, work_id: work.id, date_time_completed };
-                if (approval_url !== request.approval_url) {
-                    console.log('approval_url', approval_url);
-                    input = {...input, approval_url}
+                if (attachments !== request.attachments) {
+                    input = {...input, attachments}
                 }
                 await API.graphql({ query: mutations.updateWorkRequest, variables: { input } });
             } else {
-                action = 'Added'
+                action = 'added'
                 tracking_no = nanoid(10);
-                const approval_url = selectedFiles.map(f => `${tracking_no}/${f.name}`).join(',');
-                await API.graphql({ query: mutations.createWorkRequest, variables: { input: {...requestData, work_id: work.id, tracking_no, approval_url, date_time_completed } } });
+                const attachments = selectedFiles.map(f => `${tracking_no}/${f.name}`).join(',');
+                await API.graphql({ query: mutations.createWorkRequest, variables: { input: {...requestData, work_id: work.id, tracking_no, attachments, date_time_completed } } });
             }
-            // Update work pickup time
-            if (isPickupTimeUpdated) {
-                await API.graphql({ query: mutations.updateWork, variables: { input: { id: work.id, date_time_pickup: date_time_completed }} });
-            }
-
+            
             //Upload files to s3
             selectedFiles.forEach(f => {
                 const fileName = `${tracking_no}/${f.name}`;
@@ -132,17 +123,26 @@ const WorkRequestForm = (props) => {
             setAlertState({
                 open: true,
                 severity: 'success',
-                title: `Work Request ${action} Successfully`,
-                message: 'SMS has been sent to customer'
+                title: `Work request ${action} successfully`,
+                message: action === 'added' ? 'SMS has been sent to customer' : ''
             });
         } catch (e) {
             console.log('Error in saving work request', e);
-            setAlertState({
-                open: true,
-                severity: 'error',
-                title: `Work Request ${action} Error`,
-                message: 'Please try again later'
-            });
+            if (e?.errors?.map(error => error.message).some(m => m.includes('Notification error'))) {
+                setAlertState({
+                    open: true,
+                    severity: 'error',
+                    title: `SMS notification error`,
+                    message: 'There is an issue with sending SMS notification to customer'
+                });
+            } else {
+                setAlertState({
+                    open: true,
+                    severity: 'error',
+                    title: `Work request ${action} error`,
+                    message: 'Please try again later'
+                });
+            }
         }    
 
         setLoadingState(false);
@@ -153,9 +153,9 @@ const WorkRequestForm = (props) => {
 
     useEffect(() => {
         if (request?.id) {
-            const { approval_url } = request;
+            const { attachments } = request;
     
-            const objectKeys = approval_url.split(',');
+            const objectKeys = attachments.split(',');
             //TODO: a better way to filter out invalid s3 object paths
             const objectPaths = objectKeys
                 .filter(x => !x.startsWith('request')); 

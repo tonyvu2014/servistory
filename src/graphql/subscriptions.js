@@ -134,7 +134,7 @@ export const onCreateWork = /* GraphQL */ `
           tracking_no
           title
           description
-          approval_url
+          attachments
           price
           date_time_completed
           status
@@ -185,7 +185,7 @@ export const onUpdateWork = /* GraphQL */ `
           tracking_no
           title
           description
-          approval_url
+          attachments
           price
           date_time_completed
           status
@@ -236,7 +236,7 @@ export const onDeleteWork = /* GraphQL */ `
           tracking_no
           title
           description
-          approval_url
+          attachments
           price
           date_time_completed
           status
@@ -260,7 +260,7 @@ export const onCreateWorkRequest = /* GraphQL */ `
       tracking_no
       title
       description
-      approval_url
+      attachments
       price
       date_time_completed
       status
@@ -306,7 +306,7 @@ export const onUpdateWorkRequest = /* GraphQL */ `
       tracking_no
       title
       description
-      approval_url
+      attachments
       price
       date_time_completed
       status
@@ -352,7 +352,7 @@ export const onDeleteWorkRequest = /* GraphQL */ `
       tracking_no
       title
       description
-      approval_url
+      attachments
       price
       date_time_completed
       status

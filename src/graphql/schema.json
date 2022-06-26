@@ -854,7 +854,7 @@
           "isDeprecated" : false,
           "deprecationReason" : null
         }, {
-          "name" : "approval_url",
+          "name" : "attachments",
           "description" : null,
           "args" : [ ],
           "type" : {
@@ -1047,7 +1047,7 @@
           },
           "defaultValue" : null
         }, {
-          "name" : "approval_url",
+          "name" : "attachments",
           "description" : null,
           "type" : {
             "kind" : "INPUT_OBJECT",
@@ -2946,7 +2946,7 @@
           },
           "defaultValue" : null
         }, {
-          "name" : "approval_url",
+          "name" : "attachments",
           "description" : null,
           "type" : {
             "kind" : "SCALAR",
@@ -3031,7 +3031,7 @@
           },
           "defaultValue" : null
         }, {
-          "name" : "approval_url",
+          "name" : "attachments",
           "description" : null,
           "type" : {
             "kind" : "INPUT_OBJECT",
@@ -3160,7 +3160,7 @@
           },
           "defaultValue" : null
         }, {
-          "name" : "approval_url",
+          "name" : "attachments",
           "description" : null,
           "type" : {
             "kind" : "SCALAR",

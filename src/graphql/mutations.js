@@ -147,7 +147,7 @@ export const createWork = /* GraphQL */ `
           title
           description
           reason
-          approval_url
+          attachments
           price
           date_time_completed
           status
@@ -202,7 +202,7 @@ export const updateWork = /* GraphQL */ `
           title
           description
           reason
-          approval_url
+          attachments
           price
           date_time_completed
           status
@@ -257,7 +257,7 @@ export const deleteWork = /* GraphQL */ `
           title
           description
           reason
-          approval_url
+          attachments
           price
           date_time_completed
           status
@@ -285,7 +285,7 @@ export const createWorkRequest = /* GraphQL */ `
       title
       description
       reason
-      approval_url
+      attachments
       price
       date_time_completed
       status
@@ -335,7 +335,7 @@ export const updateWorkRequest = /* GraphQL */ `
       title
       description
       reason
-      approval_url
+      attachments
       price
       date_time_completed
       status
@@ -385,7 +385,7 @@ export const deleteWorkRequest = /* GraphQL */ `
       title
       description
       reason
-      approval_url
+      attachments
       price
       date_time_completed
       status

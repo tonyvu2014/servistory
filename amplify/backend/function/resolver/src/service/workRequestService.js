@@ -1,11 +1,12 @@
 const workRequestRepo = require('../repository/workRequestRepository').workRequestRepository;
-const { ValidationError } = require('../exception/error');
+const { ValidationError, NotificationError } = require('../exception/error');
 const { v4: uuidv4 } = require('uuid');
-const format = require('date-fns/format');
-const parseISO = require('date-fns/parseISO');
+const formatInTimeZone = require('date-fns-tz/formatInTimeZone');
+const formatISO = require('date-fns/formatISO')
 const { smsService } = require('./smsService');
 const { workService } = require('./workService');
 const { vendorService } = require('./vendorService');
+const { BASE_URL } = require('../common/constant');
 
 exports.workRequestService = {
     createWorkRequest: async function(input) {
@@ -20,7 +21,11 @@ exports.workRequestService = {
 
         const newWorkRequest = await workRequestRepo.create(request);
 
-        this.notifyCustomer(newWorkRequest);
+        try {
+            await this.notifyCustomer(newWorkRequest);
+        } catch (err) {
+            throw new NotificationError(`Notification error: ${err}`);
+        }
 
         return newWorkRequest;
     },
@@ -28,23 +33,23 @@ exports.workRequestService = {
     notifyCustomer: async function(workRequest) {
         const workId = workRequest.work_id;
 
-        const work = await workService.getVendor(workId);
+        const work = await workService.getWork(workId);
+        const vendor = await vendorService.getVendor(work.vendor_id);
 
         let message;
         switch (workRequest.status) {
             case 'PENDING': 
-                message = `Hi ${work.customer_name}, we’ve identified a recommended maintenance "${workRequest.title}". \
-                You can view and approve it here: https://master.d37elpx0f99jhq.amplifyapp.com/approval/${workRequest.tracking_no}`;
+                message = `Hi ${work.customer_name}, we’ve identified a recommended maintenance "${workRequest.title}". ` +
+                `You can view and approve it here: ${BASE_URL}/approval/${workRequest.tracking_no}.`;
                 break;
             case 'APPROVED':
-                message = `${work.customer_name}, thanks for viewing and approving "${workRequest.title}". \
-                Your estimated vehicle-ready date is ${format(parseISO(work.date_time_pickup), 'dd/MM/yyyy')} at ${format(parseISO(work.date_time_pickup), 'h:m a')}. \
-                If you have any questions please let us know.`
+                message = `${work.customer_name}, thanks for viewing and approving "${workRequest.title}". ` +
+                `Your estimated vehicle-ready date is ${formatInTimeZone(work.date_time_pickup, vendor.timezone,'dd/MM/yyyy')} at ${formatInTimeZone(work.date_time_pickup, vendor.timezone ,'h:mm a')}. ` +
+                'If you have any questions please let us know.'
                 break;
             case 'REJECTED':
-                const vendor = await vendorService.getVendor(work.vendor_id);
-                message = `Hi ${work.customer_name}, confirming that you have declined the approval "${workRequest.title}". \
-                If you want to discuss it further, please don’t hesitate to give us a buzz on ${vendor.phone}`;
+                message = `Hi ${work.customer_name}, confirming that you have declined the approval "${workRequest.title}". ` +
+                `If you want to discuss it further, please don’t hesitate to give us a buzz on ${vendor.phone}.`;
                 break;
             default:         
         }
@@ -70,7 +75,16 @@ exports.workRequestService = {
         
         // send sms notifications to customer
         if (status && ['APPROVED', 'REJECTED'].includes(status)) {
-            this.notifyCustomer(updatedWorkRequest);
+            // update pick-up date to latest work approval's completion date
+            if (status === 'APPROVED') {
+                await workService.updateWork({ id: updatedWorkRequest.work_id, date_time_pickup: formatISO(updatedWorkRequest.date_time_completed) })
+            }
+            
+            try {
+                await this.notifyCustomer(updatedWorkRequest);
+            } catch (err) {
+                throw new NotificationError(`Notification error: ${err}`);
+            }
         }
 
         return updatedWorkRequest;

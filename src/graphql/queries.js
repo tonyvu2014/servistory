@@ -7,6 +7,7 @@ export const getVendor = /* GraphQL */ `
       id
       name
       address
+      timezone
       email
       phone
       works {
@@ -41,6 +42,7 @@ export const listVendors = /* GraphQL */ `
         id
         name
         address
+        timezone
         email
         phone
         works {
@@ -92,7 +94,7 @@ export const getWork = /* GraphQL */ `
           title
           description
           reason
-          approval_url
+          attachments
           price
           date_time_completed
           status
@@ -140,7 +142,7 @@ export const listWorks = /* GraphQL */ `
             title
             description
             reason
-            approval_url
+            attachments
             price
             date_time_completed
             status
@@ -169,7 +171,7 @@ export const getWorkRequest = /* GraphQL */ `
       title
       description
       reason
-      approval_url
+      attachments
       price
       date_time_completed
       status
@@ -221,7 +223,7 @@ export const listWorkRequests = /* GraphQL */ `
         title
         description
         reason
-        approval_url
+        attachments
         price
         date_time_completed
         status

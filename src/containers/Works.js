@@ -347,15 +347,15 @@ const Works = () => {
             setAlertState({
                 open: true,
                 severity: 'success',
-                title: `Card Status Updated Successfully`,
-                message: 'Card are sorted by drop-off date'
+                title: `Card status updated successfully`,
+                message: 'Cards are sorted by pick-up date'
             })
         } catch (e) {
             console.log('Error in updating work status', e);
             setAlertState({
                 open: true,
                 severity: 'error',
-                title: `Card Status Updated Error`,
+                title: `Card status updated error`,
                 message: 'Please try again later'
             });
         }

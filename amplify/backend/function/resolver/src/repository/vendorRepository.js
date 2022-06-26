@@ -5,14 +5,14 @@ const { DatabaseError } = require("../exception/error");
 
 exports.vendorRepository = {
     create: async function(vendor) {
-        const { id, address, email, name, phone } = vendor;
+        const { id, address, timezone, email, name, phone } = vendor;
 
         const now = format(new Date(), constant.DEFAULT_DB_DATE_FORMAT);
 
         const result = await dataApiClient.query(`
-            INSERT INTO Vendor (id, address, email, name, phone, date_time_created, date_time_updated) 
+            INSERT INTO Vendor (id, address, timezone, email, name, phone, date_time_created, date_time_updated) 
             VALUES (:id, :address, :email, :name, :phone, :date_time_created, :date_time_updated)
-        `, { id, address: address ?? null, email: email ?? null, name, phone, date_time_created: now, date_time_updated: now }
+        `, { id, address: address ?? null, timezone: timezone ?? null, email: email ?? null, name, phone, date_time_created: now, date_time_updated: now }
         );
 
         if (result?.numberOfRecordsUpdated < 1) {
@@ -21,6 +21,7 @@ exports.vendorRepository = {
 
         return await this.getOne(id);
     },
+    
     getOne: async function(id) {
         const data =  await dataApiClient.query(`SELECT * FROM Vendor WHERE id =:id`, { id });
 
