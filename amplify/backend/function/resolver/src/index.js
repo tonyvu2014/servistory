@@ -57,8 +57,17 @@ const resolvers = {
 
     Work: {
         requests: (event) => {
-            console.log('event for work requests', event);
             return getWorkRequests(event);
+        },
+
+        vendor: (event) => {
+            return getWorkVendor(event);
+        }
+    },
+
+    WorkRequest: {
+        work: (event) => {
+            return getRequestWork(event);
         }
     }
 }
@@ -155,10 +164,22 @@ async function createVendor(event) {
     return await vendorService.createVendor(input);
 }
 
+async function getRequestWork(event) {
+    const workId = event.source.work_id;
+
+    return await workService.getWork(workId);
+}
+
 // Work
 async function getWorkRequests(event) {
     const { filter, limit, token } = event.arguments;
     const workId = event.source.id;
 
     return await workRequestService.getWorkRequests({...filter, work_id: { eq: workId } }, limit, token);
+}
+
+async function getWorkVendor(event) {
+    const vendorId = event.source.vendor_id;
+
+    return await vendorService.getVendor(vendorId);
 }

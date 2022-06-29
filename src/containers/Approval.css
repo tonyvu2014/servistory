@@ -1,0 +1,51 @@
+.approval-wrapper {
+    font-family: 'Poppins';
+    font-style: normal;
+    color: #fff;
+    margin-top: 16px;
+}
+
+.approval-header {
+    background: rgba(0, 0, 148, 0.37);
+    color: #fff; 
+}
+
+.approval-vendor {
+    background: #002094;
+    border-radius: 8px;
+    padding: 4px 16px 16px;
+}
+
+.approval-vendor-name {
+    text-align: center;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 27px;
+    text-transform: uppercase ;
+}
+
+.approval-vendor-details {
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 21px;
+}
+
+.approval-customer {
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 24px;
+    text-align: center; 
+}
+
+.approval-status {
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 21px;
+    letter-spacing: 0.04em;
+    text-transform: capitalize;
+    color: #3C4158;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}

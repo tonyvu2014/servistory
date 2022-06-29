@@ -98,7 +98,7 @@ exports.workService = {
 
         const vendor = await vendorService.getVendor(vendorId);
 
-        const message = `We’ve updated your vehicle ready date to ${formatInTimeZone(work.date_time_pickup, vendor.timezone ,'dd/MM/yyyy')} at ${formatInTimeZone(work.date_time_pickup, vendor.timezone ,'h:mm a')}. ` +
+        const message = `We’ve updated your vehicle ready date to ${formatInTimeZone(work.date_time_pickup, vendor.timezone ,'dd/MM/yyyy')}. ` +
         `If you have any questions please let us know on ${vendor.phone}. Thanks ${work.customer_name}`
 
         if (message) {

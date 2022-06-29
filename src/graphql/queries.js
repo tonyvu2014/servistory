@@ -131,9 +131,7 @@ export const listWorks = /* GraphQL */ `
           name
           address
           email
-          phone
-          date_time_created
-          date_time_updated
+          phone      
         }
         requests {
           items {
@@ -230,6 +228,13 @@ export const listWorkRequests = /* GraphQL */ `
         work {
           id
           vendor_id
+          vendor {
+            id
+            name
+            address
+            email
+            phone
+          }
           customer_name
           customer_phone
           tracking_no

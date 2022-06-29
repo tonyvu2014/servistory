@@ -1,21 +1,22 @@
 import React, { useState, createContext, useMemo } from 'react';
 import { Amplify } from 'aws-amplify';
-import AppBar from '@mui/material/AppBar';
-import logo from './assets/servistory.svg';
 import Toolbar from '@mui/material/Toolbar';
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
-import LogoutIcon from '@mui/icons-material/Logout';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
-import { withAuthenticator } from '@aws-amplify/ui-react';
+import { Authenticator } from '@aws-amplify/ui-react';
 import '@aws-amplify/ui-react/styles.css';
 import awsExports from './aws-exports';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
 import Works from './containers/Works';
+import Approval from './containers/Approval';
+import Header from './components/common/Header';
+import Login from './components/authenticator/Login';
+import RequireAuth from './components/authenticator/RequireAuth';
 import mdTheme from './theme';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import './App.css';
 
 Amplify.configure(awsExports);
 
@@ -24,7 +25,7 @@ export const LoadingContext = createContext({
   setLoadingState: () => false
 });
 
-function App({ signOut, user }) {
+function App() {
 
   const [loadingState, setLoadingState] = useState(false);
   const loadingValue = useMemo(
@@ -36,30 +37,28 @@ function App({ signOut, user }) {
     <ThemeProvider theme={mdTheme}>
       <Box sx={{ display: 'flex' }}>
         <CssBaseline />
-        <AppBar position="fixed" open={true}>
-          <Toolbar>
-            <Box component="img" src={logo} alt="Servistory" />
-            <Box component="span" sx={{ flexGrow: 1 }} />
-            <IconButton onClick={signOut}> 
-              <Typography variant="body1" color="secondary.dark" sx={{ pr:'2px', fontWeight: 'medium' }}> 
-                Logout
-              </Typography>
-              <LogoutIcon color="secondary.dark" sx={{ width: 34 }} />
-            </IconButton>
-          </Toolbar>
-        </AppBar>
-        <Box
-            component="main"
-            sx={{
-              flexGrow: 1,
-              height: '100vh',
-              overflow: 'auto',
-              backgroundColor: '#F5F5F7'
-            }}
-        >
-          <Toolbar />
+        <Authenticator.Provider>
           <LoadingContext.Provider value={loadingValue}>
-            <Works />
+            <Box
+              component="main"
+              sx={{
+                flexGrow: 1,
+                height: '100vh',
+                overflow: 'auto',
+                backgroundColor: '#F5F5F7'
+              }}
+            >
+              <Toolbar />
+              <BrowserRouter>
+                <Routes>
+                  <Route path="/" element={<Header />}>
+                    <Route index element={<RequireAuth><Works /></RequireAuth>}></Route>
+                    <Route path="/approval/:requestTrackingNo" element={<Approval />}></Route>
+                    <Route path="/login" element={<Login />}></Route>
+                  </Route>
+                </Routes>
+              </BrowserRouter>
+            </Box>
             <Backdrop
               sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 2 }}
               open={loadingState}
@@ -67,10 +66,10 @@ function App({ signOut, user }) {
               <CircularProgress color="primary" />
             </Backdrop>
           </LoadingContext.Provider>
-        </Box>
+        </Authenticator.Provider>
       </Box>
     </ThemeProvider>
   );
 }
 
-export default withAuthenticator(App, {hideSignUp: true});
+export default App;
