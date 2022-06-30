@@ -178,7 +178,7 @@ const Approval = () => {
                         <Typography sx={{ whiteSpace: 'pre-line' }}>{workRequest?.description}</Typography>   
                     </AccordionDetails>
                 </Accordion>)}
-                {workRequest && (<Grid container className='approval-quote'>
+                <Grid container className='approval-quote'>
                     <Grid item xs={12} className='approval-quote-title'>
                         If approved now:
                     </Grid>
@@ -194,7 +194,7 @@ const Approval = () => {
                     <Grid item xs={8} className='approval-quote-label'>
                         Expected vehicle ready date 
                     </Grid>
-                </Grid>)}
+                </Grid>
                 {workRequest?.status === 'PENDING' && (<div className='approval-action'>
                     <Button variant='contained' className='approval-action-decline' onClick={() => handleDeclination()}>
                         Decline
