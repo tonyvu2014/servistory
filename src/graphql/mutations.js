@@ -32,8 +32,6 @@ export const createVendor = /* GraphQL */ `
         previousToken
         nextToken
       }
-      date_time_created
-      date_time_updated
     }
   }
 `;
@@ -68,8 +66,6 @@ export const updateVendor = /* GraphQL */ `
         previousToken
         nextToken
       }
-      date_time_created
-      date_time_updated
     }
   }
 `;
@@ -104,8 +100,6 @@ export const deleteVendor = /* GraphQL */ `
         previousToken
         nextToken
       }
-      date_time_created
-      date_time_updated
     }
   }
 `;
@@ -132,13 +126,6 @@ export const createWork = /* GraphQL */ `
         address
         email
         phone
-        works {
-          total
-          previousToken
-          nextToken
-        }
-        date_time_created
-        date_time_updated
       }
       requests {
         items {
@@ -187,13 +174,6 @@ export const updateWork = /* GraphQL */ `
         address
         email
         phone
-        works {
-          total
-          previousToken
-          nextToken
-        }
-        date_time_created
-        date_time_updated
       }
       requests {
         items {
@@ -242,13 +222,6 @@ export const deleteWork = /* GraphQL */ `
         address
         email
         phone
-        works {
-          total
-          previousToken
-          nextToken
-        }
-        date_time_created
-        date_time_updated
       }
       requests {
         items {
@@ -307,8 +280,6 @@ export const createWorkRequest = /* GraphQL */ `
           address
           email
           phone
-          date_time_created
-          date_time_updated
         }
         requests {
           total
@@ -357,8 +328,6 @@ export const updateWorkRequest = /* GraphQL */ `
           address
           email
           phone
-          date_time_created
-          date_time_updated
         }
         requests {
           total
@@ -407,8 +376,6 @@ export const deleteWorkRequest = /* GraphQL */ `
           address
           email
           phone
-          date_time_created
-          date_time_updated
         }
         requests {
           total
