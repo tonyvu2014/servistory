@@ -93,11 +93,31 @@
     font-weight: 400;
     font-size: 14px;
     line-height: 21px;
+    font-style: italic;
 }
 
 .approval-main-work {
     margin-top: 32px;
     line-height: 22px;
+}
+
+.approval-main-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.approval-status-icon {
+    text-align: center;
+    height: 50px;
+}
+
+.approval-main-status {
+    text-align: center;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 24px;
+    text-transform: uppercase;
 }
 
 .approval-main-work-title {
@@ -145,7 +165,7 @@
 
 .approval-info {
     margin: 12px !important;
-    color: #fff;
+    color: #fff !important;
 }
 
 .approval-info-summary {

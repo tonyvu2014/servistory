@@ -167,11 +167,13 @@ const WorkRequestForm = (props) => {
                     return new File([data.Body], p.split('/').slice(-1)[0], { type: data.ContentType });
                 } catch (error) {
                     console.log(`Error fetching file ${p}`, error);
+                    return null;
                 }
             });
 
             Promise.all(fileListPromise).then(fileList => {
-                setSelectedFiles(fileList)
+                const validFileList = fileList.filter(f => f !== null);
+                setSelectedFiles(validFileList)
             });
         }
     }, []);

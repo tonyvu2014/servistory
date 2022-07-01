@@ -28,7 +28,6 @@ const WorkRequestView = (props) => {
     const [openWorkRequestModal, setOpenWorkRequestModal] = useState(false);
 
     const { work, request, preSubmitAction, postSubmitAction } = props;
-    console.log('request expected completion time', request.date_time_completed);
     const { attachments } = request;
 
     const objectKeys = attachments.split(',');

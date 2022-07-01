@@ -120,13 +120,6 @@ export const onCreateWork = /* GraphQL */ `
         address
         email
         phone
-        works {
-          total
-          previousToken
-          nextToken
-        }
-        date_time_created
-        date_time_updated
       }
       requests {
         items {
@@ -171,13 +164,6 @@ export const onUpdateWork = /* GraphQL */ `
         address
         email
         phone
-        works {
-          total
-          previousToken
-          nextToken
-        }
-        date_time_created
-        date_time_updated
       }
       requests {
         items {
@@ -222,13 +208,6 @@ export const onDeleteWork = /* GraphQL */ `
         address
         email
         phone
-        works {
-          total
-          previousToken
-          nextToken
-        }
-        date_time_created
-        date_time_updated
       }
       requests {
         items {
@@ -282,13 +261,6 @@ export const onCreateWorkRequest = /* GraphQL */ `
           address
           email
           phone
-          date_time_created
-          date_time_updated
-        }
-        requests {
-          total
-          previousToken
-          nextToken
         }
         date_time_created
         date_time_updated
@@ -328,13 +300,6 @@ export const onUpdateWorkRequest = /* GraphQL */ `
           address
           email
           phone
-          date_time_created
-          date_time_updated
-        }
-        requests {
-          total
-          previousToken
-          nextToken
         }
         date_time_created
         date_time_updated
@@ -374,13 +339,6 @@ export const onDeleteWorkRequest = /* GraphQL */ `
           address
           email
           phone
-          date_time_created
-          date_time_updated
-        }
-        requests {
-          total
-          previousToken
-          nextToken
         }
         date_time_created
         date_time_updated

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { API, graphqlOperation } from 'aws-amplify';
 import { listWorkRequests } from '../graphql/queries';
@@ -11,6 +11,9 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CheckIcon from '@mui/icons-material/Check';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import DoNotDisturbIcon from '@mui/icons-material/DoNotDisturb';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import Button from '@mui/material/Button';
 import Grid from "@mui/material/Grid";
 import parseISO from 'date-fns/parseISO';
@@ -18,8 +21,23 @@ import format from 'date-fns/format';
 import { LoadingContext } from '../App';
 import { getPublicUrl } from '../common/s3Helper';
 import AliceCarousel from 'react-alice-carousel';
+import { onUpdateWorkRequest } from '../graphql/subscriptions';
 import "react-alice-carousel/lib/alice-carousel.css";
 import './Approval.css';
+import NotificationDialog from '../components/common/NotificationDialog';
+
+const defaultDialogState = {
+    open: false,
+    handleClose: () => {},
+    title: '',
+    children: undefined,
+    icon: undefined,
+    subtitle: '',
+    primaryAction: '',
+    secondaryAction: '',
+    handlePrimaryAction: () => {},
+    handleSecondaryAction: undefined
+}
 
 const Approval = () => {
 
@@ -31,7 +49,36 @@ const Approval = () => {
     const [items, setItems] = useState([]);
     const [currentIndex, setCurrentIndex] = useState(1);
 
+    const [dialogState, setDialogState] = useState(defaultDialogState);
+
     const { requestTrackingNo } = useParams();
+
+    const replaceWorkRequestRef = useRef(null);
+    const replaceWorkRequest = (updatedWorkRequest) => {
+        setWorkRequest(updatedWorkRequest);
+        const work = updatedWorkRequest.work;
+        setWork(work);
+        setVendor(work.vendor);
+    }
+    replaceWorkRequestRef.current = replaceWorkRequest;
+
+    const handleCloseDialog = () => {
+        setDialogState({...dialogState, open: false});
+    }
+
+    const handleDeclinationConfirmation = () => {
+        setDialogState({
+            open: true,
+            handleClose: handleCloseDialog,
+            title: 'Decline Approval',
+            children: <>Please confirm that you wish to decline this work approval.</>,
+            icon: <DoNotDisturbIcon sx={{ color: '#77777A', fontSize: '64px' }} />,
+            primaryAction: 'Reconsider',
+            handlePrimaryAction: handleCloseDialog,
+            secondaryAction: 'Yes, Decline',
+            handleSecondaryAction: handleDeclination
+        });
+    }
 
     const handleDeclination = async () => {
         setLoadingState(true)
@@ -42,8 +89,26 @@ const Approval = () => {
                     status: 'REJECTED'
                 }
             }));
+            setDialogState({
+                open: true,
+                handleClose: handleCloseDialog,
+                title: 'Successfully Declined',
+                children: <>Hi {work.customer_name}, you have successfully decline the work approval. Thanks for taking the time to consider it.</>,
+                icon: <DoNotDisturbIcon sx={{ color: '#92001C', fontSize: '64px' }} />,
+                primaryAction: 'Back to Approval Page',
+                handlePrimaryAction: handleCloseDialog
+            });
         } catch (e) {
             console.log('Error in declining work approval');
+            setDialogState({
+                open: true,
+                handleClose: handleCloseDialog,
+                title: 'Unsuccessfully Declined',
+                children: <>Please try again later. We are sorry for the inconvenience.</>,
+                icon: <ErrorOutlineIcon sx={{ color: 'red', fontSize: '64px' }}></ErrorOutlineIcon>,
+                primaryAction: 'Back to Approval Page',
+                handlePrimaryAction: handleCloseDialog,
+            })
         }
         setLoadingState(false)
     }
@@ -57,8 +122,26 @@ const Approval = () => {
                     status: 'APPROVED'
                 }
             }));
+            setDialogState({
+                open: true,
+                handleClose: handleCloseDialog,
+                title: 'Successfully Approved',
+                children: <>Your mechanic will be instantly notified that this maintenace has been approved.</>,
+                icon: <CheckCircleIcon sx={{ color: '#008000', fontSize: '64px' }} />,
+                primaryAction: 'Back to Approval Page',
+                handlePrimaryAction: handleCloseDialog
+            });
         } catch (e) {
             console.log('Error in accepting work approval');
+            setDialogState({
+                open: true,
+                handleClose: handleCloseDialog,
+                title: 'Approved Unsuccessfully',
+                children: <>Please try again later. We are sorry for the inconvenience.</>,
+                icon: <ErrorOutlineIcon sx={{ color: 'red', fontSize: '64px' }}></ErrorOutlineIcon>,
+                primaryAction: 'Back to Approval Page',
+                handlePrimaryAction: handleCloseDialog,
+            });
         }
         setLoadingState(false)
     }
@@ -77,7 +160,7 @@ const Approval = () => {
                 if (workRequests.length > 0) {
                     const workRequest = workRequests[0];
                     setWorkRequest(workRequest);
-                    const items = workRequest.attachments.split(',').map(a =>(<img width="100%" src={getPublicUrl(a)}  alt='attachment' />));
+                    const items = workRequest?.attachments?.split(',').map(a =>(<img width="100%" src={getPublicUrl(a)}  alt='attachment' />));
                     setItems(items);
                     const work = workRequest.work;
                     setWork(work);
@@ -88,6 +171,15 @@ const Approval = () => {
                 }
             } catch (e) {
                 console.log('Error in fetching the work approval', e);
+                setDialogState({
+                    open: true,
+                    handleClose: handleCloseDialog,
+                    title: 'Something goes wrong',
+                    children: <>Please try again later. We are sorry for the inconvenience.</>,
+                    icon: <ErrorOutlineIcon sx={{ color: 'red' }}></ErrorOutlineIcon>,
+                    primaryAction: 'Back to Approval Page',
+                    handlePrimaryAction: handleCloseDialog,
+                })
             }
             setLoadingState(false);
         };
@@ -95,7 +187,24 @@ const Approval = () => {
         debouncedFetch();
     }, [requestTrackingNo]);
 
+    useEffect(() => {
+        const onUpdateWorkRequestSubscription = API.graphql(
+            graphqlOperation(onUpdateWorkRequest)
+        ).subscribe({
+            next: ({ provider, value }) => {
+                const updatedWorkRequest = value.data.onUpdateWorkRequest;
+                replaceWorkRequestRef.current(updatedWorkRequest)
+            },
+            error: error => console.log('onUpdateWorkRequest() subscription error', error)
+        });
+
+        return () => {
+            onUpdateWorkRequestSubscription.unsubscribe();
+        }
+    }, [])
+
     return (
+        <>
         <Container className='approval-wrapper'>
             <div className='approval-header'>
                 {vendor && (
@@ -120,18 +229,32 @@ const Approval = () => {
             </div>
             {workRequest && (<div className='approval-status'>
                 <span className='approval-status-bar'></span>
-                {workRequest?.status?.toLowerCase()} approval
+                {workRequest?.status === 'PENDING' && 'Pending approval'}
+                {workRequest?.status === 'APPROVED' && 'Approved'}
+                {workRequest?.status === 'REJECTED' && 'Declined'}
+                {!['PENDING', 'APPROVED', 'REJECTED'].includes(workRequest?.status) && `${workRequest?.status.toLowerCase()} approval`}
                 <span className='approval-status-bar'></span>
             </div>
             )}
             {workRequest && (<div className='approval-main'>
                 <div className='approval-main-top'>
                     <div className='approval-main-header'>
-                        <div className='approval-main-vendor'>
-                            {vendor?.name}
+                        <div className='approval-main-header-left'>
+                            <div className='approval-main-vendor'>
+                                {vendor?.name}
+                            </div>
+                            <div className='approval-main-time'>
+                                {workRequest?.date_time_created ? format(parseISO(workRequest?.date_time_created), 'dd MMM yyyy') : ''} at {workRequest?.date_time_created ? format(parseISO(workRequest?.date_time_created), 'h:maaa'): ''}
+                            </div>
                         </div>
-                        <div className='approval-main-time'>
-                            {workRequest?.date_time_created ? format(parseISO(workRequest?.date_time_created), 'dd MMM yyyy') : ''} at {workRequest?.date_time_created ? format(parseISO(workRequest?.date_time_created), 'h:maaa'): ''}
+                        <div className='approval-main-header-right'>
+                            {['APPROVED', 'REJECTED'].includes(workRequest.status) && (<div className='approval-status-icon'>
+                                {workRequest.status === 'APPROVED' && <CheckCircleIcon sx={{ color: '#008000', fontSize: '50px' }}/>}
+                                {workRequest.status === 'REJECTED' && <DoNotDisturbIcon sx={{ color: '#92001C', fontSize: '50px' }}/>}
+                            </div>)}
+                            {['APPROVED', 'REJECTED'].includes(workRequest.status) && (<div className='approval-main-status' style={{ color: workRequest.status === 'REJECTED' ? '#46464A' : '#008000' }}>
+                                {workRequest.status === 'REJECTED' ? 'DECLINED' : workRequest.status}
+                            </div>)}
                         </div>
                     </div>
                     <div className='approval-main-work'>
@@ -196,7 +319,7 @@ const Approval = () => {
                     </Grid>
                 </Grid>
                 {workRequest?.status === 'PENDING' && (<div className='approval-action'>
-                    <Button variant='contained' className='approval-action-decline' onClick={() => handleDeclination()}>
+                    <Button variant='contained' className='approval-action-decline' onClick={() => handleDeclinationConfirmation()}>
                         Decline
                     </Button>
                     <Button variant='contained' className='approval-action-approve' onClick={() => handleApproval()}>
@@ -207,6 +330,18 @@ const Approval = () => {
             </div>
             )}
         </Container>
+        <NotificationDialog
+            open={dialogState.open}
+            handleClose={dialogState.handleClose}
+            title={dialogState.title}
+            children={dialogState.children}
+            icon={dialogState.icon}
+            primaryAction={dialogState.primaryAction}
+            handlePrimaryAction={dialogState.handlePrimaryAction}
+            secondaryAction={dialogState.secondaryAction}
+            handleSecondaryAction={dialogState.handleSecondaryAction}
+        />
+        </>
     )
 }
 
