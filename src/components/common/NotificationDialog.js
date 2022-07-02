@@ -31,13 +31,6 @@ const style = {
     '& .MuiDialogActions-root': {
         justifyContent: 'space-evenly',
         paddingTop: '24px'
-    },
-
-    '&. dialog-subtitle': {
-        padding: '12px 0',
-        fontWeight: 400,
-        fontSize: '16px',
-        lineHeight: '30px'
     }
 };
 
@@ -100,7 +93,14 @@ const NotificationDialog = (props) => {
                             {secondaryAction}
                     </Button>)}
                 </DialogActions>
-                {subtitle && (<div className='dialog-subtitle'>{subtitle}</div>)}
+                {subtitle && (<Box sx={{
+                    padding: '12px 0',
+                    fontWeight: 400,
+                    fontSize: '16px',
+                    lineHeight: '30px'
+                }}>
+                    {subtitle}
+                </Box>)}
             </Box>
         </Dialog>
     )

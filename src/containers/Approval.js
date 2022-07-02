@@ -73,6 +73,7 @@ const Approval = () => {
             title: 'Decline Approval',
             children: <>Please confirm that you wish to decline this work approval.</>,
             icon: <DoNotDisturbIcon sx={{ color: '#77777A', fontSize: '64px' }} />,
+            subtitle: `Please contact us on ${vendor.phone} if you have any questions.`,
             primaryAction: 'Reconsider',
             handlePrimaryAction: handleCloseDialog,
             secondaryAction: 'Yes, Decline',
@@ -285,7 +286,6 @@ const Approval = () => {
                             setCurrentIndex(newIndex);
                         }}
                     />
-                   
                 </div>
                 {workRequest?.description && (<Accordion className='approval-info'>
                     <AccordionSummary
@@ -334,6 +334,7 @@ const Approval = () => {
             open={dialogState.open}
             handleClose={dialogState.handleClose}
             title={dialogState.title}
+            subtitle={dialogState.subtitle}
             children={dialogState.children}
             icon={dialogState.icon}
             primaryAction={dialogState.primaryAction}
