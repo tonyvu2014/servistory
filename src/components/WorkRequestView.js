@@ -126,7 +126,7 @@ const WorkRequestView = (props) => {
                 <Box>
                     <Typography variant="subtitle1">Work Description</Typography>
                     <Box component="div">
-                        <Typography variant="body1">{request.description}</Typography>
+                        <Typography variant="body1" sx={{ whiteSpace: 'pre-line' }}>{request.description}</Typography>
                     </Box>
                 </Box>
             </Stack>
@@ -135,7 +135,7 @@ const WorkRequestView = (props) => {
                     <Box>
                         <Typography variant="subtitle1">Reason for Recommendation</Typography>
                         <Box component="div">
-                            <Typography variant="body1">{request.reason}</Typography>
+                            <Typography variant="body1" sx={{ whiteSpace: 'pre-line' }}>{request.reason}</Typography>
                         </Box>
                     </Box>
                 </Stack>

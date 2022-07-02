@@ -78,7 +78,7 @@ const WorkView = (props) => {
                 <Box>
                     <Typography variant="subtitle1">Details/Notes</Typography>
                     <Box component="div">
-                        <Typography variant="body1">{work?.note}</Typography>
+                        <Typography variant="body1" sx={{ whiteSpace: 'pre-line' }}>{work?.note}</Typography>
                     </Box>
                 </Box>
             </Stack>

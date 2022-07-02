@@ -21,10 +21,10 @@ import format from 'date-fns/format';
 import { LoadingContext } from '../App';
 import { getPublicUrl } from '../common/s3Helper';
 import AliceCarousel from 'react-alice-carousel';
+import NotificationDialog from '../components/common/NotificationDialog';
 import { onUpdateWorkRequest } from '../graphql/subscriptions';
 import "react-alice-carousel/lib/alice-carousel.css";
 import './Approval.css';
-import NotificationDialog from '../components/common/NotificationDialog';
 
 const defaultDialogState = {
     open: false,
