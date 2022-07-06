@@ -214,8 +214,8 @@ const Approval = () => {
                         {vendor?.name}
                     </p>
                     <div className="approval-vendor-details">
-                        <div>
-                            Phone: {vendor?.phone}
+                        <div className="approval-vendor-phone">
+                            Phone: <a href={`tel: ${vendor?.phone}`}>{vendor?.phone}</a>
                         </div>
                         <div>
                             Address: {vendor?.address}

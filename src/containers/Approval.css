@@ -40,6 +40,10 @@
     line-height: 21px;
 }
 
+.approval-vendor-phone > a {
+    color: #fff !important;
+}
+
 .approval-customer {
     font-weight: 400;
     font-size: 16px;
