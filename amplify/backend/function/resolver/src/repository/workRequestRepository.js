@@ -49,7 +49,6 @@ exports.workRequestRepository = {
             .filter(field => request[field] != null)
             .map(field => `${field} = :${field}`)
             .join(', ');
-        console.log('WorkRequest updateSetStatement', updateSetStatement);
 
         const result = await dataApiClient.query(`
             UPDATE WorkRequest SET ${updateSetStatement}, date_time_updated = :date_time_updated

@@ -131,7 +131,7 @@ const WorkRequestForm = (props) => {
                     open: true,
                     severity: 'error',
                     title: `SMS notification error`,
-                    message: 'There is an issue with sending SMS notification to customer'
+                    message: 'There is an issue with sending SMS notifications to customer'
                 });
             } else {
                 setAlertState({

@@ -2,7 +2,8 @@ const workRequestRepo = require('../repository/workRequestRepository').workReque
 const { ValidationError, NotificationError } = require('../exception/error');
 const { v4: uuidv4 } = require('uuid');
 const formatInTimeZone = require('date-fns-tz/formatInTimeZone');
-const formatISO = require('date-fns/formatISO')
+const formatISO = require('date-fns/formatISO');
+const addBusinessDays = require('date-fns/addBusinessDays');
 const { smsService } = require('./smsService');
 const { workService } = require('./workService');
 const { vendorService } = require('./vendorService');
@@ -70,11 +71,22 @@ exports.workRequestService = {
         if (id == null) {
             throw new ValidationError('Id is required');
         }
+        
+        let data = input;
+        if (status && status === 'ACCEPTED') {
+            const workRequest = await this.getWorkRequest(id);
+            const hoursPassed = this.getHoursPassed(workRequest.date_time_created);
 
-        const updatedWorkRequest = await workRequestRepo.update(input);
+            if (hoursPassed > 2) {
+                const newCompletionDate = this.getNewExpectedCompletionDate(workRequest.date_time_completed, hoursPassed);
+                data = {...input, date_time_completed: newCompletionDate.toISOString()}
+            }
+        }
+
+        const updatedWorkRequest = await workRequestRepo.update(data);
         
         // send sms notifications to customer
-        if (status && ['APPROVED', 'REJECTED'].includes(status)) {
+        if (status && ['APPROVED', 'REJECTED', 'PENDING'].includes(status)) {
             // update pick-up date to latest work approval's completion date
             if (status === 'APPROVED') {
                 await workService.updateWork({ id: updatedWorkRequest.work_id, date_time_pickup: formatISO(updatedWorkRequest.date_time_completed) })
@@ -88,6 +100,51 @@ exports.workRequestService = {
         }
 
         return updatedWorkRequest;
+    },
+
+    /**
+     * Compute the hours which have passed since a moment
+     * 
+     * @param {Date} date 
+     * @returns {Int} - number of hours which has passed since {date}
+     */
+    getHoursPassed: function(date) {
+        const dt = new Date(formatISO(date));
+        console.log('date object', dt);
+        const now = new Date();
+
+        const timePassed = now - dt;
+        console.log('timePassed', timePassed);
+
+        const hoursPassed = timePassed / (1000*60);
+
+        return hoursPassed;
+    },
+
+    /**
+     * Compute the new expected completion date based on number of hours 
+     * past the current moment. 
+     * - Less than 2 hours: no change
+     * - More than 2 hours: add 1 day + number of days over 2 hours
+     * 
+     * @param {Date} expectedCompletionDate 
+     * @param {Int} hoursPassed 
+     * @returns {Date} newExpectedCompletionDate - newly expected completion date
+     */
+    getNewExpectedCompletionDate: function(expectedCompletionDate, hoursPassed) {
+        if (hoursPassed <= 2) {
+            return expectedCompletionDate;
+        }
+
+        const currentExpectedCompletionDate = new Date(formatISO(expectedCompletionDate));
+
+        const daysOver = Math.floor(hoursPassed - 2, 24);
+        console.log('days over', daysOver);
+
+        const newExpectedCompletionDate = addBusinessDays(currentExpectedCompletionDate, 1+daysOver);
+        console.log('newExpectedCompletionDate', newExpectedCompletionDate);
+
+        return newExpectedCompletionDate;
     },
 
     getWorkRequest: async function(id) {
