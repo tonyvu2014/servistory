@@ -73,7 +73,7 @@ const Approval = () => {
             title: 'Decline Approval',
             children: <>Please confirm that you wish to decline this work approval.</>,
             icon: <DoNotDisturbIcon sx={{ color: '#77777A', fontSize: '64px' }} />,
-            subtitle: `Please contact us on ${vendor.phone} if you have any questions.`,
+            subtitle: <>Please contact us on <a href={`tel:${vendor.phone}`}>{vendor.phone}</a> if you have any questions.</>,
             primaryAction: 'Reconsider',
             handlePrimaryAction: handleCloseDialog,
             secondaryAction: 'Yes, Decline',

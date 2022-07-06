@@ -73,7 +73,7 @@ exports.workService = {
                 `We'll keep you updated, and you can also contact us on ${vendor.phone}.`;
                 break;
             case 'WORK_COMMENCED':
-                message = `Hi ${work.customer_name},  good news: we’re beginning work on your vehicle. ` + 
+                message = `Hi ${work.customer_name}, good news: we’re beginning work on your vehicle. ` + 
                 'We’ll let you know in advance if we identify any new items for maintenance. ' +
                 'Otherwise, we’ll just notify you once your vehicle is ready for collection.'
                 break;
@@ -99,7 +99,7 @@ exports.workService = {
         const vendor = await vendorService.getVendor(vendorId);
 
         const message = `We’ve updated your vehicle ready date to ${formatInTimeZone(work.date_time_pickup, vendor.timezone ,'dd/MM/yyyy')}. ` +
-        `If you have any questions please let us know on ${vendor.phone}. Thanks ${work.customer_name}`
+        `If you have any questions please let us know on ${vendor.phone}. Thanks ${work.customer_name}.`
 
         if (message) {
             await smsService.sendMessage(

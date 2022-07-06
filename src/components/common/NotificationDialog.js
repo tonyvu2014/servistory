@@ -110,7 +110,7 @@ NotificationDialog.propTypes = {
     title: PropTypes.string.isRequired,
     icon: PropTypes.node,
     children: PropTypes.node,
-    subtitle: PropTypes.string,
+    subtitle: PropTypes.node,
     open: PropTypes.bool,
     handleClose: PropTypes.func.isRequired,
     primaryAction: PropTypes.string.isRequired,

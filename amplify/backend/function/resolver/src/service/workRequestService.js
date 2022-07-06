@@ -41,7 +41,7 @@ exports.workRequestService = {
         switch (workRequest.status) {
             case 'PENDING': 
                 message = `Hi ${work.customer_name}, we’ve identified a recommended maintenance "${workRequest.title}". ` +
-                `You can view and approve it here: ${BASE_URL}/approval/${workRequest.tracking_no}.`;
+                `You can view and approve it here: ${BASE_URL}/approval/${workRequest.tracking_no}`;
                 break;
             case 'APPROVED':
                 message = `${work.customer_name}, thanks for viewing and approving "${workRequest.title}". ` +
@@ -50,7 +50,7 @@ exports.workRequestService = {
                 break;
             case 'REJECTED':
                 message = `Hi ${work.customer_name}, confirming that you have declined the approval "${workRequest.title}". ` +
-                `If you want to discuss it further, please don’t hesitate to give us a buzz on ${vendor.phone}.`;
+                `If you want to discuss it further, please don’t hesitate to give us a buzz on ${vendor.phone}`;
                 break;
             default:         
         }

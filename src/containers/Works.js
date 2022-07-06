@@ -47,7 +47,7 @@ import format from 'date-fns/format';
 import parseISO from 'date-fns/parseISO';
 import { listWorks } from '../graphql/queries';
 import { updateWork } from '../graphql/mutations';
-import { DATE_DISPLAY_FORMAT, WORKS_PER_PAGE } from '../common/constant';
+import { DATE_DISPLAY_FORMAT, WORKS_PER_PAGE, STATUS_TO_TEXT_MAPPER } from '../common/constant';
 import * as subscriptions from '../graphql/subscriptions';
 import debounce from 'lodash/debounce';
 import { LoadingContext } from '../App';
@@ -347,7 +347,7 @@ const Works = () => {
             setAlertState({
                 open: true,
                 severity: 'success',
-                title: `Card status updated successfully`,
+                title: `Card has been move to ${STATUS_TO_TEXT_MAPPER[status]} successfully`,
                 message: 'Cards are sorted by pick-up date'
             })
         } catch (e) {
