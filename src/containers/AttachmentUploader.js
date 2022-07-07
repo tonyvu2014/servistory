@@ -134,8 +134,10 @@ const AttachmentUploader = () => {
         }
         setLoadingState(false);
 
+        setSelectedWorkId(undefined);
+        setSelectedFiles([]);
         setAlertState({
-            show: false,
+            show: true,
             status: 'success',
             message: `Draft work approval is created successfully with tracking no: ${tracking_no}`
         });

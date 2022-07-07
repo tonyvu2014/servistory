@@ -12,7 +12,6 @@ import parseISO from 'date-fns/parseISO';
 import PhoneIcon from '@mui/icons-material/Phone';
 import CancelIcon from '@mui/icons-material/Cancel';
 import EditIcon from '@mui/icons-material/Edit';
-import IconButton from '@mui/material/IconButton';
 import PresentationModal from './common/PresentationModal';
 import WorkRequestForm from './WorkRequestForm';
 import { getPublicUrl } from '../common/s3Helper';
@@ -102,18 +101,17 @@ const WorkRequestView = (props) => {
                         <Grid item xs={12}>
                             &nbsp;
                         </Grid>
-                        <Grid item xs={2} sx={{ textAlign: 'left' }}>
-                            <IconButton onClick={() => setOpenWorkRequestModal(true)}>
-                                <EditIcon color='warning'/>
-                            </IconButton>
-                        </Grid>
-                        <Grid item xs={10} sx={{ textAlign: 'right' }}>
-                            {request.status !== 'APPROVED' && (<Button className='approvalButton' onClick={() => updateWorkRequestStatus('APPROVED')}>
+                        <Grid item xs={12} sx={{ textAlign: 'right' }}>
+                            {!['APPROVED', 'DRAFT'].includes(request.status) && (<Button className='approvalButton' onClick={() => updateWorkRequestStatus('APPROVED')}>
                                 <PhoneIcon />&nbsp;Mark as Approved
                             </Button>
                             )}
-                            {request.status !== 'REJECTED' && (<Button className='cancelButton' onClick={() => updateWorkRequestStatus('REJECTED')}>
+                            {!['REJECTED', 'DRAFT'].includes(request.status) && (<Button className='cancelButton' onClick={() => updateWorkRequestStatus('REJECTED')}>
                                 <CancelIcon />&nbsp; Cancel Request
+                            </Button>
+                            )}
+                            {request.status === 'DRAFT' && (<Button className='updateButton' onClick={() => setOpenWorkRequestModal(true)}>
+                                <EditIcon />&nbsp;Update Request
                             </Button>
                             )}
                         </Grid>

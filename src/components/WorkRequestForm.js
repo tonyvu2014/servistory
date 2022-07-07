@@ -102,6 +102,9 @@ const WorkRequestForm = (props) => {
                 if (attachments !== request.attachments) {
                     input = {...input, attachments}
                 }
+                if (request?.status === 'DRAFT') {
+                    input = {...input, status: 'PENDING'}
+                }
                 await API.graphql({ query: mutations.updateWorkRequest, variables: { input } });
             } else {
                 action = 'added'

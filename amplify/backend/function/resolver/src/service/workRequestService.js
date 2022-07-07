@@ -135,12 +135,8 @@ exports.workRequestService = {
         }
 
         const currentExpectedCompletionDate = new Date(formatISO(expectedCompletionDate));
-
         const daysOver = Math.floor((hoursPassed - 2) / 24);
-        console.log('days over', daysOver);
-
         const newExpectedCompletionDate = addBusinessDays(currentExpectedCompletionDate, 1+daysOver);
-        console.log('newExpectedCompletionDate', newExpectedCompletionDate);
 
         return newExpectedCompletionDate;
     },

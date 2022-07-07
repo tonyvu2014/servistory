@@ -23,6 +23,7 @@ import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import WatchLaterIcon from '@mui/icons-material/WatchLater';
+import DraftsOutlineIcon from '@mui/icons-material/DraftsOutlined';
 import CancelIcon from '@mui/icons-material/Cancel';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import PresentationModal from '../components/common/PresentationModal';
@@ -583,11 +584,15 @@ const Works = () => {
                                             className='approvalStatusBox'>
                                            <Box className='approvalStatusItem'>         
                                             {row.requests.items.filter(r => r.status==='APPROVED').length} 
-                                            <CheckCircleIcon color='info' />
+                                            <CheckCircleIcon color='success' />
                                            </Box>
                                            <Box className='approvalStatusItem'>         
                                             {row.requests.items.filter(r => r.status==='PENDING').length}
                                             <WatchLaterIcon color='warning' />
+                                           </Box>
+                                           <Box className='approvalStatusItem'>         
+                                            {row.requests.items.filter(r => r.status==='DRAFT').length}
+                                            <DraftsOutlineIcon color='info' />
                                            </Box>
                                            <Box className='approvalStatusItem'>
                                             {row.requests.items.filter(r => r.status==='REJECTED').length}
@@ -611,7 +616,7 @@ const Works = () => {
                                     <StyledTableCell className="bottom"/>
                                     {['IN_WORKSHOP', 'WORK_COMMENCED'].includes(workStatus) && 
                                         (<StyledTableCell className="bottom">
-                                            <Button variant="contained" sx={{ lineHeight: "16px", backgroundColor: '#142297' }} 
+                                            <Button variant="contained" sx={{ lineHeight: "16px", backgroundColor: '#142297', width: '100%' }} 
                                                 onClick={() => handleOpenWorkRequestModal(row)}>
                                                 <AddIcon color="#fff" sx={{ mr: 1 }} />
                                                 Approval

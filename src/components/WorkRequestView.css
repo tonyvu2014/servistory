@@ -4,6 +4,7 @@
     border-radius: 8px;
     height: 130px;
     width: 100%;
+    max-width: 450px;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -37,6 +38,12 @@
 
 .cancelButton {
     background-color: #932825 !important;
+    color: #fff !important; 
+    margin: 0 2px !important;
+}
+
+.updateButton {
+    background-color: #2940D3 !important;
     color: #fff !important; 
     margin: 0 2px !important;
 }
