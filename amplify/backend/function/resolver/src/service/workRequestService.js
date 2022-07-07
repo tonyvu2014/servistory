@@ -110,13 +110,11 @@ exports.workRequestService = {
      */
     getHoursPassed: function(date) {
         const dt = new Date(formatISO(date));
-        console.log('date object', dt);
         const now = new Date();
 
         const timePassed = now - dt;
-        console.log('timePassed', timePassed);
 
-        const hoursPassed = timePassed / (1000*60);
+        const hoursPassed = timePassed / (1000*60*60);
 
         return hoursPassed;
     },
@@ -138,7 +136,7 @@ exports.workRequestService = {
 
         const currentExpectedCompletionDate = new Date(formatISO(expectedCompletionDate));
 
-        const daysOver = Math.floor(hoursPassed - 2, 24);
+        const daysOver = Math.floor((hoursPassed - 2) / 24);
         console.log('days over', daysOver);
 
         const newExpectedCompletionDate = addBusinessDays(currentExpectedCompletionDate, 1+daysOver);
