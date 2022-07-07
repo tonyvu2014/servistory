@@ -41,7 +41,7 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import Radio from '@mui/material/Radio';
 import Pagination from '@mui/material/Pagination';
-import { API, graphqlOperation } from 'aws-amplify';
+import { API, graphqlOperation, Auth } from 'aws-amplify';
 import Paper from '@mui/material/Paper';
 import format from 'date-fns/format';
 import parseISO from 'date-fns/parseISO';
@@ -80,6 +80,7 @@ const Works = () => {
     const [page, setPage] = useState(1);
     const [requestSubtitle, setRequestSubtitle] = useState(undefined);
     const [selectedRequestIndex, setSelectedRequestIndex] = useState(0);
+    const [vendorId, setVendorId] = useState(undefined);
 
     const handleCloseAlert = () => {
         setAlertState(defaultAlertState);
@@ -153,6 +154,13 @@ const Works = () => {
     replaceWorkRequestRef.current = replaceWorkRequest;
 
     useEffect(() => {
+        async function getVendorId() {
+            const { attributes } = await Auth.currentAuthenticatedUser();
+            const vendorId = attributes['custom:org_id'];
+            setVendorId(vendorId);
+        }
+        getVendorId();
+
         const onCreateWorkSubscription = API.graphql(
             graphqlOperation(subscriptions.onCreateWork)
         ).subscribe({
@@ -209,15 +217,26 @@ const Works = () => {
         async function fetchData() {
             try {
                 setLoadingState(true);
-                let filterCondition = { status: { eq: workStatus } }
+                let filterCondition = { vendor_id: { eq: vendorId }, 
+                    and : {
+                        status: { eq: workStatus }
+                    } 
+                }
                 if (searchQuery) {
-                    filterCondition = { status: { eq: workStatus }, and: {
-                        customer_name: { contains: searchQuery}, or: {
-                            car_model: { contains: searchQuery }, or: {
-                                plate_no: { contains: searchQuery }
-                            }
+                    filterCondition = { vendor_id: { eq: vendorId },
+                        and: {
+                            status: { eq: workStatus }, 
+                            and: {
+                                customer_name: { contains: searchQuery}, 
+                                or: {
+                                    car_model: { contains: searchQuery }, 
+                                    or: {
+                                        plate_no: { contains: searchQuery }
+                                    }
+                                }
+                            } 
                         }
-                    } }
+                    }
                 }
                 const result = await API.graphql(graphqlOperation(listWorks, {
                     filter: filterCondition,

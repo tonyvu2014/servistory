@@ -11,6 +11,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
 import Works from './containers/Works';
 import Approval from './containers/Approval';
+import AttachmentUploader from './containers/AttachmentUploader';
 import Header from './components/common/Header';
 import Login from './components/authenticator/Login';
 import RequireAuth from './components/authenticator/RequireAuth';
@@ -54,6 +55,7 @@ function App() {
                   <Route path="/" element={<Header />}>
                     <Route index element={<RequireAuth><Works /></RequireAuth>}></Route>
                     <Route path="/approval/:requestTrackingNo" element={<Approval />}></Route>
+                    <Route path="/upload" element={<RequireAuth><AttachmentUploader /></RequireAuth>}></Route>
                     <Route path="/login" element={<Login />}></Route>
                   </Route>
                 </Routes>

@@ -9,7 +9,7 @@ const { nanoid } = require('nanoid')
 exports.workRequestRepository = {
     create: async function(request) {
         const { id, work_id, title, description, reason, attachments,
-                price, tracking_no, date_time_completed } = request;
+                price, tracking_no, date_time_completed, status } = request;
 
         const now = format(new Date(), constant.DEFAULT_DB_DATE_FORMAT);
         const final_tracking_no = tracking_no ?? nanoid(10);
@@ -22,9 +22,9 @@ exports.workRequestRepository = {
                 :price, :date_time_completed, :tracking_no, :attachments, :status, 
                 :date_time_created, :date_time_updated)
         `, { id, work_id, title, description: description ?? null, reason: reason ?? null,
-            price: price ?? null, date_time_completed: date_time_completed ? format(parseISO(date_time_completed), constant.DEFAULT_DB_DATE_FORMAT) : null, 
+            price: price ?? 0, date_time_completed: date_time_completed ? format(parseISO(date_time_completed), constant.DEFAULT_DB_DATE_FORMAT) : now, 
             tracking_no: final_tracking_no, attachments: attachments ?? null, 
-            status: 'PENDING', date_time_created: now, date_time_updated: now }
+            status:  status ?? 'PENDING', date_time_created: now, date_time_updated: now }
         );
 
         if (result?.numberOfRecordsUpdated < 1) {

@@ -73,7 +73,7 @@ exports.workRequestService = {
         }
         
         let data = input;
-        if (status && status === 'ACCEPTED') {
+        if (status && status === 'APPROVED') {
             const workRequest = await this.getWorkRequest(id);
             const hoursPassed = this.getHoursPassed(workRequest.date_time_created);
 
