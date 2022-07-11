@@ -267,26 +267,28 @@ const Approval = () => {
                         </Typography>
                     </div>
                 </div>
-                <div className='approval-main-images'>
-                    <div className='approval-images-counter'>
-                        <span className='approval-images-counter-box'>{currentIndex} of {items.length}</span>
+                {items & items.length > 0 (
+                    <div className='approval-main-images'>
+                        <div className='approval-images-counter'>
+                            <span className='approval-images-counter-box'>{currentIndex} of {items.length}</span>
+                        </div>
+                        <AliceCarousel
+                            autoHeight={true}
+                            disableButtonsControls
+                            controlsStrategy="default,alternative"
+                            infinite={true}
+                            fadeOutAnimation={true}
+                            items={items}
+                            autoPlay={true}
+                            autoPlayInterval={5000}
+                            disableAutoPlayOnAction={true}
+                            onSlideChange={(e) => {
+                                const newIndex = currentIndex < items.length ? currentIndex + 1 : 1
+                                setCurrentIndex(newIndex);
+                            }}
+                        />
                     </div>
-                    <AliceCarousel
-                        autoHeight={true}
-                        disableButtonsControls
-                        controlsStrategy="default,alternative"
-                        infinite={true}
-                        fadeOutAnimation={true}
-                        items={items}
-                        autoPlay={true}
-                        autoPlayInterval={5000}
-                        disableAutoPlayOnAction={true}
-                        onSlideChange={(e) => {
-                            const newIndex = currentIndex < items.length ? currentIndex + 1 : 1
-                            setCurrentIndex(newIndex);
-                        }}
-                    />
-                </div>
+                )}    
                 {workRequest?.description && (<Accordion className='approval-info'>
                     <AccordionSummary
                         expandIcon={<ExpandMoreIcon sx={{ color: 'white'}} />}
