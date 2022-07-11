@@ -38,13 +38,14 @@ exports.workRequestRepository = {
 
         const now = format(new Date(), constant.DEFAULT_DB_DATE_FORMAT);
 
-        const { id, date_time_completed } = request;
+        const { id, date_time_completed, date_time_created } = request;
 
         const updateSetStatement = [
             'title', 'description', 
             'price', 'status', 
             'attachments', 'reason',
-            'date_time_completed'
+            'date_time_completed',
+            'date_time_created',
         ]
             .filter(field => request[field] != null)
             .map(field => `${field} = :${field}`)
@@ -57,6 +58,7 @@ exports.workRequestRepository = {
             id, 
             ...request, 
             ...(date_time_completed && {date_time_completed: format(parseISO(date_time_completed), constant.DEFAULT_DB_DATE_FORMAT)}),
+            ...(date_time_created && {date_time_created: format(parseISO(date_time_created), constant.DEFAULT_DB_DATE_FORMAT)}),
             date_time_updated: now 
         });
 

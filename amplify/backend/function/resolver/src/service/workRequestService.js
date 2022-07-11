@@ -22,8 +22,12 @@ exports.workRequestService = {
 
         const newWorkRequest = await workRequestRepo.create(request);
 
+        const workId = newWorkRequest.work_id;
+        const work = await workService.getWork(workId);
+        const vendor = await vendorService.getVendor(work.vendor_id);
+        
         try {
-            await this.notifyCustomer(newWorkRequest);
+            await this.notifyCustomer(newWorkRequest, work, vendor);
         } catch (err) {
             throw new NotificationError(`Notification error: ${err}`);
         }
@@ -31,12 +35,7 @@ exports.workRequestService = {
         return newWorkRequest;
     },
 
-    notifyCustomer: async function(workRequest) {
-        const workId = workRequest.work_id;
-
-        const work = await workService.getWork(workId);
-        const vendor = await vendorService.getVendor(work.vendor_id);
-
+    notifyCustomer: async function(workRequest, work, vendor) {
         let message;
         switch (workRequest.status) {
             case 'PENDING': 
@@ -62,7 +61,27 @@ exports.workRequestService = {
                 work.customer_name
             );
         }
+    },
 
+    notifyVendor: async function(workRequest, work, vendor) {
+        let message;
+        switch (workRequest.status) {
+            case 'APPROVED':
+                message = `${work.customer_name} has APPROVED "${workRequest.title}" for "${work.car_model}"`;
+                break;
+            case 'REJECTED':
+                message = `${work.customer_name} has DECLINED "${workRequest.title}" for "${work.car_model}"`;
+                break;
+            default:         
+        }
+
+        if (message) {
+            await smsService.sendMessage(
+                vendor.phone,
+                message,
+                vendor.name
+            );
+        }
     },
 
     updateWorkRequest: async function(input) {
@@ -79,23 +98,42 @@ exports.workRequestService = {
 
             if (hoursPassed > 2) {
                 const newCompletionDate = this.getNewExpectedCompletionDate(workRequest.date_time_completed, hoursPassed);
-                data = {...input, date_time_completed: newCompletionDate.toISOString()}
+                data = {...data, date_time_completed: newCompletionDate.toISOString()}
             }
+        }
+
+        // update date_time_created = datetime when status is updated to PENDING
+        if (status & status === 'PENDING') {
+            const now = new Date();
+            data = {...data, date_time_created: now.toISOString() }
         }
 
         const updatedWorkRequest = await workRequestRepo.update(data);
         
-        // send sms notifications to customer
         if (status && ['APPROVED', 'REJECTED', 'PENDING'].includes(status)) {
             // update pick-up date to latest work approval's completion date
             if (status === 'APPROVED') {
                 await workService.updateWork({ id: updatedWorkRequest.work_id, date_time_pickup: formatISO(updatedWorkRequest.date_time_completed) })
             }
+
+            const workId = updatedWorkRequest.work_id;
+            const work = await workService.getWork(workId);
+            const vendor = await vendorService.getVendor(work.vendor_id);
             
+            // send sms notifications to customer
             try {
-                await this.notifyCustomer(updatedWorkRequest);
+                await this.notifyCustomer(updatedWorkRequest, work, vendor);
             } catch (err) {
                 throw new NotificationError(`Notification error: ${err}`);
+            }
+
+            // send sms notifications to mechanics
+            if (['APPROVED', 'DECLINED'].includes(status)) {
+                try {
+                    await this.notifyVendor(updatedWorkRequest, work, vendor);
+                } catch (err) {
+                    throw new NotificationError(`Notification error: ${err}`)
+                }
             }
         }
 
