@@ -336,8 +336,8 @@ const WorkRequestForm = (props) => {
                 </Stack>
                 <Box sx={{ textAlign: 'right' }}>
                     <Button variant="contained" color="primary" type="submit">
-                        {request ? (<EditIcon color="#fff" sx={{ mr: 1 }} />) : (<SendIcon color="#fff" sx={{ mr: 1 }} />)}
-                        {request ? 'Update Request' : 'Send Request'}
+                        {request && request.status !== 'DRAFT' ? (<EditIcon color="#fff" sx={{ mr: 1 }} />) : (<SendIcon color="#fff" sx={{ mr: 1 }} />)}
+                        {request && request.status !== 'DRAFT' ? 'Update Request' : 'Send Request'}
                     </Button>
                 </Box>
             </Box>
