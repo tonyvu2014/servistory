@@ -228,7 +228,7 @@ const Works = () => {
                         and: {
                             status: { eq: workStatus }, 
                             and: {
-                                customer_name: { contains: searchQuery}, 
+                                customer_name: { contains: searchQuery }, 
                                 or: {
                                     car_model: { contains: searchQuery }, 
                                     or: {
@@ -260,15 +260,16 @@ const Works = () => {
             setLoadingState(false);
         };
         const debouncedFetch = debounce(fetchData, 1000);
-        debouncedFetch();
-    }, [workStatus, searchQuery, page])
+        if (vendorId && workStatus) {
+            debouncedFetch();
+        }
+    }, [workStatus, searchQuery, page, vendorId])
 
     const [openCustomerFormModal, setOpenCustomerFormModal] = useState(false);
     const [openCustomerViewModal, setOpenCustomerViewModal] = useState(false);
     const [openCustomerRemovalModal, setOpenCustomerRemovalModal] = useState(false);
     const [openWorkRequestModal, setOpenWorkRequestModal] = useState(false);
     const [openWorkRequestViewModal, setOpenWorkRequestViewModal] = useState(false);
-
 
     const handleOpenCustomerFormModal = (data) => {
         if (data) {

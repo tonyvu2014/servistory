@@ -5,6 +5,7 @@ import Box from "@mui/material/Box";
 import Stack from '@mui/material/Stack';
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
+import MuiPhoneNumber from "material-ui-phone-number";
 import AddIcon from '@mui/icons-material/AddCircle';
 import EditIcon from '@mui/icons-material/Edit';
 import * as mutations from "../graphql/mutations";
@@ -143,7 +144,7 @@ const WorkForm = (props) => {
                     <Controller
                         name = "customer_phone"
                         render = {({ field }) =>
-                            <TextField 
+                            <MuiPhoneNumber 
                                 {...field}
                                 id="customer_phone"
                                 name="customer_phone"
@@ -152,6 +153,8 @@ const WorkForm = (props) => {
                                 variant="outlined"
                                 fullWidth
                                 helperText={errors.customer_phone && errors.customer_phone.message}
+                                defaultCountry={"au"}
+                                onlyCountries={["au"]}
                             />
                         }
                         control={control}

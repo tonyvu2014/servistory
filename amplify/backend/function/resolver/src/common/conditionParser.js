@@ -39,7 +39,7 @@ function parseFilter(filter) {
             continue;
         } 
 
-        const { operator, value, type } = getConditionOperatorAndValue(condition);
+        const { operator, value } = getConditionOperatorAndValue(condition);
         if (operator == null || value == null) {
             continue;
         }
