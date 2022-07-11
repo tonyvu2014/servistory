@@ -147,7 +147,7 @@ const AttachmentUploader = () => {
     return (
         <Container sx={{ marginTop: 3 }}>
             <Typography variant="h3" sx={{ marginBottom: 2, textAlign: 'center' }}>Upload Images</Typography>
-            {alertState.show && (<Typography variant='body1' color={alertState.status} sx={{ marginBottom: 2, textAlign: 'center' }}>
+            {alertState.show && (<Typography variant='body1' color={alertState.status === 'success' ? 'primary' : 'error'} sx={{ marginBottom: 2, textAlign: 'center' }}>
                 {alertState.message}
             </Typography>
             )}
