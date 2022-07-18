@@ -153,6 +153,7 @@ const WorkForm = (props) => {
                                 variant="outlined"
                                 fullWidth
                                 helperText={errors.customer_phone && errors.customer_phone.message}
+                                countryCodeEditable={false}
                                 defaultCountry={"au"}
                                 onlyCountries={["au"]}
                             />
