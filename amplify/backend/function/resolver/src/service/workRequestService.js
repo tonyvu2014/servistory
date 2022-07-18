@@ -1,4 +1,5 @@
 const workRequestRepo = require('../repository/workRequestRepository').workRequestRepository;
+const workRepo = require('../repository/workRepository').workRepository;
 const { ValidationError, NotificationError } = require('../exception/error');
 const { v4: uuidv4 } = require('uuid');
 const formatInTimeZone = require('date-fns-tz/formatInTimeZone');
@@ -113,7 +114,7 @@ exports.workRequestService = {
         if (status && ['APPROVED', 'REJECTED', 'PENDING'].includes(status)) {
             // update pick-up date to latest work approval's completion date
             if (status === 'APPROVED') {
-                await workService.updateWork({ id: updatedWorkRequest.work_id, date_time_pickup: formatISO(updatedWorkRequest.date_time_completed) })
+                await workRepo.update({ id: updatedWorkRequest.work_id, date_time_pickup: formatISO(updatedWorkRequest.date_time_completed) })
             }
 
             const workId = updatedWorkRequest.work_id;
