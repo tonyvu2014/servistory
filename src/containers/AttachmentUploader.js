@@ -117,7 +117,7 @@ const AttachmentUploader = () => {
             selectedFiles.forEach(f => {
                 const fileName = `${tracking_no}/${f.name}`;
                 s3Client.uploadFile(f, fileName)
-                    .then(data => console.log('response', data))
+                    .then(data => console.log('File upload success'))
                     .catch(err => {
                         console.log('File upload error', err);
                         throw new Error('File Upload Error');
