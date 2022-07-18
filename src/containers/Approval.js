@@ -157,6 +157,7 @@ const Approval = () => {
                     limit: 1,
                     token: null
                 }));
+                console.log('workRequestsResult', workRequestsResult);
                 const workRequests = workRequestsResult.data.listWorkRequests.items;
                 if (workRequests.length > 0) {
                     const workRequest = workRequests[0];
@@ -267,7 +268,7 @@ const Approval = () => {
                         </Typography>
                     </div>
                 </div>
-                {items & items.length > 0 (
+                {items && items.length > 0 && (
                     <div className='approval-main-images'>
                         <div className='approval-images-counter'>
                             <span className='approval-images-counter-box'>{currentIndex} of {items.length}</span>
@@ -280,7 +281,7 @@ const Approval = () => {
                             fadeOutAnimation={true}
                             items={items}
                             autoPlay={true}
-                            autoPlayInterval={5000}
+                            autoPlayInterval={4000}
                             disableAutoPlayOnAction={true}
                             onSlideChange={(e) => {
                                 const newIndex = currentIndex < items.length ? currentIndex + 1 : 1
