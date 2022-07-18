@@ -157,7 +157,6 @@ const Approval = () => {
                     limit: 1,
                     token: null
                 }));
-                console.log('workRequestsResult', workRequestsResult);
                 const workRequests = workRequestsResult.data.listWorkRequests.items;
                 if (workRequests.length > 0) {
                     const workRequest = workRequests[0];

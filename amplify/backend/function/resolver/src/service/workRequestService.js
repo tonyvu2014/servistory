@@ -103,7 +103,7 @@ exports.workRequestService = {
         }
 
         // update date_time_created = datetime when status is updated to PENDING
-        if (status & status === 'PENDING') {
+        if (status && status === 'PENDING') {
             const now = new Date();
             data = {...data, date_time_created: now.toISOString() }
         }
