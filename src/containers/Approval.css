@@ -2,8 +2,9 @@
     font-family: 'Poppins';
     font-style: normal;
     color: #fff;
-    padding-top: 18px;
+    margin-top: 18px;
     background: #FFF;
+    overflow-x: hidden
 }
 
 @media screen and (max-width: 760px) {
