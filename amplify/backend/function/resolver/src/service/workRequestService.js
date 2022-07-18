@@ -128,7 +128,7 @@ exports.workRequestService = {
             }
 
             // send sms notifications to mechanics
-            if (['APPROVED', 'DECLINED'].includes(status)) {
+            if (['APPROVED', 'REJECTED'].includes(status)) {
                 try {
                     await this.notifyVendor(updatedWorkRequest, work, vendor);
                 } catch (err) {

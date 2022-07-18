@@ -29,7 +29,7 @@ const Header = () => {
         <>
             <AppBar position="fixed" open={true}>
                 <Toolbar className={route !== 'authenticated' ? 'align-center' : ''}>
-                    <Box component="img" src={logo} alt="Servistory" onClick={() => { navigate('/'); }} sx={{ cursor: 'pointer' }} />
+                    <Box component="img" src={logo} alt="Servistory" />
                     {route === 'authenticated' && (<Box component="span" sx={{ flexGrow: 1 }} />)}
                     {route === 'authenticated' && (<IconButton onClick={logOut}> 
                         <Typography variant="body1" color="secondary.dark" sx={{ pr:'2px', fontWeight: 'medium' }}> 
