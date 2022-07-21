@@ -215,16 +215,10 @@
               ],
               "Resource": {
                 "Fn::Sub": [
-                  "arn:aws:rds:${region}:${account}:cluster:${cluster}",
+                  "${dbCluster}",
                   {
-                    "region": {
-                      "Ref": "AWS::Region"
-                    },
-                    "account": {
-                      "Ref": "AWS::AccountId"
-                    },
-                    "cluster": {
-                      "Ref": "AuroraServerlessClusterName"
+                    "dbCluster": {
+                      "Ref": "dbClusterArn"
                     }
                   }
                 ]
@@ -256,16 +250,10 @@
               ],
               "Resource": {
                 "Fn::Sub": [
-                  "arn:aws:secretsmanager:${region}:${account}:secret:rds-db-credentials/${secret}",
+                  "${dbSecret}",
                   {
-                    "region": {
-                      "Ref": "AWS::Region"
-                    },
-                    "account": {
-                      "Ref": "AWS::AccountId"
-                    },
-                    "secret": {
-                      "Ref": "RDSCredentialsSecretName"
+                    "dbSecret": {
+                      "Ref": "dbSecretArn"
                     }
                   }
                 ]
