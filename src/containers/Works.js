@@ -467,6 +467,11 @@ const Works = () => {
                 indicatorColor="secondary"
                 aria-label="Vehicle Status"
                 centered
+                sx={{
+                    '& .MuiTabs-flexContainer': {
+                      flexWrap: 'wrap',
+                    },
+                }}
             >
                 <Tab value="PENDING" icon={<DateRangeIcon />} label="Awaiting Vehicle" />
                 <Tab value="IN_WORKSHOP" icon={<HomeIcon />} label="Vehicle In Workshop" />
@@ -484,7 +489,8 @@ const Works = () => {
                         disableUnderline
                         sx={{ 
                             borderRadius: "25px",
-                            width: "400px", 
+                            minWidth: "200px",
+                            maxwidth: "400px", 
                             border: "1px solid", borderColor: "secondary", 
                             paddingLeft: 2, 
                             paddingRight: 2 
