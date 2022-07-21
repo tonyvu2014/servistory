@@ -24,12 +24,6 @@
     },
     "dbName": {
       "Type": "String"
-    },
-    "AuroraServerlessClusterName": {
-      "Type": "String"
-    },
-    "RDSCredentialsSecretName": {
-      "Type": "String"
     }
   },
   "Conditions": {
