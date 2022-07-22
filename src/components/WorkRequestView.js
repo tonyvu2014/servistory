@@ -120,14 +120,16 @@ const WorkRequestView = (props) => {
                 </Grid>
             </Stack>
             <hr sx={{ color: '#E3E6EB', width: '1px' }}/>
-            <Stack direction="row" spacing={1} sx={{ my: 2 }}>
-                <Box>
-                    <Typography variant="subtitle1">Work Description</Typography>
-                    <Box component="div">
-                        <Typography variant="body1" sx={{ whiteSpace: 'pre-line' }}>{request.description}</Typography>
+            {request.description && (
+                <Stack direction="row" spacing={1} sx={{ my: 2 }}>
+                    <Box>
+                        <Typography variant="subtitle1">Work Description</Typography>
+                        <Box component="div">
+                            <Typography variant="body1" sx={{ whiteSpace: 'pre-line' }}>{request.description}</Typography>
+                        </Box>
                     </Box>
-                </Box>
-            </Stack>
+                </Stack>
+            )}
             {request.reason && (
                 <Stack direction="row" spacing={1} sx={{ my: 2 }}>
                     <Box>
