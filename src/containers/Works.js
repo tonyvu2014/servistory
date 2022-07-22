@@ -470,7 +470,7 @@ const Works = () => {
                 sx={{
                     '& .MuiTabs-flexContainer': {
                       flexWrap: 'wrap',
-                    },
+                    }
                 }}
             >
                 <Tab value="PENDING" icon={<DateRangeIcon />} label="Awaiting Vehicle" />
@@ -488,10 +488,11 @@ const Works = () => {
                         onChange={(event) => console.log('query', setSearchQuery(event.target.value))}
                         disableUnderline
                         sx={{ 
+                            fontSize: "12px",
                             borderRadius: "25px",
-                            minWidth: "200px",
-                            maxwidth: "400px", 
-                            border: "1px solid", borderColor: "secondary", 
+                            width: "350px",
+                            border: "1px solid", 
+                            borderColor: "secondary", 
                             paddingLeft: 2, 
                             paddingRight: 2 
                         }}
