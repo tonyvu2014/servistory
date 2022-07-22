@@ -23,7 +23,7 @@ import { DATE_PICKER_FORMAT, TIME_PICKER_FORMAT, DATE_TIME_PICKER_FORMAT } from 
 import * as yup from 'yup';
 import { WorkAlertContext } from '../containers/Works';
 import omit from 'lodash/omit';
-import { s3Client, s3 } from '../common/s3Helper';
+import { s3Client, s3, getPublicUrl } from '../common/s3Helper';
 import { nanoid } from 'nanoid';
 import './WorkRequestForm.css';
 import { LoadingContext } from '../App';
@@ -35,6 +35,7 @@ const WorkRequestForm = (props) => {
     const { setLoadingState } = useContext(LoadingContext);
 
     const [selectedFiles, setSelectedFiles] = useState([]);
+    const [existingFiles, setExistingFiles] = useState([]);
 
     const { preSubmitAction, postSubmitAction, work, request } = props;
 
@@ -73,6 +74,11 @@ const WorkRequestForm = (props) => {
         }
     }
 
+    const handleExistingFileRemoval = (fileName) => {
+        const updatedExistingFiles = existingFiles.filter(f => f.name !== fileName);
+        setExistingFiles([...updatedExistingFiles]);
+    }
+
     const handleFileRemoval = (fileName) => {
         const updatedSelectedFiles = selectedFiles.filter(f => f.name !== fileName);
         setSelectedFiles([...updatedSelectedFiles]);
@@ -97,7 +103,9 @@ const WorkRequestForm = (props) => {
             if (request?.id) {
                 action = 'updated';
                 tracking_no = request?.tracking_no;
-                const attachments = selectedFiles.map(f => `${tracking_no}/${f.name}`).join(',');
+                let fileList = existingFiles.map(f => `${tracking_no}/${f.name}`)
+                fileList.push(selectedFiles.map(f => `${tracking_no}/${f.name}`));
+                const attachments = fileList.join(',');
                 let input = { id: request.id, ...requestData, work_id: work.id, date_time_completed };
                 if (attachments !== request.attachments) {
                     input = {...input, attachments}
@@ -160,24 +168,13 @@ const WorkRequestForm = (props) => {
             //TODO: a better way to filter out invalid s3 object paths
             const objectPaths = objectKeys
                 .filter(x => !x.startsWith('request')); 
-    
-            const fileListPromise = objectPaths.map(async (p) => {
-                try {
-                    const data = await (s3.getObject({
-                        Bucket: process.env.REACT_APP_S3_BUCKET_NAME,
-                        Key: `attachments/${p}`
-                    }).promise());
-                    return new File([data.Body], p.split('/').slice(-1)[0], { type: data.ContentType });
-                } catch (error) {
-                    console.log(`Error fetching file ${p}`, error);
-                    return null;
-                }
-            });
 
-            Promise.all(fileListPromise).then(fileList => {
-                const validFileList = fileList.filter(f => f !== null);
-                setSelectedFiles(validFileList)
-            });
+            const existingFiles = objectPaths.map(p => ({
+                name: p.split('/').slice(-1)[0],
+                url: getPublicUrl(p)
+            }));
+
+            setExistingFiles(existingFiles);
         }
     }, []);
 
@@ -245,15 +242,23 @@ const WorkRequestForm = (props) => {
                 <Stack direction="column" spacing={1} sx={{ my: 2 }}>
                     <Typography variant="subtitle1">Upload Images</Typography>
                     <Box component="div" className='uploadBox'>
+                        {existingFiles.map(f => (
+                            <div key={f.name} className="displayFile">
+                                <img alt='attachment' src={f.url} className="displayImage" />
+                                <div className="topRight" onClick={() => handleExistingFileRemoval(f.name)}>
+                                    <DeleteForeverIcon color='#82868C' />
+                                </div>
+                            </div>
+                        ))}
                         {selectedFiles.map(f => (
                             <div key={f.name} className="displayFile">
-                                <img alt='' src={URL.createObjectURL(f)} className="displayImage" />
+                                <img alt='attachment' src={URL.createObjectURL(f)} className="displayImage" />
                                 <div className="topRight" onClick={() => handleFileRemoval(f.name)}>
                                     <DeleteForeverIcon color='#82868C' />
                                 </div>
                             </div>
                         ))}
-                        {selectedFiles?.length < 3 && (
+                        {existingFiles?.length + selectedFiles?.length < 3 && (
                             <InputLabel htmlFor="files" className="addFile">
                                 <AddIcon color='#82868C' />
                                 <Typography variant="body2" sx={{ fontWeight: 600, color: '#3A3C40' }}>Choose a file</Typography>

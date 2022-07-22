@@ -637,7 +637,7 @@ const Works = () => {
                         </TableBody>
                     </Table>
                 </TableContainer>
-                <Pagination count={Math.min(Math.floor(total/ WORKS_PER_PAGE) + 1, 10)} 
+                <Pagination count={total === 0 ? 0 : Math.min(Math.floor((total-1)/ WORKS_PER_PAGE) + 1, 10)} 
                     page={page} 
                     siblingCount={2} variant="outlined" 
                     showFirstButton showLastButton
@@ -669,7 +669,7 @@ const Works = () => {
                     <WorkRequestForm work={selectedWork} preSubmitAction={handleCloseWorkRequestModal} />
             </PresentationModal>
             <PresentationModal
-                title="Sent Request"
+                title="Work Approval Request"
                 subtitle={requestSubtitle}
                 open={openWorkRequestViewModal}
                 handleMoveBack={selectedRequestIndex === 0 ? undefined : handleMoveRequestBack}
