@@ -491,7 +491,8 @@ const Works = () => {
                             fontSize: "12px",
                             borderRadius: "25px",
                             width: "350px",
-                            border: "1px solid", borderColor: "secondary", 
+                            border: "1px solid", 
+                            borderColor: "secondary", 
                             paddingLeft: 2, 
                             paddingRight: 2 
                         }}
