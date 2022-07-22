@@ -488,9 +488,9 @@ const Works = () => {
                         onChange={(event) => console.log('query', setSearchQuery(event.target.value))}
                         disableUnderline
                         sx={{ 
+                            fontSize: "12px",
                             borderRadius: "25px",
-                            minWidth: "200px",
-                            maxWidth: "400px", 
+                            width: "350px",
                             border: "1px solid", borderColor: "secondary", 
                             paddingLeft: 2, 
                             paddingRight: 2 
