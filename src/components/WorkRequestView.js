@@ -163,7 +163,7 @@ const WorkRequestView = (props) => {
                     <Grid item xs={6}>
                         <Typography variant="subtitle1">Pick-Up Time</Typography>
                         <Box>
-                            <Typography variant="body1">{format(parseISO(request.date_time_completed), 'H:mmaaa')}</Typography>
+                            <Typography variant="body1">{format(parseISO(request.date_time_completed), 'h:mmaaa')}</Typography>
                         </Box>
                     </Grid>
                 </Grid>
