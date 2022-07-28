@@ -9,6 +9,7 @@ type Vendor {
   timezone: String!
   email: String
   phone: String!
+  contact_no: String
   works(filter: WorkFilterInput, limit: Int, token: String): WorkConnection
   date_time_created: AWSDateTime!
   date_time_updated: AWSDateTime!

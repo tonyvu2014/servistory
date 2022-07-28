@@ -50,7 +50,7 @@ exports.workRequestService = {
                 break;
             case 'REJECTED':
                 message = `Hi ${work.customer_name}, confirming that you have declined the approval "${workRequest.title}". ` +
-                `If you want to discuss it further, please don’t hesitate to give us a buzz on ${vendor.phone}`;
+                `If you want to discuss it further, please don’t hesitate to give us a buzz on ${vendor.contact_no ?? vendor.phone}`;
                 break;
             default:         
         }

@@ -10,6 +10,7 @@ export const getVendor = /* GraphQL */ `
       timezone
       email
       phone
+      contact_no
       works {
         items {
           id
@@ -45,11 +46,7 @@ export const listVendors = /* GraphQL */ `
         timezone
         email
         phone
-        works {
-          total
-          previousToken
-          nextToken
-        }
+        contact_no
         date_time_created
         date_time_updated
       }
@@ -79,6 +76,7 @@ export const getWork = /* GraphQL */ `
         address
         email
         phone
+        contact_no
         works {
           total
           previousToken
@@ -131,7 +129,8 @@ export const listWorks = /* GraphQL */ `
           name
           address
           email
-          phone      
+          phone   
+          contact_no   
         }
         requests {
           items {
@@ -191,6 +190,7 @@ export const getWorkRequest = /* GraphQL */ `
           address
           email
           phone
+          contact_no
           date_time_created
           date_time_updated
         }
@@ -234,6 +234,7 @@ export const listWorkRequests = /* GraphQL */ `
             address
             email
             phone
+            contact_no
           }
           customer_name
           customer_phone

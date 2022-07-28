@@ -70,7 +70,7 @@ exports.workService = {
             case 'PENDING': 
                 message = `Hi ${work.customer_name}, thanks for trusting us with your vehicle at ${vendor.name}. ` + 
                 `Your vehicle is booked to be in our workshop on the ${formatInTimeZone(work.date_time_arrived, vendor.timezone ,'dd/MM/yyyy')} with a current expected pick-up date of ${formatInTimeZone(work.date_time_pickup, vendor.timezone ,'dd/MM/yyyy')}. ` +
-                `We'll keep you updated, and you can also contact us on ${vendor.phone}.`;
+                `We'll keep you updated, and you can also contact us on ${vendor.contact_no ?? vendor.phone}.`;
                 break;
             case 'WORK_COMMENCED':
                 message = `Hi ${work.customer_name}, good news: we’re beginning work on your vehicle. ` + 
@@ -99,7 +99,7 @@ exports.workService = {
         const vendor = await vendorService.getVendor(vendorId);
 
         const message = `We’ve updated your vehicle ready date to ${formatInTimeZone(work.date_time_pickup, vendor.timezone ,'dd/MM/yyyy')}. ` +
-        `If you have any questions please let us know on ${vendor.phone}. Thanks ${work.customer_name}.`
+        `If you have any questions please let us know on ${vendor.contact_no ?? vendor.phone}. Thanks ${work.customer_name}.`
 
         if (message) {
             await smsService.sendMessage(
