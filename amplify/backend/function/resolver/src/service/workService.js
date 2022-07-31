@@ -72,11 +72,11 @@ exports.workService = {
                 `Your vehicle is booked to be in our workshop on the ${formatInTimeZone(work.date_time_arrived, vendor.timezone ,'dd/MM/yyyy')} with a current expected pick-up date of ${formatInTimeZone(work.date_time_pickup, vendor.timezone ,'dd/MM/yyyy')}. ` +
                 `We'll keep you updated, and you can also contact us on ${vendor.phone}.`;
                 break;
-            case 'WORK_COMMENCED':
-                message = `Hi ${work.customer_name}, good news: we’re beginning work on your vehicle. ` + 
-                'We’ll let you know in advance if we identify any new items for maintenance. ' +
-                'Otherwise, we’ll just notify you once your vehicle is ready for collection.'
-                break;
+            // case 'WORK_COMMENCED':
+            //     message = `Hi ${work.customer_name}, good news: we’re beginning work on your vehicle. ` + 
+            //     'We’ll let you know in advance if we identify any new items for maintenance. ' +
+            //     'Otherwise, we’ll just notify you once your vehicle is ready for collection.'
+            //     break;
             case 'COMPLETED':
                 message = `Your vehicle is now ready for collection. Thanks for choosing ${vendor.name}. ` +
                 `If you have any feedback or questions please let us know and we hope to see you next time ${work.customer_name}!`;
