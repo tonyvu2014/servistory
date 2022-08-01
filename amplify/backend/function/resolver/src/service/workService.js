@@ -40,7 +40,7 @@ exports.workService = {
         const updatedWork = await workRepo.update(input);
 
         // send sms notifications to customer to notify about status change
-        if (status && ['PENDING', 'WORK_COMMENCED', 'COMPLETED'].includes(status)) {
+        if (status && ['PENDING', 'COMPLETED'].includes(status)) {
             try {
                 await this.notifyStatusChange(updatedWork);
             } catch (err) {

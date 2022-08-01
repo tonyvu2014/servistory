@@ -161,8 +161,10 @@ const Approval = () => {
                 if (workRequests.length > 0) {
                     const workRequest = workRequests[0];
                     setWorkRequest(workRequest);
-                    const items = workRequest?.attachments?.split(',').map(a =>(<img width="100%" src={getPublicUrl(a)}  alt='attachment' />));
-                    setItems(items);
+                    if (workRequest?.attachments) {
+                        const items = workRequest?.attachments?.split(',').map(a =>(<img width="100%" src={getPublicUrl(a)}  alt='attachment' />));
+                        setItems(items);
+                    }
                     const work = workRequest.work;
                     setWork(work);
                     const vendor = work?.vendor;
