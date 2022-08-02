@@ -12,6 +12,7 @@ export const createVendor = /* GraphQL */ `
       address
       email
       phone
+      contact_no
       works {
         items {
           id
@@ -46,6 +47,7 @@ export const updateVendor = /* GraphQL */ `
       address
       email
       phone
+      contact_no
       works {
         items {
           id
@@ -80,6 +82,7 @@ export const deleteVendor = /* GraphQL */ `
       address
       email
       phone
+      contact_no
       works {
         items {
           id
@@ -126,6 +129,7 @@ export const createWork = /* GraphQL */ `
         address
         email
         phone
+        contact_no
       }
       requests {
         items {
@@ -174,6 +178,7 @@ export const updateWork = /* GraphQL */ `
         address
         email
         phone
+        contact_no
       }
       requests {
         items {
@@ -222,6 +227,7 @@ export const deleteWork = /* GraphQL */ `
         address
         email
         phone
+        contact_no
       }
       requests {
         items {
@@ -280,6 +286,7 @@ export const createWorkRequest = /* GraphQL */ `
           address
           email
           phone
+          contact_no
         }
         requests {
           total
@@ -328,6 +335,7 @@ export const updateWorkRequest = /* GraphQL */ `
           address
           email
           phone
+          contact_no
         }
         requests {
           total
@@ -376,6 +384,7 @@ export const deleteWorkRequest = /* GraphQL */ `
           address
           email
           phone
+          contact_no
         }
         requests {
           total

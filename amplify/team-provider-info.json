@@ -21,11 +21,11 @@
       "function": {
         "smsSender": {
           "deploymentBucketName": "amplify-servistory-prod-102855-deployment",
-          "s3Key": "amplify-builds/smsSender-2b54795032695652626d-build.zip"
+          "s3Key": "amplify-builds/smsSender-58505a4a716459476435-build.zip"
         },
         "resolver": {
           "deploymentBucketName": "amplify-servistory-prod-102855-deployment",
-          "s3Key": "amplify-builds/resolver-5846377641323547514a-build.zip",
+          "s3Key": "amplify-builds/resolver-41763446427a3935625a-build.zip",
           "dbSecretArn": "arn:aws:secretsmanager:ap-southeast-2:416696267306:secret:rds-db-credentials/cluster-FMXZ36QOXT6PK7WH4RJP5UEMVU/admin-y4slMC",
           "dbClusterArn": "arn:aws:rds:ap-southeast-2:416696267306:cluster:servistory-serverless-cluster",
           "dbName": "Servistory"
@@ -51,12 +51,12 @@
     "categories": {
       "function": {
         "smsSender": {
-          "deploymentBucketName": "amplify-servistory-dev-210920-deployment",
-          "s3Key": "amplify-builds/smsSender-58505a4a716459476435-build.zip"
+          "deploymentBucketName": "amplify-servistory-dev-102855-deployment",
+          "s3Key": "amplify-builds/smsSender-2b54795032695652626d-build.zip"
         },
         "resolver": {
-          "deploymentBucketName": "amplify-servistory-dev-210920-deployment",
-          "s3Key": "amplify-builds/resolver-4e6444495a4f582b4f78-build.zip",
+          "deploymentBucketName": "amplify-servistory-dev-102855-deployment",
+          "s3Key": "amplify-builds/resolver-5846377641323547514a-build.zip",
           "dbSecretArn": "arn:aws:secretsmanager:ap-southeast-2:416696267306:secret:rds-db-credentials/cluster-YUKQ4NUGXZFQPH6WLCTV7KN6HY/devAdmin-zEreF0",
           "dbClusterArn": "arn:aws:rds:ap-southeast-2:416696267306:cluster:dev-servistory-serverless-cluster",
           "dbName": "Servistory"

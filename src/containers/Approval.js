@@ -73,7 +73,7 @@ const Approval = () => {
             title: 'Decline Approval',
             children: <>Please confirm that you wish to decline this work approval.</>,
             icon: <DoNotDisturbIcon sx={{ color: '#77777A', fontSize: '64px' }} />,
-            subtitle: <>Please contact us on <a href={`tel:${vendor.phone}`}>{vendor.phone}</a> if you have any questions.</>,
+            subtitle: <>Please contact us on <a href={`tel:${vendor.contact_no ?? vendor.phone}`}>{vendor.contact_no ?? vendor.phone}</a> if you have any questions.</>,
             primaryAction: 'Reconsider',
             handlePrimaryAction: handleCloseDialog,
             secondaryAction: 'Yes, Decline',
@@ -161,8 +161,10 @@ const Approval = () => {
                 if (workRequests.length > 0) {
                     const workRequest = workRequests[0];
                     setWorkRequest(workRequest);
-                    const items = workRequest?.attachments?.split(',').map(a =>(<img width="100%" src={getPublicUrl(a)}  alt='attachment' />));
-                    setItems(items);
+                    if (workRequest?.attachments) {
+                        const items = workRequest?.attachments?.split(',').map(a =>(<img width="100%" src={getPublicUrl(a)}  alt='attachment' />));
+                        setItems(items);
+                    }
                     const work = workRequest.work;
                     setWork(work);
                     const vendor = work?.vendor;
@@ -215,7 +217,7 @@ const Approval = () => {
                     </p>
                     <div className="approval-vendor-details">
                         <div className="approval-vendor-phone">
-                            Phone: <a href={`tel: ${vendor?.phone}`}>{vendor?.phone}</a>
+                            Phone: <a href={`tel: ${vendor?.contact_no ?? vendor?.phone}`}>{vendor?.contact_no ?? vendor?.phone}</a>
                         </div>
                         <div>
                             Address: {vendor?.address}
