@@ -21,11 +21,11 @@
       "function": {
         "smsSender": {
           "deploymentBucketName": "amplify-servistory-prod-102855-deployment",
-          "s3Key": "amplify-builds/smsSender-58505a4a716459476435-build.zip"
+          "s3Key": "amplify-builds/smsSender-2b54795032695652626d-build.zip"
         },
         "resolver": {
           "deploymentBucketName": "amplify-servistory-prod-102855-deployment",
-          "s3Key": "amplify-builds/resolver-7478414f6344454a4b65-build.zip",
+          "s3Key": "amplify-builds/resolver-42306d36663239396f35-build.zip",
           "dbSecretArn": "arn:aws:secretsmanager:ap-southeast-2:416696267306:secret:rds-db-credentials/cluster-FMXZ36QOXT6PK7WH4RJP5UEMVU/admin-y4slMC",
           "dbClusterArn": "arn:aws:rds:ap-southeast-2:416696267306:cluster:servistory-serverless-cluster",
           "dbName": "Servistory"
