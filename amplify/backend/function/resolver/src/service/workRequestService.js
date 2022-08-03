@@ -40,18 +40,18 @@ exports.workRequestService = {
         let message;
         switch (workRequest.status) {
             case 'PENDING': 
-                message = `Hi ${work.customer_name}, this is ${vendor?.name}. We’ve identified a recommended maintenance ${workRequest?.title} for your vehicle. ` +
+                message = `Hi ${work.customer_name}, this is ${vendor?.name}. We have identified a recommended maintenance ${workRequest?.title} for your vehicle. ` +
                 `You can view and approve it here: ${BASE_URL}/approval/${workRequest.tracking_no}. ` + 
                 `If you have any questions, please let us know on ${vendor.contact_no ?? vendor.phone}, thanks!`;
                 break;
             case 'APPROVED':
-                message = `${work.customer_name}, thanks for viewing and approving "${workRequest.title}". ` +
+                message = `${work.customer_name}, thanks for viewing and approving ${workRequest.title}. ` +
                 `Your estimated vehicle-ready date is ${formatInTimeZone(work.date_time_pickup, vendor.timezone,'dd/MM/yyyy')} at ${formatInTimeZone(work.date_time_pickup, vendor.timezone ,'h:mm a')}. ` +
                 'If you have any questions, please let us know.'
                 break;
             case 'REJECTED':
-                message = `Hi ${work.customer_name}, confirming that you have declined the approval "${workRequest.title}". ` +
-                `If you want to discuss it further, please don’t hesitate to give us a buzz on ${vendor.contact_no ?? vendor.phone}`;
+                message = `Hi ${work.customer_name}, confirming that you have declined the approval ${workRequest.title}. ` +
+                `If you want to discuss it further, please do not hesitate to give us a buzz on ${vendor.contact_no ?? vendor.phone}`;
                 break;
             default:         
         }
@@ -69,10 +69,10 @@ exports.workRequestService = {
         let message;
         switch (workRequest.status) {
             case 'APPROVED':
-                message = `${work.customer_name} has APPROVED "${workRequest.title}" for "${work.car_model}"`;
+                message = `${work.customer_name} has APPROVED ${workRequest.title} for ${work.car_model}`;
                 break;
             case 'REJECTED':
-                message = `${work.customer_name} has DECLINED "${workRequest.title}" for "${work.car_model}"`;
+                message = `${work.customer_name} has DECLINED ${workRequest.title} for ${work.car_model}`;
                 break;
             default:         
         }
