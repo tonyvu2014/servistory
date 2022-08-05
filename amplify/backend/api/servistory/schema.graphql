@@ -353,6 +353,14 @@ input DeleteWorkRequestInput {
   id: ID!
 }
 
+input NotifyWorkStatusInput {
+  work_id: ID!
+}
+
+type UpdateResult {
+  count: Int!
+}
+
 type Query {
   getVendor(id: ID!): Vendor @function(name: "resolver-${env}")
   listVendors(filter: VendorFilterInput, limit: Int, token: String): VendorConnection @function(name: "resolver-${env}")
@@ -372,6 +380,8 @@ type Mutation {
   createWorkRequest(input: CreateWorkRequestInput!, condition: WorkRequestConditionInput): WorkRequest @function(name: "resolver-${env}")
   updateWorkRequest(input: UpdateWorkRequestInput!, condition: WorkRequestConditionInput): WorkRequest @function(name: "resolver-${env}")
   deleteWorkRequest(input: DeleteWorkRequestInput!, condition: WorkRequestConditionInput): WorkRequest @function(name: "resolver-${env}")
+
+  notifyWorkStatus(input: NotifyWorkStatusInput!): UpdateResult @function(name: "resolver-${env}")
 }
 
 type Subscription {

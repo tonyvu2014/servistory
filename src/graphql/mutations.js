@@ -400,3 +400,13 @@ export const deleteWorkRequest = /* GraphQL */ `
     }
   }
 `;
+
+export const notifyWorkStatus = `
+  mutation NotifyWorkStatus(
+    $input: NotifyWorkStatusInput!
+  ) {
+    notifyWorkStatus(input: $input) {
+      count
+    }
+  }
+`

@@ -21,12 +21,6 @@ exports.workService = {
 
         const newWork =  await workRepo.create(work);
 
-        try {
-            await this.notifyStatusChange(newWork);
-        } catch (err) {
-            throw new NotificationError(`Notification error: ${err}`);
-        }
-
         return newWork;
     },
 
@@ -58,6 +52,17 @@ exports.workService = {
         }
 
         return updatedWork;
+    },
+
+    notifyWorkStatus: async function(id) {
+        const work = await this.getWork(id);
+        try {
+            await this.notifyStatusChange(work);
+        } catch (err) {
+            throw new NotificationError(`Notification error: ${err}`);
+        }
+
+        return 1;
     },
 
     notifyStatusChange: async function(work) {

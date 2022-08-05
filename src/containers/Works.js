@@ -50,9 +50,11 @@ import { listWorks } from '../graphql/queries';
 import { updateWork } from '../graphql/mutations';
 import { DATE_DISPLAY_FORMAT, WORKS_PER_PAGE, STATUS_TO_TEXT_MAPPER } from '../common/constant';
 import * as subscriptions from '../graphql/subscriptions';
+import { notifyWorkStatus } from '../graphql/mutations';
 import debounce from 'lodash/debounce';
 import { LoadingContext } from '../App';
 import './Works.css';
+import ConfirmationModal from '../components/common/ConfirmationModal';
 
 const defaultAlertState = {
     open: false,
@@ -82,10 +84,13 @@ const Works = () => {
     const [requestSubtitle, setRequestSubtitle] = useState(undefined);
     const [selectedRequestIndex, setSelectedRequestIndex] = useState(0);
     const [vendorId, setVendorId] = useState(undefined);
+    const [smsConfirmationTitle, setSMSConfirmationTitle] = useState('');
+    const [openSMSConfirmationModal, setOpenSMSConfirmationModal] = useState(false);
 
     const handleCloseAlert = () => {
         setAlertState(defaultAlertState);
     }
+
     const value = useMemo(
         () => ({ alertState, setAlertState }),
         [alertState]
@@ -444,6 +449,41 @@ const Works = () => {
         }
     }));
 
+    const handleCloseSMSConfirmationModal = () => {
+        setOpenSMSConfirmationModal(false);
+    }
+
+    const handleSendSMS = async () => {
+        setOpenSMSConfirmationModal(false);
+        try {
+            setLoadingState(true);
+            await API.graphql({ query: notifyWorkStatus, variables: { input: { work_id: selectedWork.id } } });            
+            setAlertState({
+                open: true,
+                severity: 'success',
+                title: `Booking Confirmation Sent`,
+                message: 'SMS confirmation sent to customer'
+            })
+        } catch (e) {
+            console.log('Error in sending sms to customer', e);
+            setAlertState({
+                open: true,
+                severity: 'error',
+                title: `SMS Confirmation Sent Error`,
+                message: 'Please try to reach out to customer directly. Sorry for the inconvenience.'
+            });
+        }
+        setLoadingState(false);
+    }
+
+    const handleOpenSMSConfirmationModal = (work) => {
+        if (work) {
+            setSMSConfirmationTitle(`Send SMS booking confirmation to customer '${work.customer_name}'?`);
+            setSelectedWork(work);
+            setOpenSMSConfirmationModal(true);
+        }
+    }
+
     return (
         <WorkAlertContext.Provider value={value}>
             <Snackbar open={alertState.open} 
@@ -653,7 +693,7 @@ const Works = () => {
                 title={workFormTitle}
                 open={openCustomerFormModal}
                 handleClose={handleCloseCustomerFormModal}>
-                    <WorkForm work={selectedWork} preSubmitAction={handleCloseCustomerFormModal} />
+                    <WorkForm work={selectedWork} preSubmitAction={handleCloseCustomerFormModal} postSubmitAction={handleOpenSMSConfirmationModal} />
             </PresentationModal>
             <PresentationModal
                 title="Remove Customer Card"
@@ -680,6 +720,13 @@ const Works = () => {
                         request={selectedWork?.requests.items[selectedRequestIndex]} 
                         preSubmitAction={handleCloseWorkRequestViewModal} />
             </PresentationModal>
+            <ConfirmationModal
+                title={smsConfirmationTitle}
+                open={openSMSConfirmationModal}
+                handleClose={handleCloseSMSConfirmationModal}
+                handlePositiveAction={handleSendSMS}
+                handleNegativeAction={handleCloseSMSConfirmationModal}>
+            </ConfirmationModal>
         </WorkAlertContext.Provider>
     )
 };

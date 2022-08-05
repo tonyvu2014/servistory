@@ -30,6 +30,10 @@ const resolvers = {
 
         createVendor: (event) => {
             return createVendor(event);
+        },
+
+        notifyWorkStatus: (event) => {
+            return notifyWorkStatus(event);
         }
     },
 
@@ -182,4 +186,15 @@ async function getWorkVendor(event) {
     const vendorId = event.source.vendor_id;
 
     return await vendorService.getVendor(vendorId);
+}
+
+async function notifyWorkStatus(event) {
+    const { input } = event.arguments;
+    const workId = input.work_id;
+
+    const count = await workService.notifyWorkStatus(workId);
+
+    return {
+        count
+    }
 }

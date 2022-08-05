@@ -1,0 +1,16 @@
+.confirmationButton {
+    color: #fff !important;
+    font-size: 13px !important;
+    padding: 5px 40px !important;
+}
+
+.negativeAction {
+    background-color: #82868C !important;
+}
+
+.negativeAction:hover {
+    background-color: #1D212E !important;
+}
+.negativeAction:active {
+    background-color: #1D212E !important;
+}

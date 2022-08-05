@@ -20,6 +20,7 @@ import { WorkAlertContext } from '../containers/Works';
 import { LoadingContext } from '../App';
 
 const WorkForm = (props) => {
+
     const { setAlertState } = useContext(WorkAlertContext);
     const { setLoadingState } = useContext(LoadingContext);
 
@@ -70,6 +71,7 @@ const WorkForm = (props) => {
 
         const { attributes } = await Auth.currentAuthenticatedUser();
         let action;
+        let newWork;
 
         try {
             setLoadingState(true);
@@ -88,7 +90,8 @@ const WorkForm = (props) => {
                 await API.graphql({ query: mutations.updateWork, variables: { input: { id: work.id, ...workData } } });
             } else {
                 action = 'added'
-                await API.graphql({ query: mutations.createWork, variables: { input: {...data, vendor_id: attributes['custom:org_id']} } });
+                const result = await API.graphql({ query: mutations.createWork, variables: { input: {...data, vendor_id: attributes['custom:org_id']} } });
+                newWork = result.data.createWork;
             }
             setAlertState({
                 open: true,
@@ -117,7 +120,7 @@ const WorkForm = (props) => {
 
         setLoadingState(false);
         if (postSubmitAction) {
-            postSubmitAction();
+            postSubmitAction(newWork);
         }
     }
 
@@ -258,7 +261,7 @@ const WorkForm = (props) => {
                     </Button>
                 </Box>
             </Box>
-        </form>    
+        </form>
     )
 }
 
