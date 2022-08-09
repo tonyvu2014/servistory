@@ -31,13 +31,15 @@
       "address",
       "name",
       "phone_number",
-      "email"
+      "email",
+      "custom:org_id"
     ],
     "userpoolClientReadAttributes": [
       "address",
       "email",
       "name",
       "phone_number",
+      "custom:org_id",
       "email_verified",
       "phone_number_verified"
     ],

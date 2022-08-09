@@ -30,10 +30,6 @@ exports.pushSubscriptionService = {
 
         const existingVendorPushSubscription = vendorPushSubscriptions.items[0];
 
-        this.sendNotification(vendor_id, {
-            title: 'Servistory',
-            body: 'You have updated subscription to Servistory push notification'
-        });
         return await this.updatePushSubscription({
             id: existingVendorPushSubscription.id,
             subscription
@@ -77,7 +73,6 @@ exports.pushSubscriptionService = {
             { vendor_id: { eq: vendorId } }, null, null
         );
 
-        console.log('vendorPushSubscriptions', vendorPushSubscriptions);
         if (vendorPushSubscriptions.total === 0) {
             return;
         }
@@ -89,7 +84,8 @@ exports.pushSubscriptionService = {
         
         webpush.setVapidDetails('mailto:arland@servistory.com', publicVapidKey, privateVapidKey);
 
-        console.log('Sending push notification', payload);
-        return await webpush.sendNotification(vendorPushSubscription.subscription, payload);
+        const result = await webpush.sendNotification(JSON.parse(vendorPushSubscription.subscription), payload);
+        console.log('Send push notification result', result);
+        return result;
     }
 };

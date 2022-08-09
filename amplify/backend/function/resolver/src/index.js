@@ -102,16 +102,6 @@ exports.handler = async (event, context) => {
     console.log(`EVENT: ${JSON.stringify(event)}`);
     console.log(`CONTEXT: ${JSON.stringify(context)}`);
 
-    if (event.name === 'push') {
-        console.log('Sending push message', event.message);
-        const result = await pushSubscriptionService.sendNotification(event.vendorId, {
-            title: 'Servistory',
-            body: event.message
-        });
-        console.log('result', result);
-        return;
-    }
-
     const typeHandler = resolvers[event.typeName];
     if (typeHandler) {
       const resolver = typeHandler[event.fieldName];

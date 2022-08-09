@@ -87,10 +87,10 @@ exports.workRequestService = {
 
             await pushSubscriptionService.sendNotification(
                 vendor.id,
-                {
+                JSON.stringify({
                     title: 'Servistory',
                     body: message
-                }
+                })
             );
         }
     },

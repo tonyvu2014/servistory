@@ -223,6 +223,10 @@ const Works = () => {
     useEffect(() => {
         async function createSubscription() {
             if ('serviceWorker' in navigator) {
+                if (navigator.serviceWorker.controller) {
+                    console.log('servicerWorker is already registered');
+                    return;
+                }
                 const register = await navigator.serviceWorker.ready;
         
                 const publicVapidKey = process.env.REACT_APP_WEB_PUSH_PUBLIC_KEY;
@@ -231,7 +235,6 @@ const Works = () => {
                     applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
                 });
         
-                console.log('Sending subscription request');
                 try {
                     await API.graphql(
                         graphqlOperation(createPushSubscription, {
@@ -244,6 +247,8 @@ const Works = () => {
                 } catch (e) {
                     console.log('subscription error', e);
                 }
+            } else {
+                console.log('serviceWorker is not supported by this browser');
             }
         }
         
