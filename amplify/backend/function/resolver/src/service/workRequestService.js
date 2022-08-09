@@ -6,6 +6,7 @@ const formatInTimeZone = require('date-fns-tz/formatInTimeZone');
 const formatISO = require('date-fns/formatISO');
 const addBusinessDays = require('date-fns/addBusinessDays');
 const { smsService } = require('./smsService');
+const { pushSubscriptionService } = require('./pushSubscriptionService');
 const { workService } = require('./workService');
 const { vendorService } = require('./vendorService');
 const { BASE_URL } = require('../common/constant');
@@ -82,6 +83,14 @@ exports.workRequestService = {
                 vendor.phone,
                 message,
                 vendor.name
+            );
+
+            await pushSubscriptionService.sendNotification(
+                vendor.id,
+                {
+                    title: 'Servistory',
+                    body: message
+                }
             );
         }
     },

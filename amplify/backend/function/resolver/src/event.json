@@ -1,5 +1,5 @@
 {
-  "key1": "value1",
-  "key2": "value2",
-  "key3": "value3"
+  "name": "push",
+  "vendorId": "f6667345-0960-11ed-9a89-02996bf5dbfa",
+  "message": "Hello, World"
 }

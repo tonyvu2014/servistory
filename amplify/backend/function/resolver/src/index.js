@@ -1,6 +1,7 @@
 const { vendorService } = require('./service/vendorService');
 const { workService } = require('./service/workService');
 const { workRequestService } = require('./service/workRequestService');
+const { pushSubscriptionService } = require('./service/pushSubscriptionService');
 
 const resolvers = {
     Mutation: {
@@ -32,6 +33,18 @@ const resolvers = {
             return createVendor(event);
         },
 
+        createPushSubscription: (event) => {
+            return createPushSubscription(event);
+        },
+
+        updatePushSubscription: (event) => {
+            return updatePushSubscription(event);
+        },
+
+        deletePushSubscription: (event) => {
+            return deletePushSubscription(event);
+        },
+
         notifyWorkStatus: (event) => {
             return notifyWorkStatus(event);
         }
@@ -56,6 +69,14 @@ const resolvers = {
 
         getVendor: (event) => {
             return getVendor(event);
+        },
+
+        getPushSubscription: (event) => {
+            return getPushSubscription(event)
+        },
+
+        listPushSubscriptions: (event) => {
+            return listPushSubscriptions(event)
         }
     },
 
@@ -80,6 +101,16 @@ exports.handler = async (event, context) => {
 
     console.log(`EVENT: ${JSON.stringify(event)}`);
     console.log(`CONTEXT: ${JSON.stringify(context)}`);
+
+    if (event.name === 'push') {
+        console.log('Sending push message', event.message);
+        const result = await pushSubscriptionService.sendNotification(event.vendorId, {
+            title: 'Servistory',
+            body: event.message
+        });
+        console.log('result', result);
+        return;
+    }
 
     const typeHandler = resolvers[event.typeName];
     if (typeHandler) {
@@ -197,4 +228,36 @@ async function notifyWorkStatus(event) {
     return {
         count
     }
+}
+
+// Push Subscriptions
+async function createPushSubscription(event) {
+    const { input } = event.arguments; 
+
+    return await pushSubscriptionService.createPushSubscription(input);
+}
+
+async function updatePushSubscription(event) {
+    const { input } = event.arguments; 
+
+    return await pushSubscriptionService.updatePushSubscription(input);
+}
+
+async function getPushSubscription(event) {
+    const { id } = event.arguments;
+
+    return await pushSubscriptionService.getPushSubscription(id);
+}
+
+async function listPushSubscriptions(event) {
+    const { filter, limit, token } = event.arguments;
+
+    return await pushSubscriptionService.getPushSubscriptions(filter, limit, token);
+}
+
+async function deletePushSubscription(event) {
+    const { input } = event.arguments;
+    const { id } = input;
+
+    return await pushSubscriptionService.deletePushSubscription(id);
 }

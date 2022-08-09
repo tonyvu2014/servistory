@@ -56,10 +56,12 @@
         },
         "resolver": {
           "deploymentBucketName": "amplify-servistory-dev-123430-deployment",
-          "s3Key": "amplify-builds/resolver-554f3037684c32436c36-build.zip",
+          "s3Key": "amplify-builds/resolver-37336878326e50434350-build.zip",
           "dbSecretArn": "arn:aws:secretsmanager:ap-southeast-2:416696267306:secret:rds-db-credentials/cluster-YUKQ4NUGXZFQPH6WLCTV7KN6HY/devAdmin-zEreF0",
           "dbClusterArn": "arn:aws:rds:ap-southeast-2:416696267306:cluster:dev-servistory-serverless-cluster",
-          "dbName": "Servistory"
+          "dbName": "Servistory",
+          "webPushPublicKey": "BCPi7Z7UbQPl3SaiYtthwIdo6kATuFZGYuShlxpenxZcHx2sSiJ83BD3w_Q0oLmvqBDTpMyVvYutYHXpY3N1tRY",
+          "webPushPrivateKey": "qam9nHXeN2lcS5dbR1nL-SsAvHtCPHGqODE-rPwMp_U"
         }
       },
       "hosting": {

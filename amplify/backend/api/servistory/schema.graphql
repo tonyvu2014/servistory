@@ -67,6 +67,14 @@ type WorkRequest {
   work_id: ID
 }
 
+type PushSubscription {
+  id: ID!
+  vendor_id: ID!
+  subscription: String!
+  date_time_created: AWSDateTime!
+  date_time_updated: AWSDateTime!
+}
+
 input StringInput {
   ne: String
   eq: String
@@ -353,6 +361,47 @@ input DeleteWorkRequestInput {
   id: ID!
 }
 
+type PushSubscriptionConnection {
+  items: [PushSubscription]!
+  total: Int
+  previousToken: String
+  nextToken: String
+}
+
+input PushSubscriptionFilterInput {
+  id: IDInput
+  vendor_id: IDInput
+  and: [PushSubscriptionFilterInput]
+  or: [PushSubscriptionFilterInput]
+  not: PushSubscriptionFilterInput
+}
+
+input PushSubscriptionConditionInput {
+  name: StringInput
+  address: StringInput
+  email: StringInput
+  phone: StringInput
+  and: [VendorConditionInput]
+  or: [VendorConditionInput]
+  not: VendorConditionInput
+}
+
+input CreatePushSubscriptionInput {
+  id: ID
+  vendor_id: ID!
+  subscription: String!
+}
+
+input UpdatePushSubscriptionInput {
+  id: ID!
+  vendor_id: ID
+  subscription: String
+}
+
+input DeletePushSubscriptionInput {
+  id: ID!
+}
+
 input NotifyWorkStatusInput {
   work_id: ID!
 }
@@ -368,6 +417,9 @@ type Query {
   listWorks(filter: WorkFilterInput, limit: Int, token: String): WorkConnection @function(name: "resolver-${env}")
   getWorkRequest(id: ID!): WorkRequest @function(name: "resolver-${env}")
   listWorkRequests(filter: WorkRequestFilterInput, limit: Int, token: String): WorkRequestConnection @function(name: "resolver-${env}")
+
+  getPushSubscription(id: ID!): PushSubscription @function(name: "resolver-${env}")
+  listPushSubscriptions(filter: PushSubscriptionFilterInput, limit: Int, token: String): PushSubscriptionConnection @function(name: "resolver-${env}")
 }
 
 type Mutation {
@@ -380,6 +432,9 @@ type Mutation {
   createWorkRequest(input: CreateWorkRequestInput!, condition: WorkRequestConditionInput): WorkRequest @function(name: "resolver-${env}")
   updateWorkRequest(input: UpdateWorkRequestInput!, condition: WorkRequestConditionInput): WorkRequest @function(name: "resolver-${env}")
   deleteWorkRequest(input: DeleteWorkRequestInput!, condition: WorkRequestConditionInput): WorkRequest @function(name: "resolver-${env}")
+  createPushSubscription(input: CreatePushSubscriptionInput!, condition: PushSubscriptionConditionInput): PushSubscription @function(name: "resolver-${env}")
+  updatePushSubscription(input: UpdatePushSubscriptionInput!, condition: PushSubscriptionConditionInput): PushSubscription @function(name: "resolver-${env}")
+  deletePushSubscription(input: DeletePushSubscriptionInput!, condition: PushSubscriptionConditionInput): PushSubscription @function(name: "resolver-${env}")
 
   notifyWorkStatus(input: NotifyWorkStatusInput!): UpdateResult @function(name: "resolver-${env}")
 }

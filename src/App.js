@@ -1,7 +1,8 @@
-import React, { useState, createContext, useMemo } from 'react';
+import React, { useState, createContext, useMemo, useEffect } from 'react';
 import { Amplify } from 'aws-amplify';
 import Toolbar from '@mui/material/Toolbar';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Authenticator } from '@aws-amplify/ui-react';
@@ -15,6 +16,7 @@ import AttachmentUploader from './containers/AttachmentUploader';
 import Header from './components/common/Header';
 import Login from './components/authenticator/Login';
 import RequireAuth from './components/authenticator/RequireAuth';
+import { triggerPushNotification } from './client';
 import mdTheme from './theme';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './App.css';

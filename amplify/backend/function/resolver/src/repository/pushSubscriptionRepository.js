@@ -4,73 +4,60 @@ const { parseFilter } = require('../common/conditionParser');
 const format = require('date-fns/format');
 const parseISO = require('date-fns/parseISO');
 const constant = require('../common/constant');
-const { nanoid } = require('nanoid')
 
-exports.workRequestRepository = {
-    create: async function(request) {
-        const { id, work_id, title, description, reason, attachments,
-                price, tracking_no, date_time_completed, status } = request;
+exports.pushSubscriptionRepository = {
+    create: async function(pushSubscription) {
+        const { id, vendor_id, subscription } = pushSubscription;
 
         const now = format(new Date(), constant.DEFAULT_DB_DATE_FORMAT);
-        const final_tracking_no = tracking_no ?? nanoid(10);
 
         const result = await dataApiClient.query(`
-            INSERT INTO WorkRequest (id, work_id, title, description, reason, 
-                price, date_time_completed, tracking_no, attachments, status, 
+            INSERT INTO PushSubscription (id, vendor_id, subscription,  
                 date_time_created, date_time_updated) 
-            VALUES (:id, :work_id, :title, :description, :reason, 
-                :price, :date_time_completed, :tracking_no, :attachments, :status, 
+            VALUES (:id, :vendor_id, :subscription,
                 :date_time_created, :date_time_updated)
-        `, { id, work_id, title, description: description ?? null, reason: reason ?? null,
-            price: price ?? 0, date_time_completed: date_time_completed ? format(parseISO(date_time_completed), constant.DEFAULT_DB_DATE_FORMAT) : now, 
-            tracking_no: final_tracking_no, attachments: attachments ?? null, 
-            status:  status ?? 'PENDING', date_time_created: now, date_time_updated: now }
+        `, { id, vendor_id, subscription, date_time_created: now, date_time_updated: now }
         );
 
         if (result?.numberOfRecordsUpdated < 1) {
-            throw new DatabaseError('Fail to create work');
+            throw new DatabaseError('Fail to create push subscription');
         }
 
         return await this.getOne(id);
     },
 
-    update: async function(request) {
+    update: async function(pushSubscription) {
 
         const now = format(new Date(), constant.DEFAULT_DB_DATE_FORMAT);
 
-        const { id, date_time_completed, date_time_created } = request;
+        const { id, date_time_created } = pushSubscription;
 
         const updateSetStatement = [
-            'title', 'description', 
-            'price', 'status', 
-            'attachments', 'reason',
-            'date_time_completed',
-            'date_time_created',
+            'vendor_id', 'subscription' ,'date_time_created'
         ]
-            .filter(field => request[field] != null)
+            .filter(field => pushSubscription[field] != null)
             .map(field => `${field} = :${field}`)
             .join(', ');
 
         const result = await dataApiClient.query(`
-            UPDATE WorkRequest SET ${updateSetStatement}, date_time_updated = :date_time_updated
+            UPDATE PushSubscription SET ${updateSetStatement}, date_time_updated = :date_time_updated
             WHERE id = :id
         `, { 
             id, 
-            ...request, 
-            ...(date_time_completed && {date_time_completed: format(parseISO(date_time_completed), constant.DEFAULT_DB_DATE_FORMAT)}),
+            ...pushSubscription, 
             ...(date_time_created && {date_time_created: format(parseISO(date_time_created), constant.DEFAULT_DB_DATE_FORMAT)}),
             date_time_updated: now 
         });
 
         if (result?.numberOfRecordsUpdated < 1) {
-            throw new DatabaseError('Fail to update work request');
+            throw new DatabaseError('Fail to update push subscription');
         }
 
         return await this.getOne(id);
     },
 
     getOne: async function(id) {
-        const data =  await dataApiClient.query(`SELECT * FROM WorkRequest WHERE id =:id`, { id });
+        const data =  await dataApiClient.query(`SELECT * FROM PushSubscription WHERE id =:id`, { id });
 
         return data?.records.length > 0 ? data?.records[0]: null;
     },
@@ -78,12 +65,10 @@ exports.workRequestRepository = {
     getPaginatedList: async function(filter, limit, token) {
         const filterCondition = parseFilter(filter);
 
-        let countSql = 'SELECT COUNT(*) AS total FROM WorkRequest';
+        let countSql = 'SELECT COUNT(*) AS total FROM PushSubscription';
         if (filterCondition) {
             countSql = `${countSql} WHERE ${filterCondition}`;
         }
-
-        console.log('WorkRequest count query:', countSql);
 
         const result = await dataApiClient.query(countSql);
 
@@ -95,7 +80,7 @@ exports.workRequestRepository = {
             offset = 0
         }
 
-        let sql = 'SELECT * FROM WorkRequest';
+        let sql = 'SELECT * FROM PushSubscription';
 
         if (filterCondition) {
             sql = `${sql} WHERE ${filterCondition}`
@@ -105,7 +90,7 @@ exports.workRequestRepository = {
             sql = `${sql} ORDER BY date_time_updated DESC, date_time_created DESC LIMIT ${limit} OFFSET ${offset}`;
         }
 
-        console.log('WorkRequest paginatedList Query with filter and limit:', sql);
+        console.log('PushSubscription paginatedList Query with filter and limit:', sql);
 
         const data = await dataApiClient.query(sql);
 
@@ -124,13 +109,13 @@ exports.workRequestRepository = {
         const data = await this.getOne(id);
 
         if (!data) {
-            throw new NotFoundError(`Work Request is not found for id: ${id}`);
+            throw new NotFoundError(`Push Subscription is not found for id: ${id}`);
         }
 
-        const result =  await dataApiClient.query(`DELETE FROM WorkRequest WHERE id =:id`, { id });
+        const result =  await dataApiClient.query(`DELETE FROM PushSubscription WHERE id =:id`, { id });
 
         if (result?.numberOfRecordsUpdated < 1) {
-            throw new DatabaseError('Fail to delete work request');
+            throw new DatabaseError('Fail to delete push subscription');
         }
 
         return data;

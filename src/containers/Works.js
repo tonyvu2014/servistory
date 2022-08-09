@@ -50,11 +50,12 @@ import { listWorks } from '../graphql/queries';
 import { updateWork } from '../graphql/mutations';
 import { DATE_DISPLAY_FORMAT, WORKS_PER_PAGE, STATUS_TO_TEXT_MAPPER } from '../common/constant';
 import * as subscriptions from '../graphql/subscriptions';
-import { notifyWorkStatus } from '../graphql/mutations';
+import { notifyWorkStatus, createPushSubscription } from '../graphql/mutations';
 import debounce from 'lodash/debounce';
 import { LoadingContext } from '../App';
 import './Works.css';
 import ConfirmationModal from '../components/common/ConfirmationModal';
+import { urlBase64ToUint8Array } from '../common/helper';
 
 const defaultAlertState = {
     open: false,
@@ -218,6 +219,38 @@ const Works = () => {
             onUpdateWorkRequestSubscription.unsubscribe();
         }
     }, []);
+
+    useEffect(() => {
+        async function createSubscription() {
+            if ('serviceWorker' in navigator) {
+                const register = await navigator.serviceWorker.ready;
+        
+                const publicVapidKey = process.env.REACT_APP_WEB_PUSH_PUBLIC_KEY;
+                const subscription = await register.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
+                });
+        
+                console.log('Sending subscription request');
+                try {
+                    await API.graphql(
+                        graphqlOperation(createPushSubscription, {
+                            input: {
+                                vendor_id: vendorId,
+                                subscription: JSON.stringify(subscription)
+                            }
+                        })
+                    );
+                } catch (e) {
+                    console.log('subscription error', e);
+                }
+            }
+        }
+        
+        if (vendorId) {
+            createSubscription();
+        }
+    }, [vendorId]);
 
     useEffect(() => {
         async function fetchData() {

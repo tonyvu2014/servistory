@@ -400,7 +400,42 @@ export const deleteWorkRequest = /* GraphQL */ `
     }
   }
 `;
-
+export const createPushSubscription = /* GraphQL */ `
+  mutation CreatePushSubscription(
+    $input: CreatePushSubscriptionInput!
+    $condition: PushSubscriptionConditionInput
+  ) {
+    createPushSubscription(input: $input, condition: $condition) {
+      id
+      vendor_id
+      subscription
+    }
+  }
+`;
+export const updatePushSubscription = /* GraphQL */ `
+  mutation UpdatePushSubscription(
+    $input: UpdatePushSubscriptionInput!
+    $condition: PushSubscriptionConditionInput
+  ) {
+    updatePushSubscription(input: $input, condition: $condition) {
+      id
+      vendor_id
+      subscription
+    }
+  }
+`;
+export const deletePushSubscription = /* GraphQL */ `
+  mutation DeletePushSubscription(
+    $input: DeletePushSubscriptionInput!
+    $condition: VendorPushSubscriptionInput
+  ) {
+    deletePushSubscription(input: $input, condition: $condition) {
+      id
+      vendor_id
+      subscription
+    }
+  }
+`;
 export const notifyWorkStatus = `
   mutation NotifyWorkStatus(
     $input: NotifyWorkStatusInput!

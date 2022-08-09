@@ -258,3 +258,30 @@ export const listWorkRequests = /* GraphQL */ `
     }
   }
 `;
+export const getPushSubscription = /* GraphQL */ `
+  query GetPushSubscription($id: ID!) {
+    getPushSubscription(id: $id) {
+      id
+      vendor_id
+      subscription
+      date_time_created
+      date_time_updated
+    }
+  }
+`;
+export const listPushSubscriptions = /* GraphQL */ `
+  query ListPushSubscriptions($filter: PushSubscriptionFilterInput, $limit: Int, $token: String) {
+    listPushSubscriptions(filter: $filter, limit: $limit, token: $token) {
+      items {
+        id
+        vendor_id
+        subscription
+        date_time_created
+        date_time_updated
+      }
+      total
+      previousToken
+      nextToken
+    }
+  }
+`;

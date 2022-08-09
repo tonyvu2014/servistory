@@ -24,6 +24,12 @@
     },
     "dbName": {
       "Type": "String"
+    },
+    "webPushPublicKey": {
+      "Type": "String"
+    },
+    "webPushPrivateKey": {
+      "Type": "String"
     }
   },
   "Conditions": {
@@ -87,6 +93,12 @@
             },
             "DB_NAME": {
               "Ref": "dbName"
+            },
+            "WEB_PUSH_PUBLIC_KEY": {
+              "Ref": "webPushPublicKey"
+            },
+            "WEB_PUSH_PRIVATE_KEY": {
+              "Ref": "webPushPrivateKey"
             }
           }
         },

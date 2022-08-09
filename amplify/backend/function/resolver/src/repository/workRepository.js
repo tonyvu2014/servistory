@@ -124,7 +124,7 @@ exports.workRepository = {
         const data = await this.getOne(id);
 
         if (!data) {
-            throw new NotFoundError(`Record is not found for id: ${id}`);
+            throw new NotFoundError(`Work is not found for id: ${id}`);
         }
 
         const result =  await dataApiClient.query(`DELETE FROM Work WHERE id =:id`, { id });
