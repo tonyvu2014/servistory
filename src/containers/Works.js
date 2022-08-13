@@ -221,16 +221,11 @@ const Works = () => {
     }, []);
 
     useEffect(() => {
-        async function createSubscription() {
+        async function sendPushSubscription() {
             if ('serviceWorker' in navigator) {
-                if (navigator.serviceWorker.controller) {
-                    console.log('servicerWorker is already registered');
-                    return;
-                }
                 const register = await navigator.serviceWorker.ready;
         
                 const publicVapidKey = process.env.REACT_APP_WEB_PUSH_PUBLIC_KEY;
-                console.log('publicVapidKey', publicVapidKey);
                 const subscription = await register.pushManager.subscribe({
                     userVisibleOnly: true,
                     applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
@@ -253,10 +248,8 @@ const Works = () => {
             }
         }
         
-        console.log('vendor id', vendorId);
         if (vendorId) {
-            console.log('Creating push subscription');
-            createSubscription();
+            sendPushSubscription();
         }
     }, [vendorId]);
 

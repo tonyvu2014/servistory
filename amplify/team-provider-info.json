@@ -56,7 +56,7 @@
         },
         "resolver": {
           "deploymentBucketName": "amplify-servistory-dev-123430-deployment",
-          "s3Key": "amplify-builds/resolver-6478424c7235514d4644-build.zip",
+          "s3Key": "amplify-builds/resolver-786a345a534e48613372-build.zip",
           "dbSecretArn": "arn:aws:secretsmanager:ap-southeast-2:416696267306:secret:rds-db-credentials/cluster-YUKQ4NUGXZFQPH6WLCTV7KN6HY/devAdmin-zEreF0",
           "dbClusterArn": "arn:aws:rds:ap-southeast-2:416696267306:cluster:dev-servistory-serverless-cluster",
           "dbName": "Servistory",

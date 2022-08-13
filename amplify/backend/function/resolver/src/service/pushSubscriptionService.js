@@ -21,15 +21,16 @@ exports.pushSubscriptionService = {
 
             const newPushSubscription = await pushSubscriptionRepo.create(pushSubscription);
     
-            this.sendNotification(vendor_id, {
+            this.sendNotification(vendor_id, JSON.stringify({
                 title: 'Servistory',
                 body: 'You have subscribed to Servistory push notification'
-            });
+            }));
             return newPushSubscription;
         }
 
         const existingVendorPushSubscription = vendorPushSubscriptions.items[0];
 
+        console.log('Updating to subscription', subscription);
         return await this.updatePushSubscription({
             id: existingVendorPushSubscription.id,
             subscription
