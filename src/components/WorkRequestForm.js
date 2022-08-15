@@ -5,6 +5,8 @@ import Box from "@mui/material/Box";
 import Stack from '@mui/material/Stack';
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
 import Input from "@mui/material/Input";
 import Typography from "@mui/material/Typography";
 import InputLabel from '@mui/material/InputLabel';
@@ -13,6 +15,7 @@ import SendIcon from '@mui/icons-material/Send';
 import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import { listWorkApprovalTemplates } from '../graphql/queries';
 import * as mutations from "../graphql/mutations";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -23,8 +26,9 @@ import { DATE_PICKER_FORMAT, TIME_PICKER_FORMAT, DATE_TIME_PICKER_FORMAT } from 
 import * as yup from 'yup';
 import { WorkAlertContext } from '../containers/Works';
 import omit from 'lodash/omit';
-import { s3Client, s3, getPublicUrl } from '../common/s3Helper';
+import { s3Client, getPublicUrl } from '../common/s3Helper';
 import { nanoid } from 'nanoid';
+import debounce from 'lodash/debounce';
 import './WorkRequestForm.css';
 import { LoadingContext } from '../App';
 
@@ -36,6 +40,8 @@ const WorkRequestForm = (props) => {
 
     const [selectedFiles, setSelectedFiles] = useState([]);
     const [existingFiles, setExistingFiles] = useState([]);
+    const [templates, setTemplates] = useState([]);
+    const [selectedTemplateId, setSelectedTemplateId] = useState(undefined);
 
     const { preSubmitAction, postSubmitAction, work, request } = props;
 
@@ -54,7 +60,7 @@ const WorkRequestForm = (props) => {
             .min(0).required('Cost is required')
     });
 
-    const { register, handleSubmit, control, formState: { errors } } = useForm({
+    const { register, handleSubmit, setValue, control, formState: { errors } } = useForm({
         defaultValues: {
             title: request?.title || '',
             description: request?.description || '',
@@ -176,11 +182,73 @@ const WorkRequestForm = (props) => {
 
             setExistingFiles(existingFiles);
         }
+
+        async function fetchTemplates() {
+            try {
+                setLoadingState(true);
+                const result = await API.graphql(
+                    { 
+                        query: listWorkApprovalTemplates , 
+                        variables: { 
+                            input : {
+                                filter: null,
+                                limit: null,
+                                token: null
+                            }
+                        }
+                    }
+                );
+                const templates = result.data.listWorkApprovalTemplates.items;
+                setTemplates(templates);
+            } catch (e) {
+                console.log('Error in fetching templates', e);
+            }
+            setLoadingState(false);
+        }
+        const debouncedFetch = debounce(fetchTemplates, 1000);
+        debouncedFetch();
     }, []);
+
+    const handleTemplateChange = (event) => {
+        const selectedValue = event.target.value;
+        if (selectedValue === '0') {
+            setValue('title', request?.title || '');
+            setValue('description', request?.description || '');
+            setValue('reason', request?.reason || '');
+            return;
+        }
+
+        setSelectedTemplateId(selectedValue);
+        const selectedTemplate = templates.find(t => t.id === selectedValue);
+        if (selectedTemplate) {
+            setValue('title', selectedTemplate.title);
+            setValue('description', selectedTemplate.description);
+            setValue('reason', selectedTemplate.reason);
+        }
+    }
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
             <Box>
+                <Stack direction="column" spacing={1} sx={{ my:2 }}>
+                    <InputLabel id="input-template-label">Enter work approval details or select from a pre-built template</InputLabel>
+                    <Select
+                        labelId="select-template-label"
+                        id="template"
+                        value={selectedTemplateId}
+                        label="Template"
+                        onChange={handleTemplateChange}
+                        >
+                         <MenuItem value="0">
+                            -- Enter my own work approval details --
+                        </MenuItem>    
+                        {templates.map(template => (
+                            <MenuItem key={template.id} value={template.id}>
+                                {template.title}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </Stack>
                 <Stack direction="row" spacing={1} sx={{ my: 2 }}>
                     <Controller
                         name = "title"

@@ -285,3 +285,33 @@ export const listPushSubscriptions = /* GraphQL */ `
     }
   }
 `;
+
+export const getWorkApprovalTemplate = /* GraphQL */ `
+  query GetWorkApproval($id: ID!) {
+    getWorkApprovalTemplate(id: $id) {
+      id
+      title
+      description
+      reason
+      date_time_created
+      date_time_updated
+    }
+  }
+`;
+export const listWorkApprovalTemplates = /* GraphQL */ `
+  query ListWorkApprovalTemplates($filter: WorkApprovalTemplateFilterInput, $limit: Int, $token: String) {
+    listWorkApprovalTemplates(filter: $filter, limit: $limit, token: $token) {
+      items {
+        id
+        title
+        description
+        reason
+        date_time_created
+        date_time_updated
+      }
+      total
+      previousToken
+      nextToken
+    }
+  }
+`;
