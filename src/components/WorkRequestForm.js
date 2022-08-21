@@ -231,7 +231,7 @@ const WorkRequestForm = (props) => {
         <form onSubmit={handleSubmit(onSubmit)}>
             <Box>
                 <Stack direction="column" spacing={1} sx={{ my:2 }}>
-                    <InputLabel id="input-template-label">Enter work approval details or select from a pre-built template</InputLabel>
+                    <InputLabel id="input-template-label">Enter work approval details or select a pre-built template</InputLabel>
                     <Select
                         labelId="select-template-label"
                         id="template"
