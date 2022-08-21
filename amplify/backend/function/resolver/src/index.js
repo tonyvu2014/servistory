@@ -2,7 +2,7 @@ const { vendorService } = require('./service/vendorService');
 const { workService } = require('./service/workService');
 const { workRequestService } = require('./service/workRequestService');
 const { pushSubscriptionService } = require('./service/pushSubscriptionService');
-// const webpush = require('web-push');
+const { workApprovalTemplateService } = require('./service/workApprovalTemplateService');
 
 const resolvers = {
     Mutation: {
@@ -78,6 +78,14 @@ const resolvers = {
 
         listPushSubscriptions: (event) => {
             return listPushSubscriptions(event)
+        },
+
+        getWorkApprovalTemplate: (event) => {
+            return getWorkApprovalTemplate(event)
+        },
+
+        listWorkApprovalTemplates: (event) => {
+            return listWorkApprovalTemplates(event)
         }
     },
 
@@ -102,23 +110,6 @@ exports.handler = async (event, context) => {
 
     console.log(`EVENT: ${JSON.stringify(event)}`);
     console.log(`CONTEXT: ${JSON.stringify(context)}`);
-
-    // if (event.name === 'push') {
-    //     const publicVapidKey = process.env.WEB_PUSH_PUBLIC_KEY;
-    //     const privateVapidKey = process.env.WEB_PUSH_PRIVATE_KEY;
-        
-    //     webpush.setVapidDetails('mailto:arland@servistory.com', publicVapidKey, privateVapidKey);
-
-    //     const subscription = '{"endpoint":"https://fcm.googleapis.com/fcm/send/cpxIfR5efgk:APA91bGda8rEOiB81Dk8biFyOeKqLTyz9diBHALmS81hCzciD9W_oCBNwmVazxv3BQePz2bqu03gi_nDtBQ-VBttcYK1aflkWK6AAc51lmd5S-8NfcZJNekBCXHENJ2ZShrm-44Kfr20","expirationTime":null,"keys":{"p256dh":"BDpC963WPzAGU8D_FIq9QbH5QPYh48tobrtBpzO9tgV-YpK7tlgZT58gP0P1PsRNCieuo5OwfnEyQ6ZLOWolehg","auth":"pwNM66WfoQmNIn0w55Fw8A"}}';
-
-    //     const payload = JSON.stringify({
-    //         title: 'Servistory',
-    //         body: 'You have a new work approval'
-    //     });
-
-    //     const result = await webpush.sendNotification(JSON.parse(subscription), payload);
-    //     console.log('Send push notification result', result);
-    // }
 
     const typeHandler = resolvers[event.typeName];
     if (typeHandler) {
@@ -268,4 +259,17 @@ async function deletePushSubscription(event) {
     const { id } = input;
 
     return await pushSubscriptionService.deletePushSubscription(id);
+}
+
+// Work Approval Templates
+async function getWorkApprovalTemplate(event) {
+    const { id } = event.arguments;
+
+    return await workApprovalTemplateService.getWorkApprovalTemplate(id);
+}
+
+async function listWorkApprovalTemplates(event) {
+    const { filter, limit, token } = event.arguments;
+
+    return await workApprovalTemplateService.getWorkApprovalTemplates(filter, limit, token);
 }

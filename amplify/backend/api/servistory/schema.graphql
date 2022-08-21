@@ -71,8 +71,17 @@ type PushSubscription {
   id: ID!
   vendor_id: ID!
   subscription: String!
-  date_time_created: AWSDateTime!
-  date_time_updated: AWSDateTime!
+  date_time_created: AWSDateTime
+  date_time_updated: AWSDateTime
+}
+
+type WorkApprovalTemplate {
+  id: ID!
+  title: String!
+  description: String
+  reason: String
+  date_time_created: AWSDateTime
+  date_time_updated: AWSDateTime
 }
 
 input StringInput {
@@ -402,6 +411,21 @@ input DeletePushSubscriptionInput {
   id: ID!
 }
 
+type WorkApprovalTemplateConnection {
+  items: [WorkApprovalTemplate]!
+  total: Int
+  previousToken: String
+  nextToken: String
+}
+
+input WorkApprovalTemplateFilterInput {
+  id: IDInput
+  title: StringInput
+  and: [WorkApprovalTemplateFilterInput]
+  or: [WorkApprovalTemplateFilterInput]
+  not: WorkApprovalTemplateFilterInput
+}
+
 input NotifyWorkStatusInput {
   work_id: ID!
 }
@@ -420,6 +444,9 @@ type Query {
 
   getPushSubscription(id: ID!): PushSubscription @function(name: "resolver-${env}")
   listPushSubscriptions(filter: PushSubscriptionFilterInput, limit: Int, token: String): PushSubscriptionConnection @function(name: "resolver-${env}")
+
+  getWorkApprovalTemplate(id: ID!): WorkApprovalTemplate @function(name: "resolver-${env}")
+  listWorkApprovalTemplates(filter: WorkApprovalTemplateFilterInput, limit: Int, token: String): WorkApprovalTemplateConnection @function(name: "resolver-${env}")
 }
 
 type Mutation {
