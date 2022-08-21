@@ -95,7 +95,7 @@ VALUES
     uuid(),
     "Tires Replacement (with photo)",
     "Remove old tires and replace with (_____). During this process we replace the air valve inside of the rim, fit the new tyres, inflate, perform a wheel alignment and test drive the vehicle.",
-    "As per the attached photos the tread depth on your tires is currently between __mm and __mm which is getting low. The minimum legal tread depth is 1.5mm. Tyres are best replaced in complete sets, this way you don’t get uneven wear between tyres and your car functions more smoothly."
+    "As per the attached photos the tread depth on your tires is currently between __mm and __mm which is getting low. The minimum legal tread depth is 1.5mm. Tyres are best replaced in complete sets, this way you don’t get uneven wear between tyres and your car functions more smoothly.",
     NOW()
 ),
 (
