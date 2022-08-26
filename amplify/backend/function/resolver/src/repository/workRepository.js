@@ -101,8 +101,14 @@ exports.workRepository = {
             sql = `${sql} WHERE ${filterCondition}`
         }
 
+        let sortProp = 'date_time_pickup';
+        // TODO: a quick way to sort by drop-off date for awaiting vehicle, needs refactor
+        if (filterCondition.includes('status = "PENDING"')) {
+            sortProp = 'date_time_arrived';
+        }
+
         if (limit) {
-            sql = `${sql} ORDER BY date_time_pickup DESC, date_time_created DESC LIMIT ${limit} OFFSET ${offset}`;
+            sql = `${sql} ORDER BY ${sortProp} ASC, date_time_created DESC LIMIT ${limit} OFFSET ${offset}`;
         }
 
         console.log('Work paginatedList Query with filter and limit:', sql);

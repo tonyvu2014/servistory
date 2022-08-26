@@ -284,6 +284,7 @@ const Works = () => {
                     token: `${(page-1)*WORKS_PER_PAGE}`
                 }));
                 const works = result.data.listWorks.items;
+
                 setWorks(works);
                 const total = result.data.listWorks.total;
                 setTotal(total);
@@ -408,7 +409,7 @@ const Works = () => {
                 open: true,
                 severity: 'success',
                 title: `Card has been move to ${STATUS_TO_TEXT_MAPPER[status]} successfully`,
-                message: 'Cards are sorted by pick-up date'
+                message: `Cards are sorted by ${status === 'PENDING' ? 'drop-off' : 'pick-up'} date`
             })
         } catch (e) {
             console.log('Error in updating work status', e);
@@ -585,7 +586,10 @@ const Works = () => {
                     <Table sx={{ minWidth: 700 }} aria-label="works table">
                         <TableHead>
                             <TableRow sx={{ borderTop: 0 }}>
-                                <StyledTableCell align="left">Pick-Up Date</StyledTableCell>
+                                <StyledTableCell align="left">
+                                    {workStatus === 'PENDING' && 'Drop-off Date'}
+                                    {workStatus !== 'PENDING' && 'Pick-Up Date'}
+                                </StyledTableCell>
                                 <StyledTableCell align="left">Customer</StyledTableCell>
                                 <StyledTableCell align="left">Vehicle</StyledTableCell>
                                 <StyledTableCell align="left">Registration</StyledTableCell>
@@ -601,7 +605,8 @@ const Works = () => {
                             <React.Fragment key={row.id}>
                                 <TableRow sx={{ backgroundColor: row.id === updatedWorkId ? '#D4DBFC' : 'none' }}>
                                     <StyledTableCell align="left" width="10%" className='top'>
-                                        {row.date_time_pickup ? format(parseISO(row.date_time_pickup), DATE_DISPLAY_FORMAT) : ''}
+                                        {workStatus !== 'PENDING' && (row.date_time_pickup ? format(parseISO(row.date_time_pickup), DATE_DISPLAY_FORMAT) : '')}
+                                        {workStatus === 'PENDING' && (row.date_time_arrived ? format(parseISO(row.date_time_arrived), DATE_DISPLAY_FORMAT) : '')}
                                     </StyledTableCell>
                                     <StyledTableCell align="left" width="18%" className='top'>{row.customer_name}</StyledTableCell>
                                     <StyledTableCell align="left" width="18%" className='top'>{row.car_model}</StyledTableCell>

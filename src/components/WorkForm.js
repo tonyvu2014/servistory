@@ -72,6 +72,7 @@ const WorkForm = (props) => {
         const { attributes } = await Auth.currentAuthenticatedUser();
         let action;
         let newWork;
+        let workStatus;
 
         try {
             setLoadingState(true);
@@ -87,17 +88,20 @@ const WorkForm = (props) => {
                     workData = omit(workData, ['date_time_pickup']);
                 }
 
-                await API.graphql({ query: mutations.updateWork, variables: { input: { id: work.id, ...workData } } });
+                const result = await API.graphql({ query: mutations.updateWork, variables: { input: { id: work.id, ...workData } } });
+                const updatedWork = result.data.updateWork;
+                workStatus = updatedWork.status;
             } else {
                 action = 'added'
                 const result = await API.graphql({ query: mutations.createWork, variables: { input: {...data, vendor_id: attributes['custom:org_id']} } });
                 newWork = result.data.createWork;
+                workStatus = newWork.status;
             }
             setAlertState({
                 open: true,
                 severity: 'success',
                 title: `Card ${action} successfully`,
-                message: 'Cards are sorted by pick-up date'
+                message: `Cards are sorted by ${workStatus === 'PENDING' ? 'drop-off' : 'pick-up'} date`
             })
         } catch (e) {
             console.log('Error in saving work', e);
