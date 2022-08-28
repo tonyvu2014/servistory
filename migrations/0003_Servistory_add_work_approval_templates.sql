@@ -37,13 +37,6 @@ VALUES
 ),
 (
     uuid(),
-    "Brake Pads Replacement (Back)",
-    "Remove old back brake pads and replace them with new (_____) brake pads. During the replacement, we will also inspect the disc rotors and brake fluid.",
-    "As per the attached photo the back brake pads are excessively worn and due for replacement.",
-    NOW()
-),
-(
-    uuid(),
     "Brake Pads Replacement (All)",
     "Remove all brake pads and replace them with new (_____) brake pads. During the replacement, we will also inspect the disc rotors and brake fluid.",
     "The brake pads are excessively worn and due for replacement.",

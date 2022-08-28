@@ -28,7 +28,7 @@ const WorkRemoval = (props) => {
                 open: true,
                 severity: 'success',
                 title: `Card removed successfully`,
-                message: 'Cards are sorted by pick-up date'
+                message: `Cards are sorted by ${work.status === 'PENDING' ? 'drop-off' : 'pick-up'} date`
             })
         } catch (e) {
             console.log('Error in removing work', e);
