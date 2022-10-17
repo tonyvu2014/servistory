@@ -42,7 +42,7 @@ exports.workRequestService = {
         switch (workRequest.status) {
             case 'PENDING': 
                 message = `Hi ${work.customer_name}, this is ${vendor?.name}. We have identified a recommended maintenance ${workRequest?.title} for your vehicle. ` +
-                `You can view and approve it here: ${BASE_URL}/approval/${workRequest.tracking_no}. ` + 
+                `You can view and approve it here: ${BASE_URL}/approval/${workRequest.tracking_no} . ` + 
                 `If you have any questions, please let us know on ${vendor.contact_no ?? vendor.phone}, thanks!`;
                 break;
             case 'APPROVED':
