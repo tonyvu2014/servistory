@@ -1,8 +1,8 @@
 # Description
 
-A serveless customer workflow management and communication system for machenic workshop.
+A customer workflow management and communication system for machenic workshop.
 
-Backend is built with nodejs.
+Backend is built with nodejs deployed to AWS Lambda as serverless functions.
 
 This frontend was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
@@ -16,6 +16,7 @@ This frontend was bootstrapped with [Create React App](https://github.com/facebo
 - AWS S3 for storage
 - AWS RDS for database
 - ReactJS
+- NodeJS
 - MySQL
 - GraphQL
 - Material UI
