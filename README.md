@@ -1,6 +1,24 @@
-# Getting Started with Create React App
+# Description
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A serveless customer workflow management and communication system for machenic workshop.
+
+Backend is built with nodejs.
+
+This frontend was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+
+## Technologies
+
+- AWS Amplify as the framework
+- AWS AppSync for graphql
+- AWS Cognito for authentication
+- AWS Lambda for hosting function
+- AWS SNS for SMS notification
+- AWS S3 for storage
+- AWS RDS for database
+- ReactJS
+- MySQL
+- GraphQL
+- Material UI
 
 ## Available Scripts
 
